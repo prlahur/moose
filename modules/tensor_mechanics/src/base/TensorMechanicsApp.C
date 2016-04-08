@@ -108,6 +108,7 @@
 #include "NewmarkVelAux.h"
 
 #include "Pressure.h"
+#include "DisplacementAboutAxis.h"
 
 #include "CrystalPlasticitySlipRateGSS.h"
 #include "CrystalPlasticitySlipResistanceGSS.h"
@@ -115,7 +116,7 @@
 #include "CrystalPlasticityStateVarRateComponentGSS.h"
 
 #include "Mass.h"
-#include "TorqueReactionScalar.h"
+#include "TorqueReaction.h"
 
 template<>
 InputParameters validParams<TensorMechanicsApp>()
@@ -249,9 +250,10 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerAux(NewmarkVelAux);
 
   registerBoundaryCondition(Pressure);
+  registerBoundaryCondition(DisplacementAboutAxis);
 
   registerPostprocessor(Mass);
-  registerPostprocessor(TorqueReactionScalar);
+  registerPostprocessor(TorqueReaction);
 }
 
 // External entry point for dynamic syntax association
