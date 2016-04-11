@@ -18,7 +18,7 @@
 #include "XFEMMarkerUserObject.h"
 #include "XFEMMaterialTensorMarkerUserObject.h"
 #include "XFEMAction.h"
-#include "XFEMEqualValueConstraint.h"
+#include "XFEMSingleVariableConstraint.h"
 
 template<>
 InputParameters validParams<XFEMApp>()
@@ -68,7 +68,7 @@ XFEMApp::registerObjects(Factory & factory)
   registerAux(XFEMMarkerAux);
 
   //Constraints
-  registerConstraint(XFEMEqualValueConstraint);
+  registerConstraint(XFEMSingleVariableConstraint);
 
   //UserObjects
   registerUserObject(XFEMMarkerUserObject);
