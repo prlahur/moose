@@ -543,6 +543,13 @@ PorousFlowMaterialSimpleCO2::dSupercriticalViscosity_dP(Real pressure, Real temp
  return dmu * pa2psia * 1e-3; // cP to Pa.s
 }
 
+Real
+PorousFlowMaterialSimpleCO2::dViscosity_dT(Real pressure, Real temperature, Real density) const
+{
+  //TODO: implement
+  return 0.0;
+}
+
 std::vector<Real>
 PorousFlowMaterialSimpleCO2::henryConstants() const
 {
