@@ -40,6 +40,7 @@
 #include "PorousFlowMaterialMethane.h"
 #include "PorousFlowMaterialWater.h"
 #include "PorousFlowMaterialBrine.h"
+#include "PorousFlowMaterialSimpleCO2.h"
 
 // Postprocessors
 #include "PorousFlowFluidMass.h"
@@ -121,6 +122,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowMaterialMethane);
   registerMaterial(PorousFlowMaterialWater);
   registerMaterial(PorousFlowMaterialBrine);
+  registerMaterial(PorousFlowMaterialSimpleCO2);
 
   // Postprocessors
   registerPostprocessor(PorousFlowFluidMass);
