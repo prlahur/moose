@@ -146,7 +146,6 @@ SolidMechanicsApp::registerObjects(Factory & factory)
   registerKernel(OutOfPlaneStress);
   registerKernel(StressDivergenceRZ);
   registerKernel(StressDivergenceRSpherical);
-  registerKernel(HomogenizationHeatConduction);
 
   registerPostprocessor(HomogenizedElasticConstants);
   registerPostprocessor(JIntegral);
