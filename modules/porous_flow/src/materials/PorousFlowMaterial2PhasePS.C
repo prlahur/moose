@@ -11,7 +11,7 @@
 template<>
 InputParameters validParams<PorousFlowMaterial2PhasePS>()
 {
-  InputParameters params = validParams<PorousFlowStateBase>();
+  InputParameters params = validParams<PorousFlowVariableBase>();
 
   params.addRequiredCoupledVar("phase0_porepressure", "Variable that is the porepressure of phase 0 (eg, the gas phase)");
   params.addRequiredCoupledVar("phase1_saturation", "Variable that is the saturation of phase 1 (eg, the water phase)");
@@ -20,9 +20,8 @@ InputParameters validParams<PorousFlowMaterial2PhasePS>()
 }
 
 PorousFlowMaterial2PhasePS::PorousFlowMaterial2PhasePS(const InputParameters & parameters) :
-    PorousFlowStateBase(parameters),
+    PorousFlowVariableBase(parameters),
 
-    _num_ph(2),
     _phase0_porepressure_nodal(coupledNodalValue("phase0_porepressure")),
     _phase0_porepressure_qp(coupledValue("phase0_porepressure")),
     _phase0_gradp_qp(coupledGradient("phase0_porepressure")),
@@ -44,28 +43,7 @@ PorousFlowMaterial2PhasePS::PorousFlowMaterial2PhasePS(const InputParameters & p
 void
 PorousFlowMaterial2PhasePS::initQpStatefulProperties()
 {
-  _porepressure_nodal[_qp].resize(_num_ph);
-  _porepressure_qp[_qp].resize(_num_ph);
-  _porepressure_nodal_old[_qp].resize(_num_ph);
-  _gradp_qp[_qp].resize(_num_ph);
-  _dporepressure_nodal_dvar[_qp].resize(_num_ph);
-  _dporepressure_qp_dvar[_qp].resize(_num_ph);
-  _dgradp_qp_dgradv[_qp].resize(_num_ph);
-  _dgradp_qp_dv[_qp].resize(_num_ph);
-
-  _saturation_nodal[_qp].resize(_num_ph);
-  _saturation_qp[_qp].resize(_num_ph);
-  _saturation_nodal_old[_qp].resize(_num_ph);
-  _grads_qp[_qp].resize(_num_ph);
-  _dsaturation_nodal_dvar[_qp].resize(_num_ph);
-  _dsaturation_qp_dvar[_qp].resize(_num_ph);
-  _dgrads_qp_dgradv[_qp].resize(_num_ph);
-  _dgrads_qp_dv[_qp].resize(_num_ph);
-
-  _temperature_nodal[_qp].resize(_num_ph);
-  _temperature_qp[_qp].resize(_num_ph);
-  _dtemperature_nodal_dvar[_qp].resize(_num_ph);
-  _dtemperature_qp_dvar[_qp].resize(_num_ph);
+  PorousFlowVariableBase::initQpStatefulProperties();
 
   /*
    *  YAQI HACK !!
@@ -80,6 +58,8 @@ PorousFlowMaterial2PhasePS::initQpStatefulProperties()
 void
 PorousFlowMaterial2PhasePS::computeQpProperties()
 {
+  PorousFlowVariableBase::computeQpProperties();
+
   buildQpPPSSTT();
 
   /*
@@ -98,21 +78,6 @@ PorousFlowMaterial2PhasePS::computeQpProperties()
     }
   */
 
-  /*
-   * TODO: these derivatives could be put into the initQpStatefulProperties
-   *       but only if i keep pc=constant, which is probably unphysical, so i'll
-   *       keep the following computations here for modification with
-   *       a physical pc later.
-   */
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
-  {
-    _dporepressure_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dporepressure_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgradp_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgradp_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
-  }
-
   // _porepressure is only dependent on _phase0_porepressure, and its derivative is 1
   if (!(_dictator_UO.not_porflow_var(_phase0_porepressure_varnum)))
   {
@@ -125,14 +90,6 @@ PorousFlowMaterial2PhasePS::computeQpProperties()
     }
   }
 
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
-  {
-    _dsaturation_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dsaturation_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgrads_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-  }
-
   // _saturation is only dependent on _phase1_saturation, and its derivative is +/- 1
   if (!(_dictator_UO.not_porflow_var(_phase1_saturation_varnum)))
   {
@@ -143,13 +100,6 @@ PorousFlowMaterial2PhasePS::computeQpProperties()
     _dsaturation_qp_dvar[_qp][1][_dictator_UO.porflow_var_num(_phase1_saturation_varnum)] = 1.0;
     _dgrads_qp_dgradv[_qp][0][_dictator_UO.porflow_var_num(_phase1_saturation_varnum)] = -1.0;
     _dgrads_qp_dgradv[_qp][1][_dictator_UO.porflow_var_num(_phase1_saturation_varnum)] = 1.0;
-  }
-
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
-  {
-    _dtemperature_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dtemperature_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
   }
 
   // _temperature is only dependent on _phase0_temperature, and its derivative is = 1

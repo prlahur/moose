@@ -6,22 +6,23 @@
 /****************************************************************/
 
 
-#include "PorousFlowStateBase.h"
+#include "PorousFlowVariableBase.h"
 
 template<>
-InputParameters validParams<PorousFlowStateBase>()
+InputParameters validParams<PorousFlowVariableBase>()
 {
   InputParameters params = validParams<Material>();
   params.addCoupledVar("temperature", 20.0, "Fluid temperature");
   params.addRequiredParam<UserObjectName>("PorousFlowDictator_UO", "The UserObject that holds the list of Porous-Flow variable names");
-  params.addClassDescription("Base class for fluid state materials. Provides pressure, saturation and temperature material properties for all phases");
+  params.addClassDescription("Base class for thermophysical variable materials. Provides pressure, saturation and temperature material properties for all phases as required");
   return params;
 }
 
-PorousFlowStateBase::PorousFlowStateBase(const InputParameters & parameters) :
-    Material(parameters),
+PorousFlowVariableBase::PorousFlowVariableBase(const InputParameters & parameters) :
+    DerivativeMaterialInterface<Material>(parameters),
 
     _dictator_UO(getUserObject<PorousFlowDictator>("PorousFlowDictator_UO")),
+    _num_ph(_dictator_UO.num_phases()),
     _temperature_nodal_var(coupledNodalValue("temperature")),
     _temperature_qp_var(coupledValue("temperature")),
     _temperature_varnum(coupled("temperature")),
@@ -52,11 +53,51 @@ PorousFlowStateBase::PorousFlowStateBase(const InputParameters & parameters) :
 }
 
 void
-PorousFlowStateBase::initQpStatefulProperties()
+PorousFlowVariableBase::initQpStatefulProperties()
 {
+  /// Resize the material properties which constain pressure, saturation and temperature
+  _porepressure_nodal[_qp].resize(_num_ph);
+  _porepressure_qp[_qp].resize(_num_ph);
+  _porepressure_nodal_old[_qp].resize(_num_ph);
+  _gradp_qp[_qp].resize(_num_ph);
+  _dporepressure_nodal_dvar[_qp].resize(_num_ph);
+  _dporepressure_qp_dvar[_qp].resize(_num_ph);
+  _dgradp_qp_dgradv[_qp].resize(_num_ph);
+  _dgradp_qp_dv[_qp].resize(_num_ph);
+
+  _saturation_nodal[_qp].resize(_num_ph);
+  _saturation_qp[_qp].resize(_num_ph);
+  _saturation_nodal_old[_qp].resize(_num_ph);
+  _grads_qp[_qp].resize(_num_ph);
+  _dsaturation_nodal_dvar[_qp].resize(_num_ph);
+  _dsaturation_qp_dvar[_qp].resize(_num_ph);
+  _dgrads_qp_dgradv[_qp].resize(_num_ph);
+  _dgrads_qp_dv[_qp].resize(_num_ph);
+
+  _temperature_nodal[_qp].resize(_num_ph);
+  _temperature_qp[_qp].resize(_num_ph);
+  _dtemperature_nodal_dvar[_qp].resize(_num_ph);
+  _dtemperature_qp_dvar[_qp].resize(_num_ph);
 }
 
 void
-PorousFlowStateBase::computeQpProperties()
+PorousFlowVariableBase::computeQpProperties()
 {
+  /// The number of PorousFlow variables
+  unsigned int numvars = _dictator_UO.num_v();
+
+  /// Prepare the derivative matrices with zeroes
+  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  {
+    _dporepressure_nodal_dvar[_qp][phase].assign(numvars, 0.0);
+    _dporepressure_qp_dvar[_qp][phase].assign(numvars, 0.0);
+    _dgradp_qp_dgradv[_qp][phase].assign(numvars, 0.0);
+    _dgradp_qp_dv[_qp][phase].assign(numvars, RealGradient());
+    _dsaturation_nodal_dvar[_qp][phase].assign(numvars, 0.0);
+    _dsaturation_qp_dvar[_qp][phase].assign(numvars, 0.0);
+    _dgrads_qp_dgradv[_qp][phase].assign(numvars, 0.0);
+    _dgrads_qp_dv[_qp][phase].assign(numvars, RealGradient());
+    _dtemperature_nodal_dvar[_qp][phase].assign(numvars, 0.0);
+    _dtemperature_qp_dvar[_qp][phase].assign(numvars, 0.0);
+  }
 }

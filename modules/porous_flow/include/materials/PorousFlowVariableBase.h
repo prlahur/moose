@@ -6,26 +6,27 @@
 /****************************************************************/
 
 
-#ifndef POROUSFLOWSTATEBASE_H
-#define POROUSFLOWSTATEBASE_H
+#ifndef POROUSFLOWVARIABLEBASE_H
+#define POROUSFLOWVARIABLEBASE_H
 
 #include "DerivativeMaterialInterface.h"
 #include "Material.h"
 #include "PorousFlowDictator.h"
 
-class PorousFlowStateBase;
+class PorousFlowVariableBase;
 
 template<>
-InputParameters validParams<PorousFlowStateBase>();
+InputParameters validParams<PorousFlowVariableBase>();
 
 /**
- * Base class for fluid state materials, which will assemble materials for
- * pore pressure, saturation, temperature etc at the nodes and qps as required
+ * Base class for thermophysical variable materials, which assemble materials for
+ * primary variables such aspore pressure, saturation, temperature etc at the nodes
+ * and qps for all phases as required
  */
-class PorousFlowStateBase : public Material
+class PorousFlowVariableBase : public DerivativeMaterialInterface<Material>
 {
 public:
-  PorousFlowStateBase(const InputParameters & parameters);
+  PorousFlowVariableBase(const InputParameters & parameters);
 
 protected:
 
@@ -34,6 +35,8 @@ protected:
 
   /// The variable names UserObject for the PorousFlow variables
   const PorousFlowDictator & _dictator_UO;
+  /// Number of phases
+  const unsigned int _num_ph;
   /// Nodal value of temperature
   const VariableValue & _temperature_nodal_var;
   /// Quadpoint value of temperature
@@ -82,4 +85,4 @@ protected:
   MaterialProperty<std::vector<std::vector<Real> > > & _dtemperature_qp_dvar;
 };
 
-#endif //POROUSFLOWSTATEBASE_H
+#endif //POROUSFLOWVARIABLEBASE_H

@@ -11,7 +11,7 @@
 template<>
 InputParameters validParams<PorousFlowMaterial2PhasePP_VG>()
 {
-  InputParameters params = validParams<PorousFlowStateBase>();
+  InputParameters params = validParams<PorousFlowVariableBase>();
 
   params.addRequiredCoupledVar("phase0_porepressure", "Variable that is the porepressure of phase 0 (eg, the water phase).  It will be <= phase1_porepressure.");
   params.addRequiredCoupledVar("phase1_porepressure", "Variable that is the porepressure of phase 1 (eg, the gas phase)");
@@ -23,9 +23,8 @@ InputParameters validParams<PorousFlowMaterial2PhasePP_VG>()
 }
 
 PorousFlowMaterial2PhasePP_VG::PorousFlowMaterial2PhasePP_VG(const InputParameters & parameters) :
-    PorousFlowStateBase(parameters),
+    PorousFlowVariableBase(parameters),
 
-    _num_ph(2),
     _al(getParam<Real>("al")),
     _m(getParam<Real>("m")),
 
@@ -50,28 +49,7 @@ PorousFlowMaterial2PhasePP_VG::PorousFlowMaterial2PhasePP_VG(const InputParamete
 void
 PorousFlowMaterial2PhasePP_VG::initQpStatefulProperties()
 {
-  _porepressure_nodal[_qp].resize(_num_ph);
-  _porepressure_qp[_qp].resize(_num_ph);
-  _porepressure_nodal_old[_qp].resize(_num_ph);
-  _gradp_qp[_qp].resize(_num_ph);
-  _dporepressure_nodal_dvar[_qp].resize(_num_ph);
-  _dporepressure_qp_dvar[_qp].resize(_num_ph);
-  _dgradp_qp_dgradv[_qp].resize(_num_ph);
-  _dgradp_qp_dv[_qp].resize(_num_ph);
-
-  _saturation_nodal[_qp].resize(_num_ph);
-  _saturation_qp[_qp].resize(_num_ph);
-  _saturation_nodal_old[_qp].resize(_num_ph);
-  _grads_qp[_qp].resize(_num_ph);
-  _dsaturation_nodal_dvar[_qp].resize(_num_ph);
-  _dsaturation_qp_dvar[_qp].resize(_num_ph);
-  _dgrads_qp_dgradv[_qp].resize(_num_ph);
-  _dgrads_qp_dv[_qp].resize(_num_ph);
-
-  _temperature_nodal[_qp].resize(_num_ph);
-  _temperature_qp[_qp].resize(_num_ph);
-  _dtemperature_nodal_dvar[_qp].resize(_num_ph);
-  _dtemperature_qp_dvar[_qp].resize(_num_ph);
+  PorousFlowVariableBase::initQpStatefulProperties();
 
   buildQpPPSS();
 

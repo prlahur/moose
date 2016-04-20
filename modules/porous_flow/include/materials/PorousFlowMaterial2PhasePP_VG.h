@@ -9,7 +9,7 @@
 #ifndef PORFLOWMATERIAL2PHASEPP_VG_H
 #define PORFLOWMATERIAL2PHASEPP_VG_H
 
-#include "PorousFlowStateBase.h"
+#include "PorousFlowVariableBase.h"
 #include "PorousFlowCapillaryVG.h"
 
 //Forward Declarations
@@ -21,7 +21,7 @@ InputParameters validParams<PorousFlowMaterial2PhasePP_VG>();
 /**
  * Material designed to calculate fluid-phase porepressures and saturations at nodes and quadpoints
  */
-class PorousFlowMaterial2PhasePP_VG : public PorousFlowStateBase
+class PorousFlowMaterial2PhasePP_VG : public PorousFlowVariableBase
 {
 public:
   PorousFlowMaterial2PhasePP_VG(const InputParameters & parameters);
@@ -31,8 +31,6 @@ protected:
   virtual void initQpStatefulProperties();
   virtual void computeQpProperties();
 
-  /// number of phases (=2 for this class)
-  const unsigned int _num_ph;
   /// vanGenuchten alpha
   const Real _al;
   /// vanGenuchten m

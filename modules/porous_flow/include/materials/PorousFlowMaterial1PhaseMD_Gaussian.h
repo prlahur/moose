@@ -9,7 +9,7 @@
 #ifndef POROUSFLOWMATERIAL1PHASEMD_GAUSSIAN_H
 #define POROUSFLOWMATERIAL1PHASEMD_GAUSSIAN_H
 
-#include "PorousFlowStateBase.h"
+#include "PorousFlowVariableBase.h"
 
 //Forward Declarations
 class PorousFlowMaterial1PhaseMD_Gaussian;
@@ -23,7 +23,7 @@ InputParameters validParams<PorousFlowMaterial1PhaseMD_Gaussian>();
  * function and assuming the independent variable is log(mass density) and
  * assuming the fluid has a constant bulk modulus
  */
-class PorousFlowMaterial1PhaseMD_Gaussian : public PorousFlowStateBase
+class PorousFlowMaterial1PhaseMD_Gaussian : public PorousFlowVariableBase
 {
 public:
   PorousFlowMaterial1PhaseMD_Gaussian(const InputParameters & parameters);
@@ -33,8 +33,6 @@ protected:
   virtual void initQpStatefulProperties();
   virtual void computeQpProperties();
 
-  /// Number of phases
-  const unsigned int _num_ph;
   /// Gaussian parameter: saturation = exp(-(al*p)^2)
   const Real _al;
   /// _al2 = al*al

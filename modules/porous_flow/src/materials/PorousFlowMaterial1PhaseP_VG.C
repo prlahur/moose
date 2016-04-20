@@ -11,7 +11,7 @@
 template<>
 InputParameters validParams<PorousFlowMaterial1PhaseP_VG>()
 {
-  InputParameters params = validParams<PorousFlowStateBase>();
+  InputParameters params = validParams<PorousFlowVariableBase>();
 
   params.addRequiredCoupledVar("porepressure", "Variable that represents the porepressure of the single phase");
   params.addRequiredRangeCheckedParam<Real>("al", "al > 0", "van-Genuchten alpha parameter.  Must be positive.  effectiveSaturation = (1 + (-al*c)^(1/(1-m)))^(-m)");
@@ -21,9 +21,8 @@ InputParameters validParams<PorousFlowMaterial1PhaseP_VG>()
 }
 
 PorousFlowMaterial1PhaseP_VG::PorousFlowMaterial1PhaseP_VG(const InputParameters & parameters) :
-    PorousFlowStateBase(parameters),
+    PorousFlowVariableBase(parameters),
 
-    _num_ph(1),
     _al(getParam<Real>("al")),
     _m(getParam<Real>("m")),
 
@@ -39,28 +38,7 @@ PorousFlowMaterial1PhaseP_VG::PorousFlowMaterial1PhaseP_VG(const InputParameters
 void
 PorousFlowMaterial1PhaseP_VG::initQpStatefulProperties()
 {
-  _porepressure_nodal[_qp].resize(_num_ph);
-  _porepressure_qp[_qp].resize(_num_ph);
-  _porepressure_nodal_old[_qp].resize(_num_ph);
-  _gradp_qp[_qp].resize(_num_ph);
-  _dporepressure_nodal_dvar[_qp].resize(_num_ph);
-  _dporepressure_qp_dvar[_qp].resize(_num_ph);
-  _dgradp_qp_dgradv[_qp].resize(_num_ph);
-  _dgradp_qp_dv[_qp].resize(_num_ph);
-
-  _saturation_nodal[_qp].resize(_num_ph);
-  _saturation_qp[_qp].resize(_num_ph);
-  _saturation_nodal_old[_qp].resize(_num_ph);
-  _grads_qp[_qp].resize(_num_ph);
-  _dsaturation_nodal_dvar[_qp].resize(_num_ph);
-  _dsaturation_qp_dvar[_qp].resize(_num_ph);
-  _dgrads_qp_dgradv[_qp].resize(_num_ph);
-  _dgrads_qp_dv[_qp].resize(_num_ph);
-
-  _temperature_nodal[_qp].resize(_num_ph);
-  _temperature_qp[_qp].resize(_num_ph);
-  _dtemperature_nodal_dvar[_qp].resize(_num_ph);
-  _dtemperature_qp_dvar[_qp].resize(_num_ph);
+  PorousFlowVariableBase::initQpStatefulProperties();
 
   /*
    *  YAQI HACK !!
