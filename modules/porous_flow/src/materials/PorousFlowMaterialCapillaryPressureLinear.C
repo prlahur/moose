@@ -13,7 +13,7 @@ InputParameters validParams<PorousFlowMaterialCapillaryPressureLinear>()
 {
   InputParameters params = validParams<PorousFlowMaterialCapillaryPressureBase>();
   params.addRequiredParam<Real>("pc_max",  "Maximum capillary pressure (Pa)");
-  params.addClassDescription("This Material provides a linear relative permeability");
+  params.addClassDescription("This Material provides a linear capillary pressure");
   return params;
 }
 
@@ -26,6 +26,13 @@ PorousFlowMaterialCapillaryPressureLinear::PorousFlowMaterialCapillaryPressureLi
 void
 PorousFlowMaterialCapillaryPressureLinear::computeQpProperties()
 {
-  _capillary_pressure[_qp] = _pc_max * (1.0 - _saturation[_qp][_phase_num]);
-  _dcapillary_pressure_ds[_qp] = - _pc_max;
+  /// Capillary pressure and derivatives wrt phase saturation at the nodes
+  _capillary_pressure_nodal[_qp] = _pc_max * (1.0 - _saturation_nodal[_qp][_phase_num]);
+  _dcapillary_pressure_nodal_ds[_qp] = - _pc_max;
+  _d2capillary_pressure_nodal_ds2[_qp] = 0.0;
+
+  /// Capillary pressure and derivatives wrt phase saturation at the qps
+  _capillary_pressure_qp[_qp] = _pc_max * (1.0 - _saturation_qp[_qp][_phase_num]);
+  _dcapillary_pressure_qp_ds[_qp] = - _pc_max;
+  _d2capillary_pressure_qp_ds2[_qp] = 0.0;
 }

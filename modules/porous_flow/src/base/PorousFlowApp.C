@@ -31,6 +31,8 @@
 #include "PorousFlowMaterialCapillaryPressureBase.h"
 #include "PorousFlowMaterialCapillaryPressureConstant.h"
 #include "PorousFlowMaterialCapillaryPressureLinear.h"
+#include "PorousFlowMaterialCapillaryPressureVG.h"
+#include "PorousFlowMaterialCapillaryPressureVGP.h"
 #include "PorousFlowMaterialViscosityConst.h"
 #include "PorousFlowMaterialJoiner.h"
 #include "PorousFlowMaterialJoinerOld.h"
@@ -119,6 +121,8 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowMaterialCapillaryPressureBase);
   registerMaterial(PorousFlowMaterialCapillaryPressureConstant);
   registerMaterial(PorousFlowMaterialCapillaryPressureLinear);
+  registerMaterial(PorousFlowMaterialCapillaryPressureVG);
+  registerMaterial(PorousFlowMaterialCapillaryPressureVGP);
   registerMaterial(PorousFlowMaterialRelativePermeabilityBase);
   registerMaterial(PorousFlowMaterialRelativePermeabilityConstant);
   registerMaterial(PorousFlowMaterialRelativePermeabilityLinear);
