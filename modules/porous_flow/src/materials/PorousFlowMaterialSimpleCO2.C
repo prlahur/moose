@@ -121,13 +121,13 @@ PorousFlowMaterialSimpleCO2::gasViscosity(Real temperature, Real density) const
   Real tstar = tk / 251.196;
   Real a[5] = {0.235156, -0.491266, 5.211155e-2, 5.347906e-2, -1.537102e-2};
   Real d[5] = {0.4071119e-2, 0.7198037e-4, 0.2411697e-16, 0.2971072e-22, -0.1627888e-22};
-  unsigned int j[5] = {1, 1, 4, 1, 2};
-  unsigned int i[5] = {1, 2, 6, 8, 8};
+  int j[5] = {1, 1, 4, 1, 2};
+  int i[5] = {1, 2, 6, 8, 8};
 
   // Zero-denisty viscosity
   Real sum = 0.0;
 
-  for (unsigned int n = 0; n < 5; ++n)
+  for (int n = 0; n < 5; ++n)
     sum += a[n] * std::pow(std::log(tstar), n);
 
   Real theta = std::exp(sum);
@@ -454,8 +454,8 @@ PorousFlowMaterialSimpleCO2::dGasViscosity_dDensity(Real temperature, Real densi
   Real tk = temperature + _t_c2k;
   Real tstar = tk / 251.196;
   Real d[5] = {0.4071119e-2, 0.7198037e-4, 0.2411697e-16, 0.2971072e-22, -0.1627888e-22};
-  unsigned int j[5] = {1, 1, 4, 1, 2};
-  unsigned int i[5] = {1, 2, 6, 8, 8};
+  int j[5] = {1, 1, 4, 1, 2};
+  int i[5] = {1, 2, 6, 8, 8};
 
   Real b[5];
   for (unsigned int n = 0; n < 5; ++n)
@@ -544,7 +544,7 @@ PorousFlowMaterialSimpleCO2::dSupercriticalViscosity_dP(Real pressure, Real temp
 }
 
 Real
-PorousFlowMaterialSimpleCO2::dViscosity_dT(Real pressure, Real temperature, Real density) const
+PorousFlowMaterialSimpleCO2::dViscosity_dT(Real /*pressure*/, Real /*temperature*/, Real /*density*/) const
 {
   //TODO: implement
   return 0.0;
