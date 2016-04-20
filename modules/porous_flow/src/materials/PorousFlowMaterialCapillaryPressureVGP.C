@@ -15,8 +15,6 @@ InputParameters validParams<PorousFlowMaterialCapillaryPressureVGP>()
   InputParameters params = validParams<PorousFlowMaterialCapillaryPressureBase>();
   params.addRequiredRangeCheckedParam<Real>("al", "al > 0", "van Genuchten alpha parameter.  Must be positive.  effectiveSaturation = (1 + (-al*P)^(1/(1-m)))^(-m), where P = phase0_porepressure - phase1_porepressure <= 0");
   params.addRequiredRangeCheckedParam<Real>("m", "m > 0 & m < 1", "van Genuchten m parameter.  Must be between 0 and 1, and optimally should be set to >0.5   EffectiveSaturation = (1 + (-al*p)^(1/(1-m)))^(-m)");
-  params.addRequiredParam<Real>("pc_max", "Maximum capillary pressure");
-  params.addRequiredParam<Real>("p0", "Capillary pressure coefficient P0");
   params.addClassDescription("This Material provides a van Genuchten effective saturation as a function of pore pressure");
   return params;
 }
