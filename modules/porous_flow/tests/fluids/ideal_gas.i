@@ -1,8 +1,9 @@
-# Test the density and viscosity calculated by the methane Material
+# Test the density calculated by the ideal gas Material
 # Pressure 10 MPa
-# Temperature 70C
-# Methane density should equal 60.936 kg/m^3 (NIST webbook)
-# Methane viscosity should equal 1.4579e-05 Pa.s (NIST webbook)
+# molar_mass = 5e-3
+# Density should equal 18.60937 kg/m^3
+# dDensity_dPressure should equal 1.860937e-06
+# dDensity_dTemperature should equal -5.758741e-02
 
 [Mesh]
   type = GeneratedMesh
@@ -38,20 +39,21 @@
 
 [AuxVariables]
   [./temp]
-    initial_condition = 70
+    initial_condition = 50
   [../]
 []
 
 [Materials]
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
+    temperature = temp
     porepressure = pp
-    temperature = 'temp'
     al = 1
     m = 0.5
   [../]
   [./dens0]
-    type = PorousFlowMaterialMethane
+    type = PorousFlowMaterialIdealGas
+    molar_mass = 5e-3
     phase = 0
   [../]
 []
@@ -74,10 +76,6 @@
     type = ElementIntegralMaterialProperty
     mat_prop = 'PorousFlow_fluid_phase_density0'
   [../]
-  [./viscosity]
-    type = ElementIntegralMaterialProperty
-    mat_prop = 'PorousFlow_viscosity0'
-  [../]
   [./ddensity_dp]
     type = ElementIntegralMaterialProperty
     mat_prop = 'dPorousFlow_fluid_phase_density0/dpressure_variable_dummy'
@@ -86,14 +84,10 @@
     type = ElementIntegralMaterialProperty
     mat_prop = 'dPorousFlow_fluid_phase_density0/dtemperature_variable_dummy'
   [../]
-  [./dviscosity_dt]
-    type = ElementIntegralMaterialProperty
-    mat_prop = 'dPorousFlow_viscosity0/dtemperature_variable_dummy'
-  [../]
 []
 
 [Outputs]
   execute_on = 'timestep_end'
-  file_base = methane1
+  file_base = ideal_gas
   csv = true
 []

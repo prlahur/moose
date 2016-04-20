@@ -1,8 +1,10 @@
-# Test the density and viscosity calculated by the methane Material
-# Pressure 10 MPa
-# Temperature 70C
-# Methane density should equal 60.936 kg/m^3 (NIST webbook)
-# Methane viscosity should equal 1.4579e-05 Pa.s (NIST webbook)
+# Test the density and viscosity calculated by the brine Material
+# Pressure 20 MPa
+# Temperature 50C
+# xnacl = 0.1047 (equivalent to 2.0 molality)
+# Brine density should equal 1100.87 kg/m^3 (Pitzer et al, 1984)
+# Brine viscosity should equal 0.0006777 Pa.s (Phillips et al, 1980)
+# Results are within expected accuracy
 
 [Mesh]
   type = GeneratedMesh
@@ -25,7 +27,7 @@
 
 [Variables]
   [./pp]
-    initial_condition = 10e6
+    initial_condition = 20e6
   [../]
 []
 
@@ -38,7 +40,10 @@
 
 [AuxVariables]
   [./temp]
-    initial_condition = 70
+    initial_condition = 50
+  [../]
+  [./xnacl]
+    initial_condition = 0.1047
   [../]
 []
 
@@ -46,12 +51,13 @@
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
     porepressure = pp
-    temperature = 'temp'
+    temperature = temp
     al = 1
     m = 0.5
   [../]
   [./dens0]
-    type = PorousFlowMaterialMethane
+    type = PorousFlowMaterialBrine
+    xnacl = 0.1047
     phase = 0
   [../]
 []
@@ -69,6 +75,10 @@
   [./temperature]
     type = ElementIntegralVariablePostprocessor
     variable = temp
+  [../]
+  [./xnacl]
+    type = ElementIntegralVariablePostprocessor
+    variable = xnacl
   [../]
   [./density]
     type = ElementIntegralMaterialProperty
@@ -94,6 +104,6 @@
 
 [Outputs]
   execute_on = 'timestep_end'
-  file_base = methane1
+  file_base = brine1
   csv = true
 []

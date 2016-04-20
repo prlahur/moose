@@ -3,6 +3,7 @@
 # Bulk modulus 2e8
 # Density0 = 1000
 # Density should equal 1051.27 kg/m^3
+# dDensity_dPressure should equal 5.256355e-06
 
 [Mesh]
   type = GeneratedMesh
@@ -60,6 +61,10 @@
   [./density]
     type = ElementIntegralMaterialProperty
     mat_prop = 'PorousFlow_fluid_phase_density0'
+  [../]
+  [./ddensity_dp]
+    type = ElementIntegralMaterialProperty
+    mat_prop = 'dPorousFlow_fluid_phase_density0/dpressure_variable_dummy'
   [../]
 []
 

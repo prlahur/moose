@@ -1,8 +1,10 @@
-# Test the density and viscosity calculated by the methane Material
-# Pressure 10 MPa
-# Temperature 70C
-# Methane density should equal 60.936 kg/m^3 (NIST webbook)
-# Methane viscosity should equal 1.4579e-05 Pa.s (NIST webbook)
+# Test the density and viscosity calculated by the simple CO2 Material
+# Pressure 5 MPa
+# Temperature 50C
+# These conditions correspond to the gas phase
+# CO2 density should equal 104 kg/m^3 (NIST webbook)
+# CO2 viscosity should equal 0.000017345 Pa.s (NIST webbook)
+# Results are within expected accuracy
 
 [Mesh]
   type = GeneratedMesh
@@ -25,7 +27,7 @@
 
 [Variables]
   [./pp]
-    initial_condition = 10e6
+    initial_condition = 5e6
   [../]
 []
 
@@ -38,7 +40,7 @@
 
 [AuxVariables]
   [./temp]
-    initial_condition = 70
+    initial_condition = 50
   [../]
 []
 
@@ -46,12 +48,12 @@
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
     porepressure = pp
-    temperature = 'temp'
+    temperature = temp
     al = 1
     m = 0.5
   [../]
   [./dens0]
-    type = PorousFlowMaterialMethane
+    type = PorousFlowMaterialSimpleCO2
     phase = 0
   [../]
 []
@@ -94,6 +96,6 @@
 
 [Outputs]
   execute_on = 'timestep_end'
-  file_base = methane1
+  file_base = simpleco21
   csv = true
 []

@@ -4,6 +4,7 @@
 # Temperature 300K (26.85C)
 # Water density should equal 1.0 / 0.971180894e–3 = 1029.7 kg/m^3 (IAPWS IF97)
 # Water viscosity should equal 0.00085327 Pa.s (NIST webbook)
+# Results are within expected accuracy
 
 [Mesh]
   type = GeneratedMesh
@@ -37,17 +38,22 @@
   [../]
 []
 
+[AuxVariables]
+  [./temp]
+    initial_condition = 26.85
+  [../]
+[]
+
 [Materials]
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
     porepressure = pp
-    temperature = '26.85'
+    temperature = temp
     al = 1
     m = 0.5
   [../]
   [./dens0]
     type = PorousFlowMaterialWater
-    outputs = all
     phase = 0
   [../]
 []
@@ -58,6 +64,14 @@
 []
 
 [Postprocessors]
+  [./pressure]
+    type = ElementIntegralVariablePostprocessor
+    variable = pp
+  [../]
+  [./temperature]
+    type = ElementIntegralVariablePostprocessor
+    variable = temp
+  [../]
   [./density]
     type = ElementIntegralMaterialProperty
     mat_prop = 'PorousFlow_fluid_phase_density0'
@@ -65,6 +79,18 @@
   [./viscosity]
     type = ElementIntegralMaterialProperty
     mat_prop = 'PorousFlow_viscosity0'
+  [../]
+  [./ddensity_dp]
+    type = ElementIntegralMaterialProperty
+    mat_prop = 'dPorousFlow_fluid_phase_density0/dpressure_variable_dummy'
+  [../]
+  [./ddensity_dt]
+    type = ElementIntegralMaterialProperty
+    mat_prop = 'dPorousFlow_fluid_phase_density0/dtemperature_variable_dummy'
+  [../]
+  [./dviscosity_dt]
+    type = ElementIntegralMaterialProperty
+    mat_prop = 'dPorousFlow_viscosity0/dtemperature_variable_dummy'
   [../]
 []
 
