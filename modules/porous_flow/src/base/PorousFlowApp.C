@@ -46,7 +46,11 @@
 // Postprocessors
 #include "PorousFlowFluidMass.h"
 
+
 //dirac kernel
+
+
+
 #include "PorousFlowTimeLimitedConstantPointSource.h"
 
 template<>
@@ -132,7 +136,11 @@ PorousFlowApp::registerObjects(Factory & factory)
   // Postprocessors
   registerPostprocessor(PorousFlowFluidMass);
 
+
   //Dirac Kernel
+
+
+
   registerDiracKernel(PorousFlowTimeLimitedConstantPointSource);
 }
 
