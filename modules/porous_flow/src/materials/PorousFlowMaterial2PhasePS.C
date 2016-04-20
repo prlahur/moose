@@ -36,7 +36,7 @@ PorousFlowMaterial2PhasePS::PorousFlowMaterial2PhasePS(const InputParameters & p
     _phase0_temperature_qp(coupledValue("phase0_temperature")),
     _phase0_temperature_varnum(coupled("phase0_temperature"))
 {
-  if (_dictator_UO.num_phases() != _num_ph)
+  if (_dictator_UO.num_phases() != 2)
     mooseError("The Dictator proclaims that the number of phases is " << _dictator_UO.num_phases() << " whereas PorousFlowMaterial2PhasePS can only be used for 2-phase simulation.  Be aware that the Dictator has noted your mistake.");
 }
 
@@ -82,7 +82,7 @@ PorousFlowMaterial2PhasePS::computeQpProperties()
   if (!(_dictator_UO.not_porflow_var(_phase0_porepressure_varnum)))
   {
     // _phase0_porepressure is a porflow variable
-    for (unsigned phase = 0; phase < _num_ph; ++phase)
+    for (unsigned phase = 0; phase < _num_phases; ++phase)
     {
       _dporepressure_nodal_dvar[_qp][phase][_dictator_UO.porflow_var_num(_phase0_porepressure_varnum)] = 1;
       _dporepressure_qp_dvar[_qp][phase][_dictator_UO.porflow_var_num(_phase0_porepressure_varnum)] = 1;

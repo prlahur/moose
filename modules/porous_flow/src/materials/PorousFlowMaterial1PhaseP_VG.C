@@ -72,7 +72,7 @@ PorousFlowMaterial1PhaseP_VG::computeQpProperties()
   */
 
   // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  for (unsigned phase = 0; phase < _num_phases; ++phase)
   {
     _dporepressure_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
     _dporepressure_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
@@ -91,7 +91,7 @@ PorousFlowMaterial1PhaseP_VG::computeQpProperties()
 
 
   // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  for (unsigned phase = 0; phase < _num_phases; ++phase)
   {
     _dsaturation_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
     _dsaturation_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
@@ -109,7 +109,7 @@ PorousFlowMaterial1PhaseP_VG::computeQpProperties()
   }
 
   // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  for (unsigned phase = 0; phase < _num_phases; ++phase)
   {
     _dtemperature_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
     _dtemperature_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
