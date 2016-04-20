@@ -37,7 +37,8 @@ PorousFlowPorosityHM::PorousFlowPorosityHM(const InputParameters & parameters) :
     _ndisp(coupledComponents("displacements")),
     _disp_var_num(_ndisp),
 
-    _strain(getMaterialProperty<RankTwoTensor>("total_strain")), // TODO: perhaps can put temperature here at some stage?
+    _vol_strain_qp(getMaterialProperty<Real>("PorousFlow_total_volumetric_strain_qp")), // TODO: perhaps can put temperature here at some stage?
+    _dvol_strain_qp_dvar(getMaterialProperty<std::vector<RealGradient> >("dPorousFlow_total_volumetric_strain_qp_dvar")),
 
     _pf_nodal(getMaterialProperty<Real>("PorousFlow_effective_fluid_pressure_nodal")),
     _dpf_nodal_dvar(getMaterialProperty<std::vector<Real> >("dPorousFlow_effective_fluid_pressure_nodal_dvar")),
@@ -73,8 +74,8 @@ PorousFlowPorosityHM::computeQpProperties()
   // stored at the quadpoint) actually uses the strain at the quadpoint.  This
   // is OK for LINEAR elements, as strain is constant over the element anyway.
 
-  _porosity_nodal[_qp] = _biot + (_phi0 - _biot)*std::exp(-_strain[_qp].trace() + _coeff*_pf_nodal[_qp]);
-  _porosity_qp[_qp] = _biot + (_phi0 - _biot)*std::exp(-_strain[_qp].trace() + _coeff*_pf_qp[_qp]);
+  _porosity_nodal[_qp] = _biot + (_phi0 - _biot)*std::exp(-_vol_strain_qp[_qp] + _coeff*_pf_nodal[_qp]);
+  _porosity_qp[_qp] = _biot + (_phi0 - _biot)*std::exp(-_vol_strain_qp[_qp] + _coeff*_pf_qp[_qp]);
 
   _dporosity_qp_dvar[_qp].resize(_num_var, 0.0);
   _dporosity_nodal_dvar[_qp].resize(_num_var, 0.0);
@@ -86,6 +87,12 @@ PorousFlowPorosityHM::computeQpProperties()
 
   _dporosity_qp_dgradvar[_qp].resize(_num_var, RealGradient());
   _dporosity_nodal_dgradvar[_qp].resize(_num_var, RealGradient());
+  for (unsigned v = 0; v < _num_var; ++v)
+  {
+    _dporosity_qp_dgradvar[_qp][v] = -(_porosity_qp[_qp] - _biot)*_dvol_strain_qp_dvar[_qp][v];
+    _dporosity_nodal_dgradvar[_qp][v] = -(_porosity_nodal[_qp] - _biot)*_dvol_strain_qp_dvar[_qp][v];
+  }
+  /*
   for (unsigned i = 0 ; i < _ndisp ; ++i)
     if (!_dictator_UO.not_porflow_var(_disp_var_num[i]))
     {
@@ -94,5 +101,6 @@ PorousFlowPorosityHM::computeQpProperties()
       _dporosity_qp_dgradvar[_qp][pvar](i) = -(_porosity_qp[_qp] - _biot);
       _dporosity_nodal_dgradvar[_qp][pvar](i) = -(_porosity_nodal[_qp] - _biot);
     }
+  */
 }
 

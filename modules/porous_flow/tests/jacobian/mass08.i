@@ -90,7 +90,7 @@
     fill_method = symmetric_isotropic
   [../]
   [./strain]
-    type = ComputeIncrementalSmallStrain
+    type = ComputeSmallStrain
   [../]
   [./stress]
     type = ComputeLinearElasticStress #MultiPlasticityStress
@@ -98,6 +98,9 @@
     #ep_plastic_tolerance = 1E-9
   [../]
 
+  [./vol_strain]
+    type = PorousFlowVolumetricStrain
+  [../]
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
     porepressure = pp

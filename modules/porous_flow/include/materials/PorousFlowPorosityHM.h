@@ -57,7 +57,10 @@ protected:
   std::vector<unsigned int> _disp_var_num;
 
   /// strain
-  const MaterialProperty<RankTwoTensor> & _strain;
+  const MaterialProperty<Real> & _vol_strain_qp;
+
+  /// d(strain)/(dvar)
+  const MaterialProperty<std::vector<RealGradient> > & _dvol_strain_qp_dvar;
 
   /// effective nodal porepressure
   const MaterialProperty<Real> & _pf_nodal;

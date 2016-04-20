@@ -1,11 +1,10 @@
-# An undrained oedometer test on a saturated poroelastic sample.
-#
 # The sample is a single unit element, with roller BCs on the sides
 # and bottom.  A constant displacement is applied to the top: disp_z = -0.01*t.
 # There is no fluid flow.
+# Fluid mass conservation is checked.
 #
 # Under these conditions
-# porepressure = -(Fluid bulk modulus)*log(1 - 0.01t)
+# porepressure = porepressure(t=0) - (Fluid bulk modulus)*log(1 - 0.01*t)
 # stress_xx = (bulk - 2*shear/3)*disp_z/L (remember this is effective stress)
 # stress_zz = (bulk + 4*shear/3)*disp_z/L (remember this is effective stress)
 # where L is the height of the sample (L=1 in this test)
@@ -13,15 +12,16 @@
 # Parameters:
 # Bulk modulus = 2
 # Shear modulus = 1.5
-# fluid bulk modulus = 1
+# fluid bulk modulus = 0.5
+# initial porepressure = 0.1
 #
 # Desired output:
 # zdisp = -0.01*t
-# p0 = 1*log(1-0.01t)
+# p0 = 0.1 - 0.5*log(1-0.01*t)
 # stress_xx = stress_yy = -0.01*t
 # stress_zz = -0.04*t
 #
-# Regarding the "log" - it just comes from conserving fluid mass
+# Regarding the "log" - it comes from preserving fluid mass
 
 [Mesh]
   type = GeneratedMesh
@@ -51,6 +51,7 @@
   [./disp_z]
   [../]
   [./porepressure]
+    initial_condition = 0.1
   [../]
 []
 
@@ -98,24 +99,24 @@
     variable = disp_z
     component = 2
   [../]
-  #[./poro_x]
-  #  type = PorousFlowEffectiveStressCoupling
-  #  biot_coefficient = 0.3
-  #  variable = disp_x
-  #  component = 0
-  #[../]
-  #[./poro_y]
-  #  type = PorousFlowEffectiveStressCoupling
-  #  biot_coefficient = 0.3
-  #  variable = disp_y
-  #  component = 1
-  #[../]
-  #[./poro_z]
-  #  type = PorousFlowEffectiveStressCoupling
-  #  biot_coefficient = 0.3
-  #  component = 2
-  #  variable = disp_z
-  #[../]
+  [./poro_x]
+    type = PorousFlowEffectiveStressCoupling
+    biot_coefficient = 0.3
+    variable = disp_x
+    component = 0
+  [../]
+  [./poro_y]
+    type = PorousFlowEffectiveStressCoupling
+    biot_coefficient = 0.3
+    variable = disp_y
+    component = 1
+  [../]
+  [./poro_z]
+    type = PorousFlowEffectiveStressCoupling
+    biot_coefficient = 0.3
+    component = 2
+    variable = disp_z
+  [../]
   [./poro_vol_exp]
     type = PorousFlowMassVolumetricExpansion
     variable = porepressure
@@ -233,7 +234,7 @@
   [./dens0]
     type = PorousFlowMaterialDensityConstBulk
     density0 = 1
-    bulk_modulus = 1
+    bulk_modulus = 0.5
     phase = 0
   [../]
   [./dens_all]
@@ -245,6 +246,12 @@
     material_property = PorousFlow_fluid_phase_density_qp
     use_qps = true
   [../]
+  #[./porosity]
+  #  type = PorousFlowPorosityHM
+  #  porosity_zero = 0.1
+  #  biot_coefficient = 1
+  #  solid_bulk = 1
+  #[../]
   [./porosity]
     type = PorousFlowMaterialPorosityConst
     porosity = 0.1
@@ -283,16 +290,10 @@
 []
 
 [Postprocessors]
-  [./fluid_mass]
-    type = PorousFlowFluidMass
-    component_index = 0
-    variable = porepressure
-    execute_on = 'initial timestep_end'
-    use_displaced_mesh = true
-  [../]
   [./p0]
     type = PointValue
-    outputs = csv
+    outputs = 'console csv'
+    execute_on = 'initial timestep_end'
     point = '0 0 0'
     variable = porepressure
   [../]
@@ -300,6 +301,7 @@
     type = PointValue
     outputs = csv
     point = '0 0 0.5'
+    use_displaced_mesh = false
     variable = disp_z
   [../]
   [./stress_xx]
@@ -320,7 +322,14 @@
     point = '0 0 0'
     variable = stress_zz
   [../]
-
+  [./fluid_mass]
+    type = PorousFlowFluidMass
+    component_index = 0
+    variable = porepressure
+    execute_on = 'initial timestep_end'
+    use_displaced_mesh = true
+    outputs = 'console csv'
+  [../]
 []
 
 
@@ -338,12 +347,12 @@
   solve_type = Newton
   start_time = 0
   end_time = 10
-  dt = 1
+  dt = 2
 []
 
 [Outputs]
-  execute_on = 'timestep_end'
-  file_base = undrained_oedometer
+  execute_on = 'initial timestep_end'
+  file_base = mass04
   [./csv]
     type = CSV
   [../]

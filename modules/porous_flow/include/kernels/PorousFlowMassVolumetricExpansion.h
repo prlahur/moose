@@ -69,7 +69,9 @@ protected:
 
   const MaterialProperty<std::vector<std::vector<std::vector<Real> > > > & _dmass_frac_dvar;
 
-  const MaterialProperty<RankTwoTensor> & _strain_rate;
+  const MaterialProperty<Real> & _strain_rate_qp;
+
+  const MaterialProperty<std::vector<RealGradient> > & _dstrain_rate_qp_dvar;
 
   /**
    * Derivative of residual with respect to PorousFlow variable number pvar

@@ -89,7 +89,7 @@
 [UserObjects]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'porepressure'
+    porous_flow_vars = 'porepressure disp_x disp_y disp_z'
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
@@ -109,8 +109,7 @@
     fill_method = symmetric_isotropic
   [../]
   [./strain]
-    type = ComputeIncrementalSmallStrain
-    displacements = 'disp_x disp_y disp_z'
+    type = ComputeSmallStrain
   [../]
   [./stress]
     type = ComputeLinearElasticStress #MultiPlasticityStress
@@ -118,6 +117,9 @@
     #plastic_models = 'simple1'
   [../]
 
+  [./vol_strain]
+    type = PorousFlowVolumetricStrain
+  [../]
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
     porepressure = porepressure

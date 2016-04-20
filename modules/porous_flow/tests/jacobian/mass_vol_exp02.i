@@ -93,14 +93,6 @@
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
-  [./simple1]
-    type = TensorMechanicsPlasticSimpleTester
-    a = 0
-    b = 1
-    strength = 1E20
-    yield_function_tolerance = 1.0E-9
-    internal_constraint_tolerance = 1.0E-9
-  [../]
 []
 
 [Materials]
@@ -110,15 +102,15 @@
     fill_method = symmetric_isotropic
   [../]
   [./strain]
-    type = ComputeIncrementalSmallStrain
-    displacements = 'disp_x disp_y disp_z'
+    type = ComputeSmallStrain
   [../]
   [./stress]
-    type = ComputeLinearElasticStress #MultiPlasticityStress
-    #ep_plastic_tolerance = 1E-9
-    #plastic_models = 'simple1'
+    type = ComputeLinearElasticStress
   [../]
 
+  [./vol_strain]
+    type = PorousFlowVolumetricStrain
+  [../]
   [./ppss]
     type = PorousFlowMaterial1PhaseP_VG
     porepressure = porepressure
