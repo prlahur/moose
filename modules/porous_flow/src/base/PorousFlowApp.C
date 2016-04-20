@@ -45,6 +45,9 @@
 // Postprocessors
 #include "PorousFlowFluidMass.h"
 
+//dirac kernel
+#include "PorousFlowTimeLimitedConstantPointSource.h"
+
 template<>
 InputParameters validParams<PorousFlowApp>()
 {
@@ -126,6 +129,9 @@ PorousFlowApp::registerObjects(Factory & factory)
 
   // Postprocessors
   registerPostprocessor(PorousFlowFluidMass);
+
+  //Dirac Kernel
+  registerDiracKernel(PorousFlowTimeLimitedConstantPointSource);
 }
 
 // External entry point for dynamic syntax association
