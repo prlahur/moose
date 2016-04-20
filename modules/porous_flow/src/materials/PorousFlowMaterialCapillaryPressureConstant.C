@@ -26,6 +26,13 @@ PorousFlowMaterialCapillaryPressureConstant::PorousFlowMaterialCapillaryPressure
 void
 PorousFlowMaterialCapillaryPressureConstant::computeQpProperties()
 {
-  _capillary_pressure[_qp] = _pc;
-  _dcapillary_pressure_ds[_qp] = 0.0;
+  /// Capillary pressure and derivatives wrt phase saturation at the nodes
+  _capillary_pressure_nodal[_qp] = _pc;
+  _dcapillary_pressure_nodal_ds[_qp] = 0.0;
+  _d2capillary_pressure_nodal_ds2[_qp] = 0.0;
+
+  /// Capillary pressure and derivatives wrt phase saturation at the qps
+  _capillary_pressure_qp[_qp] = _pc;
+  _dcapillary_pressure_qp_ds[_qp] = 0.0;
+  _d2capillary_pressure_qp_ds2[_qp] = 0.0;
 }

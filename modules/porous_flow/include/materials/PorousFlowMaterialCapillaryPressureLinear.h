@@ -28,6 +28,7 @@ public:
 protected:
 
   virtual void computeQpProperties();
+
   /// The maximum value of the capillary pressure
   Real _pc_max;
 };

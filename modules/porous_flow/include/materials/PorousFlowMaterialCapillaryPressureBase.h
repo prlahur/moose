@@ -36,12 +36,22 @@ protected:
   const PorousFlowDictator & _dictator_UO;
   /// Name of (dummy) saturation primary variable
   VariableName _saturation_variable_name;
-  /// Saturation material property
-  const MaterialProperty<std::vector<Real> > & _saturation;
-  /// Capillary pressure material property
-  MaterialProperty<Real> & _capillary_pressure;
-  /// Derivative of capillary pressure wrt phase saturation
-  MaterialProperty<Real> & _dcapillary_pressure_ds;
+  /// Saturation material property at the nodes
+  const MaterialProperty<std::vector<Real> > & _saturation_nodal;
+  /// Saturation material property at the qps
+  const MaterialProperty<std::vector<Real> > & _saturation_qp;
+  /// Capillary pressure material property at the nodes
+  MaterialProperty<Real> & _capillary_pressure_nodal;
+  /// Derivative of capillary pressure at the nodes wrt phase saturation
+  MaterialProperty<Real> & _dcapillary_pressure_nodal_ds;
+  /// Second derivative of capillary pressure at the nodes wrt phase saturation
+  MaterialProperty<Real> & _d2capillary_pressure_nodal_ds2;
+  /// Capillary pressure material property at the qps
+  MaterialProperty<Real> & _capillary_pressure_qp;
+  /// Derivative of capillary pressure at the qps wrt phase saturation
+  MaterialProperty<Real> & _dcapillary_pressure_qp_ds;
+  /// Second derivative of capillary pressure at the qps wrt phase saturation
+  MaterialProperty<Real> & _d2capillary_pressure_qp_ds2;
 };
 
 #endif //POROUSFLOWMATERIALCAPILLARYPRESSUREBASE_H

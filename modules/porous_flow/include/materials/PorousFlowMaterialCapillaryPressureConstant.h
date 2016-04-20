@@ -27,6 +27,7 @@ public:
 protected:
 
   virtual void computeQpProperties();
+
   /// The capillary pressure (Pa)
   Real _pc;
 };
