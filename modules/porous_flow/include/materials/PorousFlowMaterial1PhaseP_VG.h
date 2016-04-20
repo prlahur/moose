@@ -9,7 +9,7 @@
 #ifndef POROUSFLOWMATERIAL1PHASEP_VG_H
 #define POROUSFLOWMATERIAL1PHASEP_VG_H
 
-#include "PorousFlowStateBase.h"
+#include "PorousFlowVariableBase.h"
 #include "PorousFlowCapillaryVG.h"
 
 //Forward Declarations
@@ -22,18 +22,16 @@ InputParameters validParams<PorousFlowMaterial1PhaseP_VG>();
  * Material designed to calculate fluid-phase porepressure and saturation
  * for the single-phase situation, assuming a van-Genuchten capillary suction function
  */
-class PorousFlowMaterial1PhaseP_VG : public PorousFlowStateBase
+class PorousFlowMaterial1PhaseP_VG : public PorousFlowVariableBase
 {
 public:
   PorousFlowMaterial1PhaseP_VG(const InputParameters & parameters);
 
 protected:
-  
+
   virtual void initQpStatefulProperties();
   virtual void computeQpProperties();
 
-  /// number of phases (=1 for this class)
-  const unsigned int _num_ph;
   /// van-Genuchten alpha parameter
   const Real _al;
   /// van-Genuchten m parameter

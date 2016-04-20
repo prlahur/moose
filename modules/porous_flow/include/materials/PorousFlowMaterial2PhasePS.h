@@ -9,7 +9,7 @@
 #ifndef PORFLOWMATERIAL2PHASEPS_H
 #define PORFLOWMATERIAL2PHASEPS_H
 
-#include "PorousFlowStateBase.h"
+#include "PorousFlowVariableBase.h"
 
 //Forward Declarations
 class PorousFlowMaterial2PhasePS;
@@ -20,7 +20,7 @@ InputParameters validParams<PorousFlowMaterial2PhasePS>();
 /**
  * Material designed to calculate fluid-phase porepressures at nodes
  */
-class PorousFlowMaterial2PhasePS : public PorousFlowStateBase
+class PorousFlowMaterial2PhasePS : public PorousFlowVariableBase
 {
 public:
   PorousFlowMaterial2PhasePS(const InputParameters & parameters);
@@ -30,8 +30,6 @@ protected:
   virtual void initQpStatefulProperties();
   virtual void computeQpProperties();
 
-  /// number of phases (=2 for this class)
-  const unsigned int _num_ph;
   /// Nodal value of porepressure of the zero phase (eg, the gas phase)
   const VariableValue & _phase0_porepressure_nodal;
   /// Quadpoint value of porepressure of the zero phase (eg, the gas phase)

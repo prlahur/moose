@@ -11,7 +11,7 @@
 template<>
 InputParameters validParams<PorousFlowMaterial1PhaseMD_Gaussian>()
 {
-  InputParameters params = validParams<PorousFlowStateBase>();
+  InputParameters params = validParams<PorousFlowVariableBase>();
   params.addRequiredCoupledVar("mass_density", "Variable that represents log(mass-density) of the single phase");
   params.addRequiredRangeCheckedParam<Real>("al", "al>0", "For this class, the capillary function is assumed to be saturation = exp(-(al*porepressure)^2) for porepressure<0.");
   params.addRequiredRangeCheckedParam<Real>("density0", "density0>0", "The density of the fluid phase");
@@ -21,9 +21,8 @@ InputParameters validParams<PorousFlowMaterial1PhaseMD_Gaussian>()
 }
 
 PorousFlowMaterial1PhaseMD_Gaussian::PorousFlowMaterial1PhaseMD_Gaussian(const InputParameters & parameters) :
-    PorousFlowStateBase(parameters),
+    PorousFlowVariableBase(parameters),
 
-    _num_ph(1),
     _al(getParam<Real>("al")),
     _al2(std::pow(_al, 2)),
     _logdens0(std::log(getParam<Real>("density0"))),
@@ -43,28 +42,7 @@ PorousFlowMaterial1PhaseMD_Gaussian::PorousFlowMaterial1PhaseMD_Gaussian(const I
 void
 PorousFlowMaterial1PhaseMD_Gaussian::initQpStatefulProperties()
 {
-  _porepressure_nodal[_qp].resize(_num_ph);
-  _porepressure_qp[_qp].resize(_num_ph);
-  _porepressure_nodal_old[_qp].resize(_num_ph);
-  _gradp_qp[_qp].resize(_num_ph);
-  _dporepressure_nodal_dvar[_qp].resize(_num_ph);
-  _dporepressure_qp_dvar[_qp].resize(_num_ph);
-  _dgradp_qp_dgradv[_qp].resize(_num_ph);
-  _dgradp_qp_dv[_qp].resize(_num_ph);
-
-  _saturation_nodal[_qp].resize(_num_ph);
-  _saturation_qp[_qp].resize(_num_ph);
-  _saturation_nodal_old[_qp].resize(_num_ph);
-  _grads_qp[_qp].resize(_num_ph);
-  _dsaturation_nodal_dvar[_qp].resize(_num_ph);
-  _dsaturation_qp_dvar[_qp].resize(_num_ph);
-  _dgrads_qp_dgradv[_qp].resize(_num_ph);
-  _dgrads_qp_dv[_qp].resize(_num_ph);
-
-  _temperature_nodal[_qp].resize(_num_ph);
-  _temperature_qp[_qp].resize(_num_ph);
-  _dtemperature_nodal_dvar[_qp].resize(_num_ph);
-  _dtemperature_qp_dvar[_qp].resize(_num_ph);
+  PorousFlowVariableBase::initQpStatefulProperties();
 
   /*
    *  YAQI HACK !!
@@ -79,6 +57,7 @@ PorousFlowMaterial1PhaseMD_Gaussian::initQpStatefulProperties()
 void
 PorousFlowMaterial1PhaseMD_Gaussian::computeQpProperties()
 {
+  PorousFlowVariableBase::computeQpProperties();
 
   buildPS();
 
@@ -97,19 +76,6 @@ PorousFlowMaterial1PhaseMD_Gaussian::computeQpProperties()
       _saturation_old[_qp][ph] = _saturation[_qp][ph];
     }
   */
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
-  {
-    _dporepressure_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dporepressure_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgradp_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgradp_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
-    _dsaturation_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dsaturation_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgrads_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgrads_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
-  }
-
 
   if (_dictator_UO.not_porflow_var(_md_varnum))
     return;
@@ -152,13 +118,6 @@ PorousFlowMaterial1PhaseMD_Gaussian::computeQpProperties()
     _dgrads_qp_dv[_qp][0][pvar] = -2.0 * _al2 * _dporepressure_qp_dvar[_qp][0][pvar] * _saturation_qp[_qp][0] * _gradp_qp[_qp][0];
     _dgrads_qp_dv[_qp][0][pvar] += -2.0 * _al2 * _porepressure_qp[_qp][0] * _dsaturation_qp_dvar[_qp][0][pvar] * _gradp_qp[_qp][0];
     _dgrads_qp_dv[_qp][0][pvar] += -2.0 * _al2 * _porepressure_qp[_qp][0] * _saturation_qp[_qp][0] * _dgradp_qp_dv[_qp][0][pvar];
-  }
-
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
-  {
-    _dtemperature_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dtemperature_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
   }
 
   // _temperature is only dependent on _temperature, and its derivative is = 1

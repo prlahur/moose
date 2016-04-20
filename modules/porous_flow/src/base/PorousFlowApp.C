@@ -14,7 +14,7 @@
 #include "PorousFlowDictator.h"
 
 // Materials
-#include "PorousFlowStateBase.h"
+#include "PorousFlowVariableBase.h"
 #include "PorousFlowMaterial1PhaseP_VG.h"
 #include "PorousFlowMaterial1PhaseMD_Gaussian.h"
 #include "PorousFlowMaterial2PhasePS.h"
@@ -102,7 +102,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerUserObject(PorousFlowDictator);
 
   // Materials
-  registerMaterial(PorousFlowStateBase);
+  registerMaterial(PorousFlowVariableBase);
   registerMaterial(PorousFlowMaterial1PhaseP_VG);
   registerMaterial(PorousFlowMaterial1PhaseMD_Gaussian);
   registerMaterial(PorousFlowMaterial2PhasePS);
