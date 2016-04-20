@@ -36,7 +36,9 @@ protected:
   /// The variable names UserObject for the PorousFlow variables
   const PorousFlowDictator & _dictator_UO;
   /// Number of phases
-  const unsigned int _num_ph;
+  const unsigned int _num_phases;
+  /// Number of components
+  const unsigned int _num_components;
   /// Nodal value of temperature
   const VariableValue & _temperature_nodal_var;
   /// Quadpoint value of temperature

@@ -42,7 +42,7 @@ PorousFlowMaterial2PhasePP_VG::PorousFlowMaterial2PhasePP_VG(const InputParamete
     _phase0_temperature_qp(coupledValue("phase0_temperature")),
     _phase0_temperature_varnum(coupled("phase0_temperature"))
 {
-  if (_dictator_UO.num_phases() != _num_ph)
+  if (_dictator_UO.num_phases() != 2)
     mooseError("The Dictator announces that the number of phases is " << _dictator_UO.num_phases() << " whereas PorousFlowMaterial2PhasePP_VG can only be used for 2-phase simulation.  When you have an efficient government, you have a dictatorship.");
 }
 
@@ -58,7 +58,7 @@ PorousFlowMaterial2PhasePP_VG::initQpStatefulProperties()
    * remain fixed (at unity) throughout the simulation
    */
   // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  for (unsigned phase = 0; phase < _num_phases; ++phase)
   {
     _dporepressure_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
     _dporepressure_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
@@ -82,7 +82,7 @@ PorousFlowMaterial2PhasePP_VG::initQpStatefulProperties()
   }
 
   // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  for (unsigned phase = 0; phase < _num_phases; ++phase)
   {
     _dtemperature_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
     _dtemperature_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
@@ -109,7 +109,7 @@ PorousFlowMaterial2PhasePP_VG::computeQpProperties()
    */
 
   // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_ph; ++phase)
+  for (unsigned phase = 0; phase < _num_phases; ++phase)
   {
     _dsaturation_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
     _dsaturation_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
