@@ -113,10 +113,10 @@ PorousFlowMaterial2PhasePP_VG::computeQpProperties()
   }
 
   const Real pc_nodal = _phase0_porepressure_nodal[_qp] - _phase1_porepressure_nodal[_qp]; // this is <= 0
-  const Real dseff_nodal = PorousFlowCapillaryVG::dseff(pc_nodal, _al, _m); // d(seff)/d(pc)
+  const Real dseff_nodal = PorousFlowEffectiveSaturationVG::dseff(pc_nodal, _al, _m); // d(seff)/d(pc)
   const Real pc_qp = _phase0_porepressure_qp[_qp] - _phase1_porepressure_qp[_qp]; // this is <= 0
-  const Real dseff_qp = PorousFlowCapillaryVG::dseff(pc_qp, _al, _m); // d(seff_qp)/d(pc_qp)
-  const Real d2seff_qp = PorousFlowCapillaryVG::d2seff(pc_qp, _al, _m); // d^2(seff_qp)/d(pc_qp)^2
+  const Real dseff_qp = PorousFlowEffectiveSaturationVG::dseff(pc_qp, _al, _m); // d(seff_qp)/d(pc_qp)
+  const Real d2seff_qp = PorousFlowEffectiveSaturationVG::d2seff(pc_qp, _al, _m); // d^2(seff_qp)/d(pc_qp)^2
 
   if (!(_dictator_UO.not_porflow_var(_phase0_porepressure_varnum)))
   {
@@ -158,11 +158,11 @@ PorousFlowMaterial2PhasePP_VG::buildQpPPSS()
   _gradp_qp[_qp][1] = _phase1_gradp_qp[_qp];
 
   const Real pc_nodal = _phase0_porepressure_nodal[_qp] - _phase1_porepressure_nodal[_qp]; // this is <= 0
-  const Real seff_nodal = PorousFlowCapillaryVG::seff(pc_nodal, _al, _m);
+  const Real seff_nodal = PorousFlowEffectiveSaturationVG::seff(pc_nodal, _al, _m);
 
   const Real pc_qp = _phase0_porepressure_qp[_qp] - _phase1_porepressure_qp[_qp]; // this is <= 0
-  const Real seff_qp = PorousFlowCapillaryVG::seff(pc_qp, _al, _m);
-  const Real dseff_qp = PorousFlowCapillaryVG::dseff(pc_qp, _al, _m); // d(seff_qp)/d(pc_qp)
+  const Real seff_qp = PorousFlowEffectiveSaturationVG::seff(pc_qp, _al, _m);
+  const Real dseff_qp = PorousFlowEffectiveSaturationVG::dseff(pc_qp, _al, _m); // d(seff_qp)/d(pc_qp)
 
   _saturation_nodal[_qp][0] = seff_nodal;
   _saturation_nodal[_qp][1] = 1.0 - seff_nodal;

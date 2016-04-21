@@ -45,11 +45,9 @@
 
 [Materials]
   [./ppss]
-    type = PorousFlowMaterial1PhaseP_VG
+    type = PorousFlowMaterial1PhaseP
     temperature = temp
     porepressure = pp
-    al = 1
-    m = 0.5
   [../]
   [./dens0]
     type = PorousFlowMaterialIdealGas
