@@ -27,7 +27,7 @@
   [./md]
     type = RandomIC
     min = 0
-    max = 1 # unsaturated for md<log(density0=0.8)=-0.223
+    max = 1 # unsaturated for md<log(density_P0=0.8)=-0.223
     variable = md
   [../]
 []
