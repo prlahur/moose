@@ -52,6 +52,8 @@
 
 
 #include "PorousFlowTimeLimitedConstantPointSource.h"
+#include "PorousFlowSquarePulsePointSource.h"
+
 
 template<>
 InputParameters validParams<PorousFlowApp>()
@@ -142,6 +144,7 @@ PorousFlowApp::registerObjects(Factory & factory)
 
 
   registerDiracKernel(PorousFlowTimeLimitedConstantPointSource);
+  registerDiracKernel(PorousFlowSquarePulsePointSource);  
 }
 
 // External entry point for dynamic syntax association
