@@ -138,7 +138,6 @@ PorousFlowMaterial1PhaseP::buildQpPPSS()
 Real
 PorousFlowMaterial1PhaseP::effectiveSaturation(Real pressure) const
 {
-  _console << "seff " << 1.0 << std::endl;
   return 1.0;
 }
 
