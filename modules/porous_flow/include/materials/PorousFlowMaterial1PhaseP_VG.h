@@ -10,7 +10,7 @@
 #define POROUSFLOWMATERIAL1PHASEP_VG_H
 
 #include "PorousFlowMaterial1PhaseP.h"
-#include "PorousFlowCapillaryVG.h"
+#include "PorousFlowEffectiveSaturationVG.h"
 
 //Forward Declarations
 class PorousFlowMaterial1PhaseP_VG;
@@ -58,7 +58,6 @@ protected:
   const Real _al;
   /// van-Genuchten m parameter
   const Real _m;
-
 };
 
 #endif //POROUSFLOWMATERIAL1PHASEP_VG_H

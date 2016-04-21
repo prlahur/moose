@@ -10,7 +10,7 @@
 #define PORFLOWMATERIAL2PHASEPP_VG_H
 
 #include "PorousFlowVariableBase.h"
-#include "PorousFlowCapillaryVG.h"
+#include "PorousFlowEffectiveSaturationVG.h"
 
 //Forward Declarations
 class PorousFlowMaterial2PhasePP_VG;

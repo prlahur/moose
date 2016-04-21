@@ -39,10 +39,8 @@
 
 [Materials]
   [./ppss]
-    type = PorousFlowMaterial1PhaseP_VG
+    type = PorousFlowMaterial1PhaseP
     porepressure = pp
-    al = 1
-    m = 0.5
   [../]
   [./dens0]
     type = PorousFlowMaterialDensityConstBulk
