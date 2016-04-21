@@ -11,131 +11,143 @@
 template<>
 InputParameters validParams<PorousFlowMaterial1PhaseP_VG>()
 {
-  InputParameters params = validParams<PorousFlowVariableBase>();
-
-  params.addRequiredCoupledVar("porepressure", "Variable that represents the porepressure of the single phase");
+  InputParameters params = validParams<PorousFlowMaterial1PhaseP>();
   params.addRequiredRangeCheckedParam<Real>("al", "al > 0", "van-Genuchten alpha parameter.  Must be positive.  effectiveSaturation = (1 + (-al*c)^(1/(1-m)))^(-m)");
   params.addRequiredRangeCheckedParam<Real>("m", "m > 0 & m < 1", "van-Genuchten m parameter.  Must be between 0 and 1, and optimally should be set to >0.5   EffectiveSaturation = (1 + (-al*p)^(1/(1-m)))^(-m)");
-  params.addClassDescription("This Material is used for the single-phase situation where porepressure is the primary variable.  calculates the 1 porepressure and the 1 saturation in a 1-phase isothermal situation, and derivatives of these with respect to the PorousFlowVariables.  van-Genuchten capillarity is assumed");
+  params.addClassDescription("This Material is used for the single-phase situation where porepressure is the primary variable.  Calculates the 1 porepressure and the 1 saturation in a 1-phase isothermal situation, and derivatives of these with respect to the PorousFlowVariables.  van-Genuchten capillarity is assumed");
   return params;
 }
 
 PorousFlowMaterial1PhaseP_VG::PorousFlowMaterial1PhaseP_VG(const InputParameters & parameters) :
-    PorousFlowVariableBase(parameters),
+    PorousFlowMaterial1PhaseP(parameters),
 
     _al(getParam<Real>("al")),
-    _m(getParam<Real>("m")),
-
-    _porepressure_nodal_var(coupledNodalValue("porepressure")),
-    _porepressure_qp_var(coupledValue("porepressure")),
-    _gradp_qp_var(coupledGradient("porepressure")),
-    _porepressure_varnum(coupled("porepressure"))
+    _m(getParam<Real>("m"))
 {
   if (_dictator_UO.num_phases() != 1)
     mooseError("The Dictator proclaims that the number of phases is " << _dictator_UO.num_phases() << " whereas PorousFlowMaterial1PhaseP_VG can only be used for 1-phase simulations.  Be aware that the Dictator has noted your mistake.");
 }
 
-void
-PorousFlowMaterial1PhaseP_VG::initQpStatefulProperties()
+Real
+PorousFlowMaterial1PhaseP_VG::effectiveSaturation(Real pressure) const
 {
-  PorousFlowVariableBase::initQpStatefulProperties();
-
-  /*
-   *  YAQI HACK !!
-   *
-   * I really just want to simply call
-   * buildQpPPSS();
-   * but i do it below in computeQpProperties
-   */
-  buildQpPPSS();
+  return PorousFlowCapillaryVG::seff(pressure, _al, _m);
 }
 
-void
-PorousFlowMaterial1PhaseP_VG::computeQpProperties()
+Real
+PorousFlowMaterial1PhaseP_VG::dEffectiveSaturation_dP(Real pressure) const
 {
-  buildQpPPSS();
-
-  /*
-   *  YAQI HACK !!
-   *
-   * I really just want to simply call
-   * buildQpPPSS();
-   * from initQpStatefulProperties, but the Variables
-   * aren't initialised at that point so moose crashes
-   */
-  /*if (_t_step == 1)
-    for (unsigned ph = 0; ph < _num_ph; ++ph)
-    {
-      _porepressure_old[_qp][ph] = _porepressure[_qp][ph];
-      _saturation_old[_qp][ph] = _saturation[_qp][ph];
-    }
-  */
-
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_phases; ++phase)
-  {
-    _dporepressure_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dporepressure_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgradp_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgradp_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
-  }
-
-  // _porepressure is only dependent on _porepressure, and its derivative is 1
-  if (!(_dictator_UO.not_porflow_var(_porepressure_varnum)))
-  {
-    // _porepressure is a PorousFlow variable
-    _dporepressure_nodal_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = 1;
-    _dporepressure_qp_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = 1;
-    _dgradp_qp_dgradv[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = 1;
-  }
-
-
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_phases; ++phase)
-  {
-    _dsaturation_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dsaturation_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgrads_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dgrads_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
-  }
-
-  if (!(_dictator_UO.not_porflow_var(_porepressure_varnum)))
-  {
-    // _porepressure is a porflow variable
-    _dsaturation_nodal_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::dseff(_porepressure_nodal_var[_qp], _al, _m);;
-    _dsaturation_qp_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::dseff(_porepressure_qp_var[_qp], _al, _m);;
-    _dgrads_qp_dgradv[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::dseff(_porepressure_qp_var[_qp], _al, _m);
-    _dgrads_qp_dv[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::d2seff(_porepressure_qp_var[_qp], _al, _m) * _gradp_qp_var[_qp];
-  }
-
-  // prepare the derivative matrix with zeroes
-  for (unsigned phase = 0; phase < _num_phases; ++phase)
-  {
-    _dtemperature_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-    _dtemperature_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
-  }
-
-  // _temperature is only dependent on _temperature, and its derivative is = 1
-  if (!(_dictator_UO.not_porflow_var(_temperature_varnum)))
-  {
-    // _temperature is a porflow variable
-    _dtemperature_nodal_dvar[_qp][0][_dictator_UO.porflow_var_num(_temperature_varnum)] = 1.0;
-    _dtemperature_qp_dvar[_qp][0][_dictator_UO.porflow_var_num(_temperature_varnum)] = 1.0;
-  }
+  return PorousFlowCapillaryVG::dseff(pressure, _al, _m);
 }
 
-void
-PorousFlowMaterial1PhaseP_VG::buildQpPPSS()
+Real
+PorousFlowMaterial1PhaseP_VG::d2EffectiveSaturation_dP2(Real pressure) const
 {
-  _porepressure_nodal[_qp][0] = _porepressure_nodal_var[_qp];
-  _porepressure_qp[_qp][0] = _porepressure_qp_var[_qp];
-  _gradp_qp[_qp][0] = _gradp_qp_var[_qp];
-
-  _saturation_nodal[_qp][0] = PorousFlowCapillaryVG::seff(_porepressure_nodal_var[_qp], _al, _m);
-  _saturation_qp[_qp][0] = PorousFlowCapillaryVG::seff(_porepressure_qp_var[_qp], _al, _m);
-  _grads_qp[_qp][0] = PorousFlowCapillaryVG::dseff(_porepressure_qp_var[_qp], _al, _m) * _gradp_qp_var[_qp];
-
-  /// Temperature is the same in each phase presently
-  _temperature_nodal[_qp][0] = _temperature_nodal_var[_qp];
-  _temperature_qp[_qp][0] = _temperature_qp_var[_qp];
+  return PorousFlowCapillaryVG::d2seff(pressure, _al, _m);
 }
+
+//
+// void
+// PorousFlowMaterial1PhaseP_VG::initQpStatefulProperties()
+// {
+//   PorousFlowVariableBase::initQpStatefulProperties();
+//
+//   /*
+//    *  YAQI HACK !!
+//    *
+//    * I really just want to simply call
+//    * buildQpPPSS();
+//    * but i do it below in computeQpProperties
+//    */
+//   buildQpPPSS();
+// }
+
+// void
+// PorousFlowMaterial1PhaseP_VG::computeQpProperties()
+// {
+//   buildQpPPSS();
+//
+//   /*
+//    *  YAQI HACK !!
+//    *
+//    * I really just want to simply call
+//    * buildQpPPSS();
+//    * from initQpStatefulProperties, but the Variables
+//    * aren't initialised at that point so moose crashes
+//    */
+//   /*if (_t_step == 1)
+//     for (unsigned ph = 0; ph < _num_ph; ++ph)
+//     {
+//       _porepressure_old[_qp][ph] = _porepressure[_qp][ph];
+//       _saturation_old[_qp][ph] = _saturation[_qp][ph];
+//     }
+//   */
+//
+//   // prepare the derivative matrix with zeroes
+//   for (unsigned phase = 0; phase < _num_phases; ++phase)
+//   {
+//     _dporepressure_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dporepressure_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dgradp_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dgradp_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
+//   }
+//
+//   // _porepressure is only dependent on _porepressure, and its derivative is 1
+//   if (!(_dictator_UO.not_porflow_var(_porepressure_varnum)))
+//   {
+//     // _porepressure is a PorousFlow variable
+//     _dporepressure_nodal_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = 1;
+//     _dporepressure_qp_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = 1;
+//     _dgradp_qp_dgradv[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = 1;
+//   }
+//
+//
+//   // prepare the derivative matrix with zeroes
+//   for (unsigned phase = 0; phase < _num_phases; ++phase)
+//   {
+//     _dsaturation_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dsaturation_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dgrads_qp_dgradv[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dgrads_qp_dv[_qp][phase].assign(_dictator_UO.num_v(), RealGradient());
+//   }
+//
+//   if (!(_dictator_UO.not_porflow_var(_porepressure_varnum)))
+//   {
+//     // _porepressure is a porflow variable
+//     _dsaturation_nodal_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::dseff(_porepressure_nodal_var[_qp], _al, _m);;
+//     _dsaturation_qp_dvar[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::dseff(_porepressure_qp_var[_qp], _al, _m);;
+//     _dgrads_qp_dgradv[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::dseff(_porepressure_qp_var[_qp], _al, _m);
+//     _dgrads_qp_dv[_qp][0][_dictator_UO.porflow_var_num(_porepressure_varnum)] = PorousFlowCapillaryVG::d2seff(_porepressure_qp_var[_qp], _al, _m) * _gradp_qp_var[_qp];
+//   }
+//
+//   // prepare the derivative matrix with zeroes
+//   for (unsigned phase = 0; phase < _num_phases; ++phase)
+//   {
+//     _dtemperature_nodal_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//     _dtemperature_qp_dvar[_qp][phase].assign(_dictator_UO.num_v(), 0.0);
+//   }
+//
+//   // _temperature is only dependent on _temperature, and its derivative is = 1
+//   if (!(_dictator_UO.not_porflow_var(_temperature_varnum)))
+//   {
+//     // _temperature is a porflow variable
+//     _dtemperature_nodal_dvar[_qp][0][_dictator_UO.porflow_var_num(_temperature_varnum)] = 1.0;
+//     _dtemperature_qp_dvar[_qp][0][_dictator_UO.porflow_var_num(_temperature_varnum)] = 1.0;
+//   }
+// }
+//
+// void
+// PorousFlowMaterial1PhaseP_VG::buildQpPPSS()
+// {
+//   _porepressure_nodal[_qp][0] = _porepressure_nodal_var[_qp];
+//   _porepressure_qp[_qp][0] = _porepressure_qp_var[_qp];
+//   _gradp_qp[_qp][0] = _gradp_qp_var[_qp];
+//
+//   _saturation_nodal[_qp][0] = PorousFlowCapillaryVG::seff(_porepressure_nodal_var[_qp], _al, _m);
+//   _saturation_qp[_qp][0] = PorousFlowCapillaryVG::seff(_porepressure_qp_var[_qp], _al, _m);
+//   _grads_qp[_qp][0] = PorousFlowCapillaryVG::dseff(_porepressure_qp_var[_qp], _al, _m) * _gradp_qp_var[_qp];
+//
+//   /// Temperature is the same in each phase presently
+//   _temperature_nodal[_qp][0] = _temperature_nodal_var[_qp];
+//   _temperature_qp[_qp][0] = _temperature_qp_var[_qp];
+// }

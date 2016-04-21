@@ -9,7 +9,7 @@
 #ifndef POROUSFLOWMATERIAL1PHASEP_VG_H
 #define POROUSFLOWMATERIAL1PHASEP_VG_H
 
-#include "PorousFlowVariableBase.h"
+#include "PorousFlowMaterial1PhaseP.h"
 #include "PorousFlowCapillaryVG.h"
 
 //Forward Declarations
@@ -20,33 +20,45 @@ InputParameters validParams<PorousFlowMaterial1PhaseP_VG>();
 
 /**
  * Material designed to calculate fluid-phase porepressure and saturation
- * for the single-phase situation, assuming a van-Genuchten capillary suction function
+ * for the single-phase situation, using a van-Genuchten capillary suction function
  */
-class PorousFlowMaterial1PhaseP_VG : public PorousFlowVariableBase
+class PorousFlowMaterial1PhaseP_VG : public PorousFlowMaterial1PhaseP
 {
 public:
   PorousFlowMaterial1PhaseP_VG(const InputParameters & parameters);
 
 protected:
 
-  virtual void initQpStatefulProperties();
-  virtual void computeQpProperties();
+  /**
+   * Effective saturation as a function of porepressure using van Genuchten
+   * formulation.
+   *
+   * @param pressure porepressure (Pa)
+   * @return effective saturation
+   */
+  Real effectiveSaturation(Real pressure) const;
+
+  /**
+   * Derivative of effective saturation wrt to porepressure.
+   *
+   * @param pressure porepressure (Pa)
+   * @return derivative of effective saturation wrt porepressure
+   */
+  Real dEffectiveSaturation_dP(Real pressure) const;
+
+  /**
+   * Second derivative of effective saturation wrt to porepressure.
+   *
+   * @param pressure porepressure (Pa)
+   * @return second derivative of effective saturation wrt porepressure
+   */
+  Real d2EffectiveSaturation_dP2(Real pressure) const;
 
   /// van-Genuchten alpha parameter
   const Real _al;
   /// van-Genuchten m parameter
   const Real _m;
-  /// Nodal value of porepressure of the fluid phase
-  const VariableValue & _porepressure_nodal_var;
-  /// Quadpoint value of porepressure of the fluid phase
-  const VariableValue & _porepressure_qp_var;
-  /// Gradient(_porepressure at quadpoints)
-  const VariableGradient & _gradp_qp_var;
-  /// Moose variable number of the porepressure
-  const unsigned int _porepressure_varnum;
 
- private:
-  void buildQpPPSS();
 };
 
 #endif //POROUSFLOWMATERIAL1PHASEP_VG_H
