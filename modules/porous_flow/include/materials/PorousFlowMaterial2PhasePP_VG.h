@@ -51,12 +51,6 @@ protected:
   const VariableGradient & _phase1_gradp_qp;
   /// Moose variable number of the phase1 porepressure
   const unsigned int _phase1_porepressure_varnum;
-  /// Nodal value of temperature
-  const VariableValue & _phase0_temperature_nodal;
-  /// Quadpoint value of temperature
-  const VariableValue & _phase0_temperature_qp;
-  /// Moose variable number of the phase0 temperature
-  const unsigned int _phase0_temperature_varnum;
 
  private:
   void buildQpPPSS();
