@@ -115,6 +115,8 @@ void PorousFlowAdvectiveFlux::upwind(bool compute_res, bool compute_jac, unsigne
   }
 
   DenseMatrix<Number> & ke = _assembly.jacobianBlock(_var.number(), jvar);
+  if (ke.n() == 0 && compute_jac) // this removes a problem encountered in the initial timestep when use_displaced_mesh=true
+    return;
 
   std::vector<std::vector<std::vector<Real> > > component_ke;
   if (compute_jac)

@@ -17,6 +17,7 @@ InputParameters validParams<PorousFlowVolumetricStrain>()
   InputParameters params = validParams<Material>();
   params.addRequiredCoupledVar("displacements", "The displacements appropriate for the simulation geometry and coordinate system");
   params.addRequiredParam<UserObjectName>("PorousFlowDictator_UO", "The UserObject that holds the list of Porous-Flow variable names.");
+  params.addParam<bool>("consistent_with_displaced_mesh", true, "The volumetric strain rate will include terms that ensure fluid mass conservation in the displaced mesh");
   params.addClassDescription("Compute volumetric strain and the volumetric_strain rate, for use in PorousFlow.");
   params.set<bool>("stateful_displacements") = true;
   return params;
@@ -25,6 +26,7 @@ InputParameters validParams<PorousFlowVolumetricStrain>()
 PorousFlowVolumetricStrain::PorousFlowVolumetricStrain(const InputParameters & parameters) :
     DerivativeMaterialInterface<Material>(parameters),
 
+    _consist(getParam<bool>("consistent_with_displaced_mesh")),
     _dictator_UO(getUserObject<PorousFlowDictator>("PorousFlowDictator_UO")),
     _num_var(_dictator_UO.num_v()),
     _ndisp(coupledComponents("displacements")),
@@ -73,7 +75,7 @@ PorousFlowVolumetricStrain::computeQpProperties()
   A -= Fbar; // A = grad_disp - grad_disp_old
 
   RankTwoTensor total_strain_increment = 0.5*(A + A.transpose());
-  const Real andy = 1 + (*_grad_disp_old[0])[_qp](0) + (*_grad_disp_old[1])[_qp](1) + (*_grad_disp_old[2])[_qp](2);
+  const Real andy = (_consist ? 1.0 + (*_grad_disp_old[0])[_qp](0) + (*_grad_disp_old[1])[_qp](1) + (*_grad_disp_old[2])[_qp](2) : 1.0);
   _vol_strain_rate_qp[_qp] = total_strain_increment.trace()/_dt/andy;
 
   // prepare the derivatives with zeroes

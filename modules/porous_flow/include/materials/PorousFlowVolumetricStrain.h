@@ -24,6 +24,9 @@ public:
 protected:
   virtual void computeQpProperties();
 
+  /// The strain rate will have terms that ensure mass is conserved when doing integrals over the displaced mesh
+  const bool _consist;
+
   /// The dictator UserObject for the Porous-Flow simulation
   const PorousFlowDictator & _dictator_UO;
 
