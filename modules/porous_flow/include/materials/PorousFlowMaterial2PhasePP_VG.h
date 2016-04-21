@@ -9,7 +9,7 @@
 #ifndef PORFLOWMATERIAL2PHASEPP_VG_H
 #define PORFLOWMATERIAL2PHASEPP_VG_H
 
-#include "PorousFlowVariableBase.h"
+#include "PorousFlowMaterial2PhasePP.h"
 #include "PorousFlowEffectiveSaturationVG.h"
 
 //Forward Declarations
@@ -21,39 +21,43 @@ InputParameters validParams<PorousFlowMaterial2PhasePP_VG>();
 /**
  * Material designed to calculate fluid-phase porepressures and saturations at nodes and quadpoints
  */
-class PorousFlowMaterial2PhasePP_VG : public PorousFlowVariableBase
+class PorousFlowMaterial2PhasePP_VG : public PorousFlowMaterial2PhasePP
 {
 public:
   PorousFlowMaterial2PhasePP_VG(const InputParameters & parameters);
 
 protected:
 
-  virtual void initQpStatefulProperties();
-  virtual void computeQpProperties();
+  /**
+   * Effective saturation as a function of porepressure using van Genuchten
+   * formulation.
+   *
+   * @param pressure porepressure (Pa)
+   * @return effective saturation
+   */
+  Real effectiveSaturation(Real pressure) const;
+
+  /**
+   * Derivative of effective saturation wrt to porepressure.
+   *
+   * @param pressure porepressure (Pa)
+   * @return derivative of effective saturation wrt porepressure
+   */
+  Real dEffectiveSaturation_dP(Real pressure) const;
+
+  /**
+   * Second derivative of effective saturation wrt to porepressure.
+   *
+   * @param pressure porepressure (Pa)
+   * @return second derivative of effective saturation wrt porepressure
+   */
+  Real d2EffectiveSaturation_dP2(Real pressure) const;
 
   /// vanGenuchten alpha
   const Real _al;
   /// vanGenuchten m
   const Real _m;
-  /// Nodal value of porepressure of the zero phase (eg, the water phase)
-  const VariableValue & _phase0_porepressure_nodal;
-  /// Quadpoint value of porepressure of the zero phase (eg, the water phase)
-  const VariableValue & _phase0_porepressure_qp;
-  /// Gradient(phase0_porepressure) at the qps
-  const VariableGradient & _phase0_gradp_qp;
-  /// Moose variable number of the phase0 porepressure
-  const unsigned int _phase0_porepressure_varnum;
-  /// Nodal value of porepressure of the one phase (eg, the gas phase)
-  const VariableValue & _phase1_porepressure_nodal;
-  /// Quadpoint value of porepressure of the one phase (eg, the gas phase)
-  const VariableValue & _phase1_porepressure_qp;
-  /// Gradient(phase1_porepressure) at the qps
-  const VariableGradient & _phase1_gradp_qp;
-  /// Moose variable number of the phase1 porepressure
-  const unsigned int _phase1_porepressure_varnum;
 
- private:
-  void buildQpPPSS();
 };
 
 #endif //PORFLOWMATERIAL2PHASEPP_VG_H
