@@ -41,7 +41,7 @@ PorousFlowMaterialBrine::computeQpProperties()
 
   /// Density and derivatives wrt pressure and temperature at the qps
   _density_qp[_qp] = density(_porepressure_qp[_qp][_phase_num], _temperature_qp[_qp][_phase_num], _xnacl);
-  _ddensity_qp_dp[_qp] = dDensity_dP(_temperature_qp[_qp][_phase_num], _temperature_qp[_qp][_phase_num], _xnacl);
+  _ddensity_qp_dp[_qp] = dDensity_dP(_porepressure_qp[_qp][_phase_num], _temperature_qp[_qp][_phase_num], _xnacl);
   _ddensity_qp_dt[_qp] = dDensity_dT(_porepressure_qp[_qp][_phase_num], _temperature_qp[_qp][_phase_num], _xnacl);
 
   /// Viscosity and derivative wrt temperature at the nodes
