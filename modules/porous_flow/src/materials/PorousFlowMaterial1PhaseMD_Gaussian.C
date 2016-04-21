@@ -14,7 +14,7 @@ InputParameters validParams<PorousFlowMaterial1PhaseMD_Gaussian>()
   InputParameters params = validParams<PorousFlowStateBase>();
   params.addRequiredCoupledVar("mass_density", "Variable that represents log(mass-density) of the single phase");
   params.addRequiredRangeCheckedParam<Real>("al", "al>0", "For this class, the capillary function is assumed to be saturation = exp(-(al*porepressure)^2) for porepressure<0.");
-  params.addRequiredRangeCheckedParam<Real>("density0", "density0>0", "The density of the fluid phase");
+  params.addRequiredRangeCheckedParam<Real>("density_P0", "density_P0>0", "The density of the fluid phase at zero porepressure");
   params.addRequiredRangeCheckedParam<Real>("bulk_modulus", "bulk_modulus>0", "The constant bulk modulus of the fluid phase");
   params.addClassDescription("This Material is used for the single-phase situation where log(mass-density) is the primary variable.  calculates the 1 porepressure and the 1 saturation in a 1-phase isothermal situation, and derivatives of these with respect to the PorousFlowVariables.  A gaussian capillary function is assumed");
   return params;
@@ -26,7 +26,7 @@ PorousFlowMaterial1PhaseMD_Gaussian::PorousFlowMaterial1PhaseMD_Gaussian(const I
     _num_ph(1),
     _al(getParam<Real>("al")),
     _al2(std::pow(_al, 2)),
-    _logdens0(std::log(getParam<Real>("density0"))),
+    _logdens0(std::log(getParam<Real>("density_P0"))),
     _bulk(getParam<Real>("bulk_modulus")),
     _recip_bulk(1.0/_al/_bulk),
     _recip_bulk2(std::pow(_recip_bulk, 2)),
