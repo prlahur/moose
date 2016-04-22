@@ -18,7 +18,7 @@
 #include "PorousFlowMaterial1PhaseP.h"
 #include "PorousFlowMaterial1PhaseP_VG.h"
 #include "PorousFlowMaterial1PhaseMD_Gaussian.h"
-#include "PorousFlowMaterial2PhasePS.h"
+#include "PorousFlowMaterial2PhasePS_VG.h"
 #include "PorousFlowMaterial2PhasePP_VG.h"
 #include "PorousFlowMaterialDensityConstBulk.h"
 #include "PorousFlowMaterialPorosityConst.h"
@@ -113,7 +113,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowMaterial1PhaseP);
   registerMaterial(PorousFlowMaterial1PhaseP_VG);
   registerMaterial(PorousFlowMaterial1PhaseMD_Gaussian);
-  registerMaterial(PorousFlowMaterial2PhasePS);
+  registerMaterial(PorousFlowMaterial2PhasePS_VG);
   registerMaterial(PorousFlowMaterial2PhasePP_VG);
   registerMaterial(PorousFlowMaterialDensityConstBulk);
   registerMaterial(PorousFlowMaterialPorosityConst);

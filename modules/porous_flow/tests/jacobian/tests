@@ -47,7 +47,12 @@
     ratio_tol = 1E-7
     difference_tol = 1E10
   [../]
-
+  [./mass09]
+    type = 'PetscJacobianTester'
+    input = 'mass09.i'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
   [./fflux01]
     type = 'PetscJacobianTester'
     input = 'fflux01.i'
@@ -84,14 +89,18 @@
     ratio_tol = 1E-7
     difference_tol = 1E10
   [../]
-
+  [./fflux07]
+    type = 'PetscJacobianTester'
+    input = 'fflux07.i'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
   [./eff_stress01]
     type = 'PetscJacobianTester'
     input = 'eff_stress01.i'
     ratio_tol = 1E-7
     difference_tol = 1E10
   [../]
-
   [./mass_vol_exp01]
     type = 'PetscJacobianTester'
     input = 'mass_vol_exp01.i'
