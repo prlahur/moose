@@ -1,13 +1,13 @@
 # Test PorousFlowTimeLimitedConstantPointSource DiracKernel
-# SinglePhase FluidState
+# SinglePhase Brine
 # Cartesian mesh with logarithmic distribution in x and y. 
 # Theis problem: Flow to single sink
 
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 40
-  ny = 40
+  nx = 20
+  ny = 20
   bias_x = 1.1
   bias_y = 1.1
   ymax = 100
@@ -24,6 +24,17 @@
   [../]
 []
 
+[AuxVariables]
+  [./density]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./viscosity]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]  
+[]
+  
   
 [Kernels]
   [./mass0]
@@ -37,6 +48,19 @@
     gravity = '0 0 0'
     component_index = 0
   [../]
+[]
+
+  [AuxKernels]
+  [./density]
+    type = MaterialRealAux
+    variable = density
+    property = PorousFlow_fluid_phase_density_qp0
+  [../]
+  [./viscosity]
+    type = MaterialRealAux
+    variable = viscosity
+    property = PorousFlow_viscosity0
+  [../]  
 []
 
 [UserObjects]
@@ -59,9 +83,8 @@
     type = PorousFlowMaterialMassFractionBuilder
   [../]
   [./dens0]
-    type = PorousFlowMaterialDensityConstBulk
-    density_P0 = 1000
-    bulk_modulus = 2E9
+    type = PorousFlowMaterialBrine
+    xnacl = 0.10
     phase = 0
   [../]
   [./dens_all]
@@ -89,11 +112,6 @@
     type = PorousFlowMaterialJoiner
     material_property = PorousFlow_relative_permeability
   [../]
-  [./visc0]
-    type = PorousFlowMaterialViscosityConst
-    viscosity = 1E-3
-    phase = 0
-  [../]
   [./visc_all]
     type = PorousFlowMaterialJoiner
     material_property = PorousFlow_viscosity
@@ -107,6 +125,18 @@
     variable = pp
     execute_on = 'initial timestep_end'
   [../]
+  [./density]
+    type = PointValue
+    point = '0 0 0'
+    variable = density
+    execute_on = 'timestep_end'
+  [../]
+  [./viscosity]
+    type = PointValue
+    point = '0 0 0'
+    variable = viscosity
+    execute_on = 'timestep_end'
+  [../]  
   [./total_mass]
     type = PorousFlowFluidMass
     variable = pp
@@ -126,16 +156,16 @@
 [Executioner]
   type = Transient
   solve_type = Newton
-  dt=7E1
+  dt=200.0
   end_time = 1E3
-  nl_abs_tol = 1e-10
+  nl_abs_tol = 1e-8
 []
 
 
   
 [Outputs]
   print_perf_log = true
-  file_base = theis1
+  file_base = theis2
   csv = true
   exodus = false
   execute_on = 'final'
