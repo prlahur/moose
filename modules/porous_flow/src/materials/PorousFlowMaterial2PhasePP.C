@@ -174,19 +174,19 @@ PorousFlowMaterial2PhasePP::buildQpPPSS()
 }
 
 Real
-PorousFlowMaterial2PhasePP::effectiveSaturation(Real pressure) const
+PorousFlowMaterial2PhasePP::effectiveSaturation(Real /* pressure */) const
 {
   return 1.0;
 }
 
 Real
-PorousFlowMaterial2PhasePP::dEffectiveSaturation_dP(Real pressure) const
+PorousFlowMaterial2PhasePP::dEffectiveSaturation_dP(Real /* pressure */) const
 {
   return 0.0;
 }
 
 Real
-PorousFlowMaterial2PhasePP::d2EffectiveSaturation_dP2(Real pressure) const
+PorousFlowMaterial2PhasePP::d2EffectiveSaturation_dP2(Real /* pressure */) const
 {
   return 0.0;
 }
