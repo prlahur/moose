@@ -6,32 +6,27 @@
 /****************************************************************/
 
 
-#ifndef PORFLOWMATERIAL2PHASEPS_H
-#define PORFLOWMATERIAL2PHASEPS_H
+#ifndef PORFLOWMATERIAL2PHASEPS_VG_H
+#define PORFLOWMATERIAL2PHASEPS_VG_H
 
-#include "PorousFlowVariableBase.h"
+#include "PorousFlowMaterial2PhasePS.h"
+#include "PorousFlowCapillaryPressureVG.h"
 
 //Forward Declarations
-class PorousFlowMaterial2PhasePS;
+class PorousFlowMaterial2PhasePS_VG;
 
 template<>
-InputParameters validParams<PorousFlowMaterial2PhasePS>();
+InputParameters validParams<PorousFlowMaterial2PhasePS_VG>();
 
 /**
  * Material designed to calculate fluid-phase porepressures at nodes
  */
-class PorousFlowMaterial2PhasePS : public PorousFlowVariableBase
+class PorousFlowMaterial2PhasePS_VG : public PorousFlowMaterial2PhasePS
 {
 public:
-  PorousFlowMaterial2PhasePS(const InputParameters & parameters);
+  PorousFlowMaterial2PhasePS_VG(const InputParameters & parameters);
 
 protected:
-
-  /**
-   * Assemble std::vectors of porepressure, saturation and temperature at the nodes
-   * and quadpoints
-   */
-  void buildQpPPSS();
 
   /**
    * Capillary pressure as a function of saturation.
@@ -63,27 +58,16 @@ protected:
    */
   virtual Real d2CapillaryPressure_dS2(Real pressure) const;
 
-  virtual void initQpStatefulProperties();
-  virtual void computeQpProperties();
-
-  /// Nodal value of porepressure of the zero phase (eg, the gas phase)
-  const VariableValue & _phase0_porepressure_nodal;
-  /// Quadpoint value of porepressure of the zero phase (eg, the gas phase)
-  const VariableValue & _phase0_porepressure_qp;
-  /// Gradient(phase0_porepressure) at the qps
-  const VariableGradient & _phase0_gradp_qp;
-  /// Moose variable number of the phase0 porepressure
-  const unsigned int _phase0_porepressure_varnum;
-  /// Nodal value of saturation of the one phase (eg, the water phase)
-  const VariableValue & _phase1_saturation_nodal;
-  /// Quadpoint value of saturation of the one phase (eg, the water phase)
-  const VariableValue & _phase1_saturation_qp;
-  /// Gradient(phase1_saturation) at the qps
-  const VariableGradient & _phase1_grads_qp;
-  /// Moose variable number of the phase1 saturation
-  const unsigned int _phase1_saturation_varnum;
-  /// Constant capillary pressure (Pa)
-  const Real _pc;
+  /// Liquid residual saturation
+  Real _sat_lr;
+  /// Liquid phase fully saturated saturation
+  Real _sat_ls;
+  /// van Genuchten exponent m
+  Real _m;
+  /// Maximum capillary pressure
+  Real _pc_max;
+  /// van Genuchten capillary pressure coefficient
+  Real _p0;
 };
 
-#endif //PORFLOWMATERIAL2PHASEPS_H
+#endif //PORFLOWMATERIAL2PHASEPS_VG_H
