@@ -1,5 +1,5 @@
 # Test PorousFlowTimeLimitedConstantPointSource DiracKernel
-# SinglePhase FluidState
+# SinglePhase Water
 # Cartesian mesh with logarithmic distribution in x and y. 
 # Theis problem: Flow to single sink
 
@@ -168,7 +168,7 @@
   print_perf_log = true
   file_base = theis3
   csv = true
-  exodus = true
+  exodus = false
   execute_on = 'final'
   [./con]
     output_linear = true

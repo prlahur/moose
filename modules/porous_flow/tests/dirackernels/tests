@@ -5,6 +5,12 @@
     csvdiff = 'theis1_pressure_0016.csv'
     rel_err = 1.0E-5
   [../]
+  [./theis2]
+    type = 'CSVDiff'
+    input = 'theis2.i'
+    csvdiff = 'theis2_pressure_0006.csv'
+    rel_err = 1.0E-5
+  [../]  
   [./theis3]
     type = 'CSVDiff'
     input = 'theis3.i'
