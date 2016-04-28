@@ -84,10 +84,15 @@
 [Postprocessors]
   [./total_mass_0]
     type = PorousFlowComponentMass
+    component_index = 0
   [../]
   [./total_mass_1]
     type = PorousFlowComponentMass
     component_index = 1
+  [../]
+  [./total_mass]
+    type = PorousFlowComponentMass
+    component_index = '0 1'
   [../]
 []
 

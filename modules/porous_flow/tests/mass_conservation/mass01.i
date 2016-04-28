@@ -71,6 +71,7 @@
 [Postprocessors]
   [./total_mass]
     type = PorousFlowComponentMass
+    component_index = 0
   [../]
 []
 
