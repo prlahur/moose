@@ -47,7 +47,7 @@ PorousFlowComponentMass::PorousFlowComponentMass(const InputParameters & paramet
   {
     unsigned int max_phase_num = * std::max_element(_phase_index.begin(), _phase_index.end());
     if (max_phase_num > _dictator_UO.num_phases() - 1)
-      mooseError("The Dictator proclaims that the phase index " << max_phase_num << " in the Postprocessor " << _name << " is greater than the largest phase index possible, which is " << _dictator_UO.num_phases() - 1 << " (number of phases - 1)");
+      mooseError("The Dictator proclaims that the phase index " << max_phase_num << " in the Postprocessor " << _name << " is greater than the largest phase index possible, which is " << _dictator_UO.num_phases() - 1);
   }
 
   /// Using saturation_threshold only makes sense for a single phase
@@ -68,7 +68,6 @@ PorousFlowComponentMass::computeQpIntegral()
   for (unsigned int i = 0; i < _phase_index.size(); ++i)
   {
     ph = _phase_index[i];
-    _console << "fxw " << _JxW[_qp] << std::endl;
     if (_fluid_saturation[_qp][ph] <= _saturation_threshold)
       mass += _fluid_density[_qp][ph] * _fluid_saturation[_qp][ph] * _mass_fraction[_qp][ph][_component_index];
   }
