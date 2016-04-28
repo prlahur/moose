@@ -70,8 +70,7 @@
 
 [Postprocessors]
   [./total_mass]
-    type = PorousFlowFluidMass
-    variable = pp
+    type = PorousFlowComponentMass
   [../]
 []
 

@@ -186,15 +186,13 @@
     point = '-1 0 0'
   [../]
   [./mass_ph0]
-    type = PorousFlowFluidMass
+    type = PorousFlowComponentMass
     component_index = 0
-    variable = ppwater
     execute_on = 'initial timestep_end'
   [../]
   [./mass_ph1]
-    type = PorousFlowFluidMass
+    type = PorousFlowComponentMass
     component_index = 1
-    variable = ppgas
     execute_on = 'initial timestep_end'
   [../]
 

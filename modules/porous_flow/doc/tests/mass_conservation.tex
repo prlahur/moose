@@ -39,7 +39,7 @@
 
 \tableofcontents
 
-\chapter{PorousFlowFluidMass postprocessor}
+\chapter{PorousFlowComponentMass postprocessor}
 
 \section{Single-phase, single-component}
 \label{1phase1comp.sec}
@@ -69,7 +69,7 @@ The porepressure is set at $P=x$.
 
 Recall that in PorousFlow, mass is lumped to the nodes.  Therefore,
 the integral above is evaluated at the nodes, and a sum of the results
-is outputted as the PorousFlowFluidMass postprocessor.
+is outputted as the PorousFlowComponentMass postprocessor.
 Using the properties given above, this yields:
 \begin{center}
 \begin{tabular}{|ccccc|}
@@ -124,6 +124,60 @@ $x$ & $p$ & Density & Saturation & $\massfrac_{\phase=0}^{\species=0}$
 
 MOOSE produces the expected answer.
 
+\newpage
+
+\section{Two-phase, two-components}
+
+This test computes the mass for two components in two phases, with both components present in
+both phases. The mass fractions are fixed at
+\begin{equation}
+\massfrac_{\phase=0}^{\species=0} = 0.3 \ , \massfrac_{\phase=1}^{\species=0} = 0.55 .
+\end{equation}
+
+Pressure is fixed at 1 Pa for each phase, and density is given by a constant bulk modulus fluid with denisty
+at zero pressure given by 1 kg m$^{-3}$ and 0.1 kg m$^{-3}$ for phase 0 and phase 1, respectively, giving densities of $2.7128$
+kg m$^{-3}$ for phase 0, and $0.27128$ kg m$^{-3}$ for phase 1. Saturation of phase 0 varies linearly
+with $x$ throughout the 1D model with three elements from $ 0 \le x \le 1$
+
+For component species 0, the mass at each node is calculated as
+\begin{center}
+\begin{tabular}{|ccccccc|}
+\hline
+$x$ & $S_{\phase=0}$ & $\massfrac_{\phase=0}^{\species=0}$ & $\massfrac_{\phase=1}^{\species=0}$
+& Nodal mass$_{\phase=0}^{\species=0}$ & Nodal mass$_{\phase=1}^{\species=0}$ & Total nodal mass$^{\species=0}$ \\
+\hline
+0 & 0 & 0.3 & 0.55 & 0 & 0.00249176 & 0.00249176 \\
+0.33333 & 0.33333 & 0.3 & 0.55 & 0.00453047 & 0.00166117 & 0.00619164 \\
+0.33333 & 0.33333 & 0.3 & 0.55 & 0.00453047 & 0.00166117 & 0.00619164 \\
+0.66667 & 0.66667 & 0.3 & 0.55 & 0.00906094 & 0.000830586 & 0.009891526 \\
+0.66667 & 0.66667 & 0.3 & 0.55 & 0.00906094 & 0.000830586 & 0.009891526 \\
+1 & 1 & 0.3 & 0.55 & 0.0135914 & 0 & 0.0135914 \\
+\hline
+ & & & Total & 0.0407742 & 0.0074753 & 0.0482495 \\
+\hline
+\end{tabular}
+\end{center}
+
+For component species 1, the mass at each node is calculated as
+\begin{center}
+\begin{tabular}{|ccccccc|}
+\hline
+$x$ & $S_{\phase=0}$ & $\massfrac_{\phase=0}^{\species=0}$ & $\massfrac_{\phase=1}^{\species=0}$
+& Nodal mass$_{\phase=0}^{\species=0}$ & Nodal mass$_{\phase=1}^{\species=0}$ & Total nodal mass$^{\species=0}$ \\
+\hline
+0 & 0 & 0.7 & 0.45 & 0 & 0.00203871 & 0.00203871 \\
+0.33333 & 0.33333 & 0.7 & 0.45 & 0.01057110 & 0.001359141& 0.01193024\\
+0.33333 & 0.33333 & 0.7 & 0.45 & 0.01057110 & 0.001359141 & 0.01193024 \\
+0.66667 & 0.66667 & 0.7 & 0.45 & 0.02114219 & 0.000679570 & 0.02182176 \\
+0.66667 & 0.66667 & 0.7 & 0.45 & 0.02114219 & 0.000679570 & 0.02182176 \\
+1 & 1 & 0.7 & 0.45 & 0.03171329 & 0 & 0.03171329 \\
+\hline
+ & & & Total & 0.0951399 & 0.06116113 & 0.1012560 \\
+\hline
+\end{tabular}
+\end{center}
+
+MOOSE produces the expected answer.
+
 
 \end{document}
-
