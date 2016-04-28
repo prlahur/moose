@@ -1,10 +1,10 @@
 # checking that the mass postprocessor correctly calculates the mass
-# 1phase, 2component, constant porosity
+# 2phase, 2component, constant porosity
 [Mesh]
   type = GeneratedMesh
   dim = 1
   nx = 3
-  xmin = -1
+  xmin = 0
   xmax = 1
 []
 
@@ -15,20 +15,29 @@
 [Variables]
   [./pp]
   [../]
-  [./mass_frac_comp0]
+  [./sat]
+  [../]
+[]
+
+[AuxVariables]
+  [./massfrac_ph0_sp0]
+    initial_condition = 0.3
+  [../]
+  [./massfrac_ph1_sp0]
+    initial_condition = 0.55
   [../]
 []
 
 [ICs]
   [./pinit]
-    type = FunctionIC
-    function = x
+    type = ConstantIC
+    value = 1
     variable = pp
   [../]
-  [./minit]
+  [./satinit]
     type = FunctionIC
-    function = 'x*x'
-    variable = mass_frac_comp0
+    function = 1-x
+    variable = sat
   [../]
 []
 
@@ -41,35 +50,45 @@
   [./mass1]
     type = PorousFlowMassTimeDerivative
     component_index = 1
-    variable = mass_frac_comp0
+    variable = sat
   [../]
 []
 
 [UserObjects]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp mass_frac_comp0'
-    number_fluid_phases = 1
+    porous_flow_vars = 'pp sat'
+    number_fluid_phases = 2
     number_fluid_components = 2
   [../]
 []
 
 [Materials]
   [./ppss]
-    type = PorousFlowMaterial1PhaseP_VG
-    porepressure = pp
-    al = 1
+    type = PorousFlowMaterial2PhasePS_VG
+    phase0_porepressure = pp
+    phase1_saturation = sat
+    pc_max = 0
     m = 0.5
+    sat_lr = 0
+    sat_ls = 1
+    p0 = 1
   [../]
   [./massfrac]
     type = PorousFlowMaterialMassFractionBuilder
-    mass_fraction_vars = 'mass_frac_comp0'
+    mass_fraction_vars = 'massfrac_ph0_sp0 massfrac_ph1_sp0'
   [../]
   [./dens0]
     type = PorousFlowMaterialDensityConstBulk
     density_P0 = 1
     bulk_modulus = 1
     phase = 0
+  [../]
+  [./dens1]
+    type = PorousFlowMaterialDensityConstBulk
+    density_P0 = 0.1
+    bulk_modulus = 1
+    phase = 1
   [../]
   [./dens_all]
     type = PorousFlowMaterialJoinerOld
@@ -82,10 +101,31 @@
 []
 
 [Postprocessors]
-  [./total_mass_0]
+  [./comp0_phase0_mass]
     type = PorousFlowComponentMass
+    component_index = 0
+    phase_index = 0
   [../]
-  [./total_mass_1]
+  [./comp0_phase1_mass]
+    type = PorousFlowComponentMass
+    component_index = 0
+    phase_index = 1
+  [../]
+  [./comp0_total_mass]
+    type = PorousFlowComponentMass
+    component_index = 0
+  [../]
+  [./comp1_phase0_mass]
+    type = PorousFlowComponentMass
+    component_index = 1
+    phase_index = 0
+  [../]
+  [./comp1_phase1_mass]
+    type = PorousFlowComponentMass
+    component_index = 1
+    phase_index = 1
+  [../]
+  [./comp1_total_mass]
     type = PorousFlowComponentMass
     component_index = 1
   [../]
@@ -95,8 +135,6 @@
   [./andy]
     type = SMP
     full = true
-    petsc_options_iname = '-ksp_type -pc_type -snes_atol -snes_rtol -snes_max_it'
-    petsc_options_value = 'bcgs bjacobi 1 1 10000'
   [../]
 []
 
@@ -109,6 +147,6 @@
 
 [Outputs]
   execute_on = 'timestep_end'
-  file_base = mass02
+  file_base = mass05
   csv = true
 []

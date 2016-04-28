@@ -139,8 +139,7 @@
     execute_on = 'timestep_end'
   [../]
   [./total_mass]
-    type = PorousFlowFluidMass
-    variable = pp
+    type = PorousFlowComponentMass
     execute_on = 'initial timestep_end'
   [../]
 []

@@ -47,7 +47,7 @@
 #include "PorousFlowVolumetricStrain.h"
 
 // Postprocessors
-#include "PorousFlowFluidMass.h"
+#include "PorousFlowComponentMass.h"
 
 
 //dirac kernel
@@ -142,13 +142,9 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowVolumetricStrain);
 
   // Postprocessors
-  registerPostprocessor(PorousFlowFluidMass);
-
+  registerPostprocessor(PorousFlowComponentMass);
 
   //Dirac Kernel
-
-
-
   registerDiracKernel(PorousFlowTimeLimitedConstantPointSource);
   registerDiracKernel(PorousFlowSquarePulsePointSource);
 }

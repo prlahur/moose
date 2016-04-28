@@ -323,9 +323,8 @@
     variable = stress_zz
   [../]
   [./fluid_mass]
-    type = PorousFlowFluidMass
+    type = PorousFlowComponentMass
     component_index = 0
-    variable = porepressure
     execute_on = 'initial timestep_end'
     use_displaced_mesh = true
     outputs = 'console csv'

@@ -23,4 +23,16 @@
     csvdiff = 'mass04.csv'
     rel_err = 1.0E-5
   [../]
+  [./mass05]
+    type = 'CSVDiff'
+    input = 'mass05.i'
+    csvdiff = 'mass05.csv'
+    rel_err = 1.0E-5
+  [../]
+  [./mass06]
+    type = 'CSVDiff'
+    input = 'mass06.i'
+    csvdiff = 'mass06.csv'
+    rel_err = 1.0E-5
+  [../]
 []

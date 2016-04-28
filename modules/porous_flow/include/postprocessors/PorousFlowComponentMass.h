@@ -6,47 +6,42 @@
 /****************************************************************/
 
 
-#ifndef POROUSFLOWFLUIDMASS_H
-#define POROUSFLOWFLUIDMASS_H
+#ifndef POROUSFLOWCOMPONENTMASS_H
+#define POROUSFLOWCOMPONENTMASS_H
 
 #include "ElementIntegralVariablePostprocessor.h"
 #include "PorousFlowDictator.h"
 
 // Forward Declarations
-class PorousFlowFluidMass;
+class PorousFlowComponentMass;
 
 template<>
-InputParameters validParams<PorousFlowFluidMass>();
+InputParameters validParams<PorousFlowComponentMass>();
 
 /**
  * Postprocessor produces the mass of a given fluid component in a region
  */
-class PorousFlowFluidMass: public ElementIntegralVariablePostprocessor
+class PorousFlowComponentMass: public ElementIntegralPostprocessor
 {
 public:
 
-  PorousFlowFluidMass(const InputParameters & parameters);
+  PorousFlowComponentMass(const InputParameters & parameters);
 
 protected:
   virtual Real computeQpIntegral();
 
-  unsigned int _component_index;
-
-  /// holds info on the PorousFlow variables
+  /// Holds info on the PorousFlow variables
   const PorousFlowDictator & _dictator_UO;
-
-  /// porosity
+  /// The component number that this Postprocessor applies to
+  const unsigned int _component_index;
+  /// The (optional) phase indices that this Postprocessor applies to. Default is all phases
+  std::vector<unsigned int> _phase_index;
   const MaterialProperty<Real> & _porosity;
-
-  /// fluid density of each phase
   const MaterialProperty<std::vector<Real> > & _fluid_density;
-
-  /// fluid saturation of each phase
   const MaterialProperty<std::vector<Real> > & _fluid_saturation;
-
-  /// fluid mass-fraction matrix
-  const MaterialProperty<std::vector<std::vector<Real> > > & _mass_frac;
-
+  const MaterialProperty<std::vector<std::vector<Real> > > & _mass_fraction;
+  /// Saturation threshold - only fluid mass at saturations below this are calculated
+  const Real _saturation_threshold;
 };
 
-#endif //POROUSFLOWFLUIDMASS_H
+#endif //POROUSFLOWCOMPONENTMASS_H
