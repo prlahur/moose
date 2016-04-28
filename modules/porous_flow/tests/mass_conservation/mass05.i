@@ -129,6 +129,16 @@
     type = PorousFlowComponentMass
     component_index = 1
   [../]
+  [./phase0_total_mass]
+    type = PorousFlowComponentMass
+    component_index = '0 1'
+    phase_index = 0
+  [../]
+  [./phase1_total_mass]
+    type = PorousFlowComponentMass
+    component_index = '0 1'
+    phase_index = 1
+  [../]
 []
 
 [Preconditioning]

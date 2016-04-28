@@ -33,7 +33,7 @@ protected:
   /// Holds info on the PorousFlow variables
   const PorousFlowDictator & _dictator_UO;
   /// The component number that this Postprocessor applies to
-  const unsigned int _component_index;
+  std::vector<unsigned int> _component_index;
   /// The (optional) phase indices that this Postprocessor applies to. Default is all phases
   std::vector<unsigned int> _phase_index;
   const MaterialProperty<Real> & _porosity;

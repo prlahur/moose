@@ -18,12 +18,10 @@
   PorousFlowDictator_UO = dictator
 []
 
-
 [Variables]
   [./pp]
   [../]
 []
-
 
 [Kernels]
   [./mass0]
@@ -110,6 +108,7 @@
   [./total_mass]
     type = PorousFlowComponentMass
     execute_on = 'initial timestep_end'
+    component_index = 0
   [../]
 []
 
@@ -129,8 +128,6 @@
   end_time = 1E3
   nl_abs_tol = 1e-10
 []
-
-
 
 [Outputs]
   print_perf_log = true

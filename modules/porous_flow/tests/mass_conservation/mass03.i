@@ -73,6 +73,7 @@
   [./total_mass]
     type = PorousFlowComponentMass
     execute_on = 'initial timestep_end'
+    component_index = 0
   [../]
 []
 
