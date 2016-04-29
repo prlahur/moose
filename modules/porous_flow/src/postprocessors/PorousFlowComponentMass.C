@@ -31,30 +31,33 @@ PorousFlowComponentMass::PorousFlowComponentMass(const InputParameters & paramet
   _mass_fraction(getMaterialProperty<std::vector<std::vector<Real> > >("PorousFlow_mass_frac")),
   _saturation_threshold(getParam<Real>("saturation_threshold"))
 {
+  const unsigned int num_phases = _dictator_UO.numPhases();
+  const unsigned int num_components = _dictator_UO.numComponents();
+
   /// Check that the number of components entered is not greater than the maximum number of components
-  if (_component_index.size() > _dictator_UO.num_components())
-    mooseError("The Dictator does not like it when you enter " << _component_index.size() << " components in the Postprocessor " << _name << " when only " << _dictator_UO.num_components() << " are allowed. Try again");
+  if (_component_index.size() > num_components)
+    mooseError("The Dictator does not like it when you enter " << _component_index.size() << " components in the Postprocessor " << _name << " when only " << num_components << " are allowed. Try again");
 
   /// Check that the largest component_index is not greater than the number of components. Note that negative values
   /// throw an input parser error so we don't have to consider them
   if (_component_index.size() > 0)
   {
     unsigned int max_comp_num = * std::max_element(_component_index.begin(), _component_index.end());
-    if (max_comp_num > _dictator_UO.num_components() - 1)
-      mooseError("The Dictator proclaims that the number of components in this simulation is " << _dictator_UO.num_components() << " whereas you have used the Postprocessor PorousFlowComponentMass with component = " << max_comp_num << ".  The Dictator does not take such mistakes lightly");
+    if (max_comp_num > num_components - 1)
+      mooseError("The Dictator proclaims that the number of components in this simulation is " << num_components << " whereas you have used the Postprocessor PorousFlowComponentMass with component = " << max_comp_num << ".  The Dictator does not take such mistakes lightly");
   }
 
   /// Check that the number of phases entered is not more than the maximum possible phases
-  if (_phase_index.size() > _dictator_UO.num_phases())
-    mooseError("The Dictator decrees that the number of phases in this simulation is " << _dictator_UO.num_phases() << " but you have entered " << _phase_index.size() << " phases in the Postprocessor " << _name);
+  if (_phase_index.size() > _dictator_UO.numPhases())
+    mooseError("The Dictator decrees that the number of phases in this simulation is " << num_phases << " but you have entered " << _phase_index.size() << " phases in the Postprocessor " << _name);
 
   /// Also check that the phase indices entered are not greater than the number of phases to avoid a segfault. Note
   /// that the input parser takes care of negative inputs so we don't need to guard against them
   if (_phase_index.size() > 0)
   {
     unsigned int max_phase_num = * std::max_element(_phase_index.begin(), _phase_index.end());
-    if (max_phase_num > _dictator_UO.num_phases() - 1)
-      mooseError("The Dictator proclaims that the phase index " << max_phase_num << " in the Postprocessor " << _name << " is greater than the largest phase index possible, which is " << _dictator_UO.num_phases() - 1);
+    if (max_phase_num > num_phases - 1)
+      mooseError("The Dictator proclaims that the phase index " << max_phase_num << " in the Postprocessor " << _name << " is greater than the largest phase index possible, which is " << num_phases - 1);
   }
 
   /// Using saturation_threshold only makes sense for a specific phase_index
@@ -63,7 +66,7 @@ PorousFlowComponentMass::PorousFlowComponentMass(const InputParameters & paramet
 
   /// If phase_index is empty, we want to sum over all phases
   if (_phase_index.size() == 0)
-    for (unsigned int i = 0; i < _dictator_UO.num_phases(); ++i)
+    for (unsigned int i = 0; i < num_phases; ++i)
       _phase_index.push_back(i);
 }
 
