@@ -1,15 +1,8 @@
 /****************************************************************/
-/*               DO NOT MODIFY THIS HEADER                      */
 /* MOOSE - Multiphysics Object Oriented Simulation Environment  */
 /*                                                              */
-/*           (c) 2010 Battelle Energy Alliance, LLC             */
-/*                   ALL RIGHTS RESERVED                        */
-/*                                                              */
-/*          Prepared by Battelle Energy Alliance, LLC           */
-/*            Under Contract No. DE-AC07-05ID14517              */
-/*            With the U. S. Department of Energy               */
-/*                                                              */
-/*            See COPYRIGHT for full restrictions               */
+/*          All contents are licensed under LGPL V2.1           */
+/*             See LICENSE for full restrictions                */
 /****************************************************************/
 
 #ifndef POROUSFLOWMETHANEPROPERTIESTEST_H
@@ -35,7 +28,7 @@ class PorousFlowMethanePropertiesTest : public CppUnit::TestFixture
   /**
    * Verify calculation of methane viscosity and derivatives wrt density and
    * temperature. Data from Table A VII.17, from Irvine Jr, T. F. and
-   *  Liley, P. E. (1984) Steam and Gas Tables with Computer Equations. 
+   *  Liley, P. E. (1984) Steam and Gas Tables with Computer Equations.
    */
   CPPUNIT_TEST( viscosity );
 
