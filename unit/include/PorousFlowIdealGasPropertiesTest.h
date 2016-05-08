@@ -38,10 +38,6 @@ public:
   PorousFlowIdealGasPropertiesTest();
 
   void density();
-
- private:
-  Real _peps;
-  Real _teps;
 };
 
 #endif  // POROUSFLOWIDEALGASPROPERTIESTEST_H

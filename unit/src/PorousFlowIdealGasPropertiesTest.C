@@ -15,9 +15,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( PorousFlowIdealGasPropertiesTest );
 
-PorousFlowIdealGasPropertiesTest::PorousFlowIdealGasPropertiesTest() :
-    _peps(1.0E-1),
-    _teps(1.0E-8)
+PorousFlowIdealGasPropertiesTest::PorousFlowIdealGasPropertiesTest()
 {
 }
 
