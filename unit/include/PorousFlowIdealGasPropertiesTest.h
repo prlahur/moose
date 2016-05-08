@@ -16,7 +16,6 @@
 
 class PorousFlowIdealGasPropertiesTest : public CppUnit::TestFixture
 {
-
   CPPUNIT_TEST_SUITE( PorousFlowIdealGasPropertiesTest );
 
   /**

@@ -16,7 +16,6 @@
 
 class PorousFlowWaterPropertiesTest : public CppUnit::TestFixture
 {
-
   CPPUNIT_TEST_SUITE( PorousFlowWaterPropertiesTest );
 
   /**
