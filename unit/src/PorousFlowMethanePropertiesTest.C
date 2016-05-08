@@ -16,7 +16,8 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( PorousFlowMethanePropertiesTest );
 
 PorousFlowMethanePropertiesTest::PorousFlowMethanePropertiesTest() :
-    _eps(1.0E-8)
+    _eps(1.0E-8),
+    _t_c2k(273.15)
 {
 }
 
@@ -37,12 +38,9 @@ PorousFlowMethanePropertiesTest::density()
 void
 PorousFlowMethanePropertiesTest::viscosity()
 {
-  Real viscosity = 12.835e-6;
-  Real delta = 0.05 * viscosity;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(viscosity, PorousFlowMethaneProperties::viscosity(70), delta);
-  viscosity = 15.003e-6;
-  delta = 0.05 * viscosity;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(viscosity, PorousFlowMethaneProperties::viscosity(150), delta);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(12.76e-6, PorousFlowMethaneProperties::viscosity(350 - _t_c2k), 1.0E-8);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(15.65e-6, PorousFlowMethaneProperties::viscosity(450 - _t_c2k), 1.0E-8);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(21.69e-6, PorousFlowMethaneProperties::viscosity(700 - _t_c2k), 1.0E-8);
   /// Now test derivatives
   Real fd;
   fd = (PorousFlowMethaneProperties::viscosity(70.0 + _eps) - PorousFlowMethaneProperties::viscosity(70.0)) / _eps;

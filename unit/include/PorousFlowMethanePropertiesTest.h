@@ -28,13 +28,14 @@ class PorousFlowMethanePropertiesTest : public CppUnit::TestFixture
 
   /**
    * Verify calculation of methane density (derivatives have been verified in the
-   * ideal gas unit tests)
+   * ideal gas unit tests). Compare results with data from NIST webbook (www.nist.gov)
    */
   CPPUNIT_TEST( density );
 
   /**
    * Verify calculation of methane viscosity and derivatives wrt density and
-   * temperature
+   * temperature. Data from Table A VII.17, from Irvine Jr, T. F. and
+   *  Liley, P. E. (1984) Steam and Gas Tables with Computer Equations. 
    */
   CPPUNIT_TEST( viscosity );
 
@@ -48,6 +49,7 @@ public:
 
  private:
   Real _eps;
+  Real _t_c2k;
 };
 
 #endif  // POROUSFLOWMETHANEPROPERTIESTEST_H
