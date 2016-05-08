@@ -27,6 +27,13 @@ class PorousFlowWaterPropertiesTest : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( PorousFlowWaterPropertiesTest );
 
   /**
+   * Verify that the correct region is provided for a given pressure and
+   * temperature. Also verify that an error is thrown if pressure and temperature
+   * are outside the range of validity
+   */
+  CPPUNIT_TEST( inRegion );
+
+  /**
    * Verify calculation of water properties in region 1 using the verification values
    * given in Table 5, From Revised Release on the IAPWS Industrial
    * Formulation 1997 for the Thermodynamic Properties of Water
@@ -111,23 +118,12 @@ class PorousFlowWaterPropertiesTest : public CppUnit::TestFixture
    */
   CPPUNIT_TEST( viscosity );
 
-  /**
-   * Verify the derivatives of properties in region 1 wrt pressure using
-   * finite differences
-   */
-  CPPUNIT_TEST( dRegion1Dp );
-
-  /**
-   * Verify the derivatives of properties in region 2 wrt pressure using
-   * finite differences
-   */
-  CPPUNIT_TEST( dRegion2Dp );
-
   CPPUNIT_TEST_SUITE_END();
 
 public:
   PorousFlowWaterPropertiesTest();
 
+  void inRegion();
   void region1();
   void region2();
   void b23();
@@ -138,12 +134,11 @@ public:
   void region5();
   void density();
   void viscosity();
-  void dRegion1Dp();
-  void dRegion2Dp();
 
  private:
   Real _peps;
   Real _teps;
+  Real _deps;
   Real _t_c2k;
 };
 

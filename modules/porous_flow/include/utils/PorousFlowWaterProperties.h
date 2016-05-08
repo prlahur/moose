@@ -51,7 +51,8 @@ Real density(Real pressure, Real temperature);
  */
 Real viscosity(Real temperature, Real density);
 
-/** Saturation pressure as a function of temperature.
+/**
+ * Saturation pressure as a function of temperature.
  *
  * Eq. (30) from Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -64,7 +65,8 @@ Real viscosity(Real temperature, Real density);
  */
 Real pSat(Real temperature);
 
-/** Saturation temperature as a function of pressure.
+/**
+ * Saturation temperature as a function of pressure.
  *
  * Eq. (31) from Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -77,7 +79,8 @@ Real pSat(Real temperature);
  */
 Real tSat(Real pressure);
 
-/** Auxillary equation for the boundary between regions 2 and 3.
+/**
+ * Auxillary equation for the boundary between regions 2 and 3.
  *
  * Eq. (5) from Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -88,7 +91,8 @@ Real tSat(Real pressure);
  */
 Real b23p(Real temperature);
 
-/** Auxillary equation for the boundary between regions 2 and 3.
+/**
+ * Auxillary equation for the boundary between regions 2 and 3.
  *
  * Eq. (6) from Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -99,7 +103,8 @@ Real b23p(Real temperature);
  */
 Real b23t(Real pressure);
 
-/** Density function for Region 1 - single phase liquid region
+/**
+ * Density function for Region 1 - single phase liquid region
  *
  * From Eq. (7) From Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -111,7 +116,8 @@ Real b23t(Real pressure);
  */
 Real densityRegion1(Real pressure, Real temperature);
 
-/** Density function for Region 2 - superheated steam
+/**
+ *Density function for Region 2 - superheated steam
  *
  * From Eq. (15) From Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -123,7 +129,8 @@ Real densityRegion1(Real pressure, Real temperature);
  */
 Real densityRegion2(Real pressure, Real temperature);
 
-/** Density function for Region 3 - supercritical water and steam
+/**
+ * Density function for Region 3 - supercritical water and steam
  *
  * To avoid iteration, use the backwards equations for region 3
  * from Revised Supplementary Release on Backward Equations for
@@ -137,7 +144,8 @@ Real densityRegion2(Real pressure, Real temperature);
  */
 Real densityRegion3(Real pressure, Real temperature);
 
-/** Density function for Region 5
+/**
+ * Density function for Region 5
  *
  * From Eq. (32) From Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water
@@ -160,45 +168,71 @@ Real densityRegion5(Real pressure, Real temperature);
  *
  * @param pressure water pressure (Pa)
  * @param temperature water temperature (C)
- * @return derivative of water density (kg/m^3) with respect to pressure
+ * @return derivative of water density (kg/m^3) wrt pressure
  */
 Real dDensity_dP(Real pressure, Real temperature);
 
 /**
  * Derivative of density function for Region 1 - single phase liquid region
- * with respect to presure.
+ * with respect to pressure.
  * From Revised Release on the IAPWS Industrial Formulation 1997 for the
  * Thermodynamic Properties of Water and Steam, IAPWS 2007.
  *
  * @param pressure water pressure (Pa)
  * @param temperature water temperature (C)
- * @return derivative of density (kg/m^3) in region 1 with respect to pressure
+ * @return derivative of density (kg/m^3) in region 1 wrt pressure
  */
 Real dDensityRegion1_dP(Real pressure, Real temperature);
 
 /**
  * Derivative of density function for Region 2 - superheated steam
- * with respect to presure.
+ * with respect to pressure.
  * From Revised Release on the IAPWS Industrial Formulation 1997 for the
  * Thermodynamic Properties of Water and Steam, IAPWS 2007.
  *
  * @param pressure water pressure (Pa)
  * @param temperature water temperature (C)
- * @return derivative of water density (kg/m^3) in region 2 with respect to pressure
+ * @return derivative of water density (kg/m^3) in region 2 wrt pressure
  */
 Real dDensityRegion2_dP(Real pressure, Real temperature);
+
+/**
+ * Derivative of density for Region 3 - supercritical water and steam
+ *
+ * To avoid iteration, use the backwards equations for region 3
+ * from Revised Supplementary Release on Backward Equations for
+ * Specific Volume as a Function of Pressure and Temperature v(p,T)
+ * for Region 3 of the IAPWS Industrial Formulation 1997 for the
+ * Thermodynamic Properties of Water and Steam.
+ *
+ * @param pressure water pressure (Pa)
+ * @param temperature water temperature (C)
+ * @return derivative of water density (kg/m^3) in region 3 wrt pressure
+ */
+Real dDensityRegion3_dP(Real pressure, Real temperature);
+
+/**
+ * Derivative of density function for Region 5
+ * with respect to pressure.
+ * From Revised Release on the IAPWS Industrial Formulation 1997 for the
+ * Thermodynamic Properties of Water and Steam, IAPWS 2007.
+ *
+ * @param pressure water pressure (Pa)
+ * @param temperature water temperature (C)
+ * @return derivative of water density (kg/m^3) in region 5 wrt pressure
+ */
+Real dDensityRegion5_dP(Real pressure, Real temperature);
 
 /**
  * Derivative of viscosity with respect to density. Derived from
  * Eq. (10) from Release on the IAPWS Formulation 2008 for the
  * Viscosity of Ordinary Water Substance.
  *
- * @param pressure water pressure (Pa)
  * @param temperature water temperature (C)
  * @param density water density (kg/m^3)
  * @return derivative of water viscosity wrt density
  */
-Real dViscosity_dDensity(Real pressure, Real temperature, Real density);
+Real dViscosity_dDensity(Real temperature, Real density);
 
 Real dDensity_dT(Real pressure, Real temperature);
 
@@ -227,6 +261,44 @@ unsigned int subregion3(Real pressure, Real temperature);
  * @param xy string to select the boundary between two subregions
  */
 Real tempXY(Real pressure, std::string xy);
+
+/**
+ * Specific volume in all subregions of region 3 EXCEPT subregion n (13).
+ *
+ * @param pi scaled water pressure
+ * @param theta scaled water temperature
+ * @param a to e constants
+ * @param N number to sum over
+ * @param I array of indices
+ * @param J array of indices
+ * @param n array of coefficients
+ * @return volume water specific volume (m^3/kg)
+ */
+Real subregionVolume(Real pi, Real theta, Real a, Real b, Real c, Real d, Real e, unsigned int N, const int I[], const int J[], const Real n[]);
+
+/**
+ * Derivative of specific volume wrt pi in all subregions of region 3 EXCEPT subregion n (13).
+ *
+ * @param pi scaled water pressure
+ * @param theta scaled water temperature
+ * @param a to e constants
+ * @param N number to sum over
+ * @param I array of indices
+ * @param J array of indices
+ * @param n array of coefficients
+ * @return volume water specific volume (m^3/kg)
+ */
+Real dSubregionVolume_dP(Real pi, Real theta, Real a, Real b, Real c, Real d, Real e, unsigned int N, const int I[], const int J[], const Real n[]);
+
+/**
+ * Determines the phase region that the given pressure and temperature values
+ * lie in.
+ *
+ * @param pressure water pressure (Pa)
+ * @param temperature water temperature (C)
+ * @return region phase region index
+ */
+unsigned int inRegion(Real pressure, Real temperature);
 
 /**
  * Reference critical constants used in to calculate thermophysical properties of water.
@@ -361,7 +433,6 @@ const Real _n3a[30] = {0.110879558823853e-2, 0.572616740810616e3, -0.76705194838
       0.408748415856745e-1, 0.474686397863312, 0.118646814997915e1,
       0.546987265727549, 0.195266770452643, -0.502268790869663e-1,
       -0.369645308193377, 0.633828037528420e-2, 0.797441793901017e-1};
-
 
 const Real _n3b[32] = {-0.827670470003621e-1, 0.416887126010565e2, 0.483651982197059e-1,
       -0.291032084950276e5, -0.111422582236948e3, -.202300083904014e-1,

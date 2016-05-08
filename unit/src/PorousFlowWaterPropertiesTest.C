@@ -16,26 +16,87 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( PorousFlowWaterPropertiesTest );
 
 PorousFlowWaterPropertiesTest::PorousFlowWaterPropertiesTest() :
-    _peps(1.0E-0),
+    _peps(1.0E-1),
     _teps(1.0E-8),
+    _deps(1.0E-8),
     _t_c2k(273.15)
 {
 }
 
 void
+PorousFlowWaterPropertiesTest::inRegion()
+{
+  CPPUNIT_ASSERT(PorousFlowWaterProperties::inRegion(3.0e6, 300 - _t_c2k) == 1);
+  CPPUNIT_ASSERT(PorousFlowWaterProperties::inRegion(30.0e6, 700.0 - _t_c2k) == 2);
+  CPPUNIT_ASSERT(PorousFlowWaterProperties::inRegion(50.0e6, 630.0 - _t_c2k) == 3);
+  CPPUNIT_ASSERT(PorousFlowWaterProperties::inRegion(30.0e6, 1500.0 - _t_c2k) == 5);
+  unsigned int region;
+  try
+  {
+    // Trigger invalid pressure fail
+    region = PorousFlowWaterProperties::inRegion(101.0e6, 300.0 - _t_c2k);
+  }
+  catch(const std::exception & e)
+  {
+    std::string msg(e.what());
+    CPPUNIT_ASSERT( msg.find("Pressure 1.01e+08 is out of range in PorousFlowWaterProperties::inRegion") != std::string::npos );
+  }
+  try
+  {
+    // Trigger another invalid pressure fail
+    region = PorousFlowWaterProperties::inRegion(51.0e6, 1200.0 - _t_c2k);
+  }
+  catch(const std::exception & e)
+  {
+    std::string msg(e.what());
+    CPPUNIT_ASSERT( msg.find("Pressure 5.1e+07 is out of range in PorousFlowWaterProperties::inRegion") != std::string::npos );
+  }
+  try
+  {
+  // Trigger invalid temperature fail
+  region = PorousFlowWaterProperties::inRegion(5.0e6, 2001.0);
+  }
+  catch(const std::exception & e)
+  {
+    std::string msg(e.what());
+    CPPUNIT_ASSERT( msg.find("Temperature 2001 is out of range in PorousFlowWaterProperties::inRegion") != std::string::npos );
+  }
+}
+
+void
 PorousFlowWaterPropertiesTest::region1()
 {
+  /// Test the densities
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.00100215168, PorousFlowWaterProperties::densityRegion1(3.0e6, 300.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.000971180894, PorousFlowWaterProperties::densityRegion1(80.0e6, 300.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.00120241800, PorousFlowWaterProperties::densityRegion1(3.0e6, 500.0 - _t_c2k), 1.0E-5);
+
+  /// Test the derivative of the density wrt pressure
+  Real fd;
+  fd = (PorousFlowWaterProperties::densityRegion1(3.0e6 + _peps, 300.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion1(3.0e6, 300.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion1_dP(3.0e6, 300.0 - _t_c2k), 1.0E-10);
+  fd = (PorousFlowWaterProperties::densityRegion1(80.0e6 + _peps, 300.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion1(80.0e6, 300.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion1_dP(80.0e6, 300.0 - _t_c2k), 1.0E-10);
+  fd = (PorousFlowWaterProperties::densityRegion1(3.0e6 + _peps, 500.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion1(3.0e6, 500.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion1_dP(3.0e6, 500.0 - _t_c2k), 1.0E-10);
 }
 
 void
 PorousFlowWaterPropertiesTest::region2()
 {
+  /// Test the densities
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 39.4913866, PorousFlowWaterProperties::densityRegion2(3.5e3, 300.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 92.3015898, PorousFlowWaterProperties::densityRegion2(3.5e3, 700.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.00542946619, PorousFlowWaterProperties::densityRegion2(30.0e6, 700.0 - _t_c2k), 1.0E-5);
+
+  /// Test the derivative of the density wrt pressure
+  Real fd;
+  fd = (PorousFlowWaterProperties::densityRegion2(3.5e3 + _peps, 300.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion2(3.5e3, 300.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion2_dP(3.5e3, 300.0 - _t_c2k), 1.0E-10);
+  fd = (PorousFlowWaterProperties::densityRegion2(3.5e3 + _peps, 700.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion2(3.5e3, 700.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion2_dP(3.5e3, 700.0 - _t_c2k), 1.0E-10);
+  fd = (PorousFlowWaterProperties::densityRegion2(30.0e6 + _peps, 700.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion2(30.0e6, 700.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion2_dP(30.0e6, 700.0 - _t_c2k), 1.0E-10);
 }
 
 void
@@ -81,6 +142,7 @@ PorousFlowWaterPropertiesTest::tempXY()
 void
 PorousFlowWaterPropertiesTest::region3()
 {
+  /// Test the densities
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.001470853100, PorousFlowWaterProperties::densityRegion3(50.0e6, 630.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.001503831359, PorousFlowWaterProperties::densityRegion3(80.0e6, 670.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.002204728587, PorousFlowWaterProperties::densityRegion3(50.0e6, 710.0 - _t_c2k), 1.0E-5);
@@ -133,14 +195,76 @@ PorousFlowWaterPropertiesTest::region3()
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.002717655648, PorousFlowWaterProperties::densityRegion3(22.064e6, 647.05 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.003798732962, PorousFlowWaterProperties::densityRegion3(22.0e6, 646.89 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.003701940010, PorousFlowWaterProperties::densityRegion3(22.064e6, 647.15 - _t_c2k), 1.0E-5);
+  /// Test the derivative of the density wrt pressure
+  Real fd;
+  fd = (PorousFlowWaterProperties::densityRegion3(50.0e6 + _peps, 630.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(50.0e6, 630.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(50.0e6, 630.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(50.0e6 + _peps, 710.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(50.0e6, 710.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(50.0e6, 710.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(20.0e6 + _peps, 630.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(20.0e6, 630.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(20.0e6, 630.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(26.0e6 + _peps, 656.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(26.0e6, 656.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(26.0e6, 656.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(26.0e6 + _peps, 661.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(26.0e6, 661.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(26.0e6, 661.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(26.0e6 + _peps, 671.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(26.0e6, 671.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(26.0e6, 671.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(23.6e6 + _peps, 649.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(23.6e6, 649.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(23.6e6, 649.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(23.6e6 + _peps, 652.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(23.6e6, 652.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(23.6e6, 652.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(23.5e6 + _peps, 653.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(23.5e6, 653.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(23.5e6, 653.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(23.0e6 + _peps, 660.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(23.0e6, 660.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(23.0e6, 660.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.6e6 + _peps, 646.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.6e6, 646.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.6e6, 646.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.6e6 + _peps, 648.6 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.6e6, 648.6 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.6e6, 648.6 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.6e6 + _peps, 649.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.6e6, 649.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.6e6, 649.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.6e6 + _peps, 649.1 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.6e6, 649.1 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.6e6, 649.1 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.6e6 + _peps, 649.4 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.6e6, 649.4 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.6e6, 649.4 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(21.1e6 + _peps, 640.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(21.1e6, 640.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(21.1e6, 640.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(21.1e6 + _peps, 644.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(21.1e6, 644.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(21.1e6, 644.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(19.1e6 + _peps, 635.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(19.1e6, 635.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(19.1e6, 635.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(17.0e6 + _peps, 626.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(17.0e6, 626.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(17.0e6, 626.0 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(21.5e6 + _peps, 644.6 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(21.5e6, 644.6 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(21.5e6, 644.6 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.5e6 + _peps, 648.6 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.5e6, 648.6 - _t_c2k)) / _peps;
+// TODO: this one isn't working correctly
+//  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.5e6, 648.6 - _t_c2k), 1.0E-9);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.15e6 + _peps, 647.5 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.15e6, 647.5 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.15e6, 647.5 - _t_c2k), 1.0E-7);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.11e6 + _peps, 648.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.11e6, 648.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.11e6, 648.0 - _t_c2k), 1.0E-7);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.0e6 + _peps, 646.84 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.0e6, 646.84 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.0e6, 646.84 - _t_c2k), 1.0E-7);
+  fd = (PorousFlowWaterProperties::densityRegion3(22.0e6 + _peps, 646.89 - _t_c2k) - PorousFlowWaterProperties::densityRegion3(22.0e6, 646.89 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion3_dP(22.0e6, 646.89 - _t_c2k), 1.0E-7);
 }
 
 void
 PorousFlowWaterPropertiesTest::region5()
 {
+  /// Test the densities
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 1.38455090, PorousFlowWaterProperties::densityRegion5(0.5e6, 1500.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.0230761299, PorousFlowWaterProperties::densityRegion5(30.0e6, 1500.0 - _t_c2k), 1.0E-5);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0 / 0.0311385219, PorousFlowWaterProperties::densityRegion5(30.0e6, 2000.0 - _t_c2k), 1.0E-5);
+  /// Test the derivative of the density wrt pressure
+  Real fd;
+  fd = (PorousFlowWaterProperties::densityRegion5(0.5e6 + _peps, 1500.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion5(0.5e6, 1500.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion5_dP(0.5e6, 1500.0 - _t_c2k), 1.0E-10);
+  fd = (PorousFlowWaterProperties::densityRegion5(30.0e6 + _peps, 1500.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion5(30.0e6, 1500.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion5_dP(30.0e6, 1500.0 - _t_c2k), 1.0E-10);
+  fd = (PorousFlowWaterProperties::densityRegion5(30.0e6 + _peps, 2000.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion5(30.0e6, 2000.0 - _t_c2k)) / _peps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion5_dP(30.0e6, 2000.0 - _t_c2k), 1.0E-10);
 }
 
 void
@@ -167,28 +291,15 @@ PorousFlowWaterPropertiesTest::viscosity()
   CPPUNIT_ASSERT_DOUBLES_EQUAL(44.217245e-6, PorousFlowWaterProperties::viscosity(1173.15 - _t_c2k, 1.0), 1.0E-10);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(47.640433e-6, PorousFlowWaterProperties::viscosity(1173.15 - _t_c2k, 100.0), 1.0E-10);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(64.154608e-6, PorousFlowWaterProperties::viscosity(1173.15 - _t_c2k, 400.0), 1.0E-10);
-}
-
-void
-PorousFlowWaterPropertiesTest::dRegion1Dp()
-{
+  /// Test derivatives wrt density
   Real fd;
-  fd = (PorousFlowWaterProperties::densityRegion1(3.0e6 + _peps, 300.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion1(3.0e6, 300.0 - _t_c2k)) / _peps;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion1_dP(3.0e6, 300.0 - _t_c2k), 1.0E-10);
-  fd = (PorousFlowWaterProperties::densityRegion1(80.0e6 + _peps, 300.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion1(80.0e6, 300.0 - _t_c2k)) / _peps;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion1_dP(80.0e6, 300.0 - _t_c2k), 1.0E-10);
-  fd = (PorousFlowWaterProperties::densityRegion1(3.0e6 + _peps, 500.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion1(3.0e6, 500.0 - _t_c2k)) / _peps;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion1_dP(3.0e6, 500.0 - _t_c2k), 1.0E-10);
-}
+  fd = (PorousFlowWaterProperties::viscosity(298.15 - _t_c2k, 998.0 + _deps) - PorousFlowWaterProperties::viscosity(298.15 - _t_c2k, 998.0)) / _deps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dViscosity_dDensity(298.15 - _t_c2k, 998.0), 1.0E-7);
+  fd = (PorousFlowWaterProperties::viscosity(298.15 - _t_c2k, 1200.0 + _deps) - PorousFlowWaterProperties::viscosity(298.15 - _t_c2k, 1200.0)) / _deps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dViscosity_dDensity(298.15 - _t_c2k, 1200.0), 1.0E-7);
+  fd = (PorousFlowWaterProperties::viscosity(873.15 - _t_c2k, 1.0 + _deps) - PorousFlowWaterProperties::viscosity(873.15 - _t_c2k, 1.0)) / _deps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dViscosity_dDensity(873.15 - _t_c2k, 1.0), 1.0E-7);
+  fd = (PorousFlowWaterProperties::viscosity(1173.15 - _t_c2k, 400.0 + _deps) - PorousFlowWaterProperties::viscosity(1173.15 - _t_c2k, 400.0)) / _deps;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dViscosity_dDensity(1173.15 - _t_c2k, 400.0), 1.0E-7);
 
-void
-PorousFlowWaterPropertiesTest::dRegion2Dp()
-{
-  Real fd;
-  fd = (PorousFlowWaterProperties::densityRegion2(3.5e3 + _peps, 300.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion2(3.5e3, 300.0 - _t_c2k)) / _peps;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion2_dP(3.5e3, 300.0 - _t_c2k), 1.0E-10);
-  fd = (PorousFlowWaterProperties::densityRegion2(3.5e3 + _peps, 700.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion2(3.5e3, 700.0 - _t_c2k)) / _peps;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion2_dP(3.5e3, 700.0 - _t_c2k), 1.0E-10);
-  fd = (PorousFlowWaterProperties::densityRegion2(30.0e6 + _peps, 700.0 - _t_c2k) - PorousFlowWaterProperties::densityRegion2(30.0e6, 700.0 - _t_c2k)) / _peps;
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(fd, PorousFlowWaterProperties::dDensityRegion2_dP(30.0e6, 700.0 - _t_c2k), 1.0E-10);
 }

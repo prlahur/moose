@@ -22,8 +22,8 @@ molarMass()
   return _Mh2o;
 }
 
-Real
-density(Real pressure, Real temperature)
+unsigned int
+inRegion(Real pressure, Real temperature)
 {
   /**
    * Valid for 273.15 K <= T <= 1073.15 K, p <= 100 MPa
@@ -34,37 +34,65 @@ density(Real pressure, Real temperature)
   if (temperature > 0.0 && temperature <= 800.0)
   {
     if (pressure < 0.0 || pressure > 100.0e6)
-      mooseError("Pressure "<< pressure << " is out of range in PorousFlowWaterProperties::density");
+      mooseError("Pressure "<< pressure << " is out of range in PorousFlowWaterProperties::inRegion");
   }
   else if (temperature > 800.0 && temperature <= 2000.0)
   {
     if (pressure < 0.0 || pressure > 50.0e6)
-      mooseError("Pressure "<< pressure << " is out of range in PorousFlowWaterProperties::density");
+      mooseError("Pressure "<< pressure << " is out of range in PorousFlowWaterProperties::inRegion");
   }
   else
-    mooseError("Temperature " << temperature << " is out of range in PorousFlowWaterProperties::density");
+    mooseError("Temperature " << temperature << " is out of range in PorousFlowWaterProperties::inRegion");
 
-  Real density;
+  /// Determine the phase region that the (P, T) point lies in
+  unsigned int region;
 
-  /// Determine which region the point is in
   if (temperature >= 0.0 && temperature <= 350.0)
   {
-    Real psat = pSat(temperature);
-
-    if (pressure > psat && pressure <= 100.0e6)
-      density = densityRegion1(pressure, temperature);
+    if (pressure > pSat(temperature) && pressure <= 100.0e6)
+      region = 1;
     else
-      density = densityRegion2(pressure, temperature);
+      region = 2;
   }
   else if (temperature > 350.0 && temperature <= 800.0)
   {
     if (pressure <= b23p(temperature))
-      density = densityRegion2(pressure, temperature);
+      region = 2;
     else
-      density = densityRegion3(pressure, temperature);
+      region = 3;
   }
   else
-   density = densityRegion5(pressure, temperature);
+   region = 5;
+
+  return region;
+}
+
+Real
+density(Real pressure, Real temperature)
+{
+  Real density;
+
+  /// Determine which region the point is in
+  unsigned int region = inRegion(pressure, temperature);
+
+  switch(region)
+  {
+    case 1:
+      density = densityRegion1(pressure, temperature);
+      break;
+
+    case 2:
+      density = densityRegion2(pressure, temperature);
+      break;
+
+    case 3:
+      density = densityRegion3(pressure, temperature);
+      break;
+
+    case 5:
+      density = densityRegion5(pressure, temperature);
+      break;
+  }
 
   return density;
 }
@@ -244,41 +272,35 @@ densityRegion2(Real pressure, Real temperature)
   return p_star2 / (_Rw * tk * (1.0 / pi2 + sumr2)) / 1000.0;
 }
 
-
-
 Real
 dDensity_dP(Real pressure, Real temperature)
 {
-  /**
-   * Valid for 273.15 K <= T <= 1073.15 K, p <= 100 MPa
-   *          1073.15 K <= T <= 2273.15 K, p <= 50 Mpa
-   */
   Real ddensity = 0.0;
 
-  /**
-   * Determine which region the point is in. First calculate the saturated pressure
-   * from the input temperature
-   */
-  Real psat = pSat(temperature);
+  /// Determine which region the point is in
+  unsigned int region = inRegion(pressure, temperature);
 
-  if (temperature >= 0.0 && temperature <= 350.0)
+  switch(region)
   {
-    if (pressure > psat && pressure <= 100.e6)
-    {
-      /// Region 1: single phase liquid
+    case 1:
       ddensity = dDensityRegion1_dP(pressure, temperature);
-    }
+      break;
 
-    if (pressure <= psat)
-    {
-      /// Region 2: vapour phase
+    case 2:
       ddensity = dDensityRegion2_dP(pressure, temperature);
-    }
+      break;
+
+    case 3:
+      ddensity = dDensityRegion3_dP(pressure, temperature);
+      break;
+
+    case 5:
+      ddensity = dDensityRegion5_dP(pressure, temperature);
+      break;
   }
 
   return ddensity;
 }
-
 
 Real
 dDensityRegion1_dP(Real pressure, Real temperature)
@@ -329,7 +351,7 @@ dDensityRegion2_dP(Real pressure, Real temperature)
 }
 
 Real
-dViscosity_dDensity(Real pressure, Real temperature, Real density)
+dViscosity_dDensity(Real temperature, Real density)
 {
   Real t1[6], d1[7];
 
@@ -439,7 +461,7 @@ subregion3(Real pressure, Real temperature)
 {
   Real pMPa = pressure / 1.0e6;
   const Real P3cd  = 19.00881189173929;
-  unsigned int subregion;
+  unsigned int subregion = 0;
 
   if (pMPa > 40.0 && pMPa <= 100.0)
   {
@@ -590,6 +612,8 @@ subregion3(Real pressure, Real temperature)
       subregion = 17;
     else if (temperature > tempXY(pressure, "jk"))
       subregion = 10;
+    else
+      mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here. Error location 9");
   }
   else if (pMPa > P3cd && pMPa <= 20.5) /// P3cd  = 19.00881189173929
   {
@@ -618,7 +642,7 @@ subregion3(Real pressure, Real temperature)
     else if (temperature > tempXY(pressure, "wx") && temperature <= tempXY(pressure, "rx"))
       subregion = 23;
     else
-      mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here for 22.11 < p <= 22.5 MPa");
+      mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here. Error location 10");
   }
   else if (pMPa > 22.064 && pMPa <= 22.11)
   {
@@ -631,10 +655,10 @@ subregion3(Real pressure, Real temperature)
     else if (temperature > tempXY(pressure, "wx") && temperature <= tempXY(pressure, "rx"))
       subregion = 23;
     else
-      mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here for 22.064 < p <= 22.11 MPa");
+      mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here. Error location 11");
   }
   else
-    mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here!");
+    mooseError("PorousFlowWaterProperties::subregion3. Shouldn't have got here. Error location 12");
 
   return subregion;
 }
@@ -670,97 +694,58 @@ densityRegion3(Real pressure, Real temperature)
   switch(subregion)
   {
     case 0:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3a[i] * std::pow(std::pow(pi - a, c), _I3a[i]) * std::pow(std::pow(theta - b, d), _J3a[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3a, _J3a, _n3a);
       break;
 
     case 1:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3b[i] * std::pow(std::pow(pi - a, c), _I3b[i]) * std::pow(std::pow(theta - b, d), _J3b[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3b, _J3b, _n3b);
       break;
 
     case 2:
-      for (unsigned int i = 0; i < N; ++i)
-       sum += _n3c[i] * std::pow(std::pow(pi - a, c), _I3c[i]) * std::pow(std::pow(theta - b, d), _J3c[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3c, _J3c, _n3c);
       break;
 
     case 3:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3d[i] * std::pow(std::pow(pi - a, c), _I3d[i]) * std::pow(std::pow(theta - b, d), _J3d[i]);
-
-     volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3d, _J3d, _n3d);
      break;
 
     case 4:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3e[i] * std::pow(std::pow(pi - a, c), _I3e[i]) * std::pow(std::pow(theta - b, d), _J3e[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3e, _J3e, _n3e);
       break;
 
     case 5:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3f[i] * std::pow(std::pow(pi - a, c), _I3f[i]) * std::pow(std::pow(theta - b, d), _J3f[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3f, _J3f, _n3f);
       break;
 
     case 6:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3g[i] * std::pow(std::pow(pi - a, c), _I3g[i]) * std::pow(std::pow(theta - b, d), _J3g[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3g, _J3g, _n3g);
       break;
 
     case 7:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3h[i] * std::pow(std::pow(pi - a, c), _I3h[i]) * std::pow(std::pow(theta - b, d), _J3h[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3h, _J3h, _n3h);
       break;
 
     case 8:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3i[i] * std::pow(std::pow(pi - a, c), _I3i[i]) * std::pow(std::pow(theta - b, d), _J3i[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3i, _J3i, _n3i);
       break;
 
     case 9:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3j[i] * std::pow(std::pow(pi - a, c), _I3j[i]) * std::pow(std::pow(theta - b, d), _J3j[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3j, _J3j, _n3j);
       break;
 
     case 10:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3k[i] * std::pow(std::pow(pi - a, c), _I3k[i]) * std::pow(std::pow(theta - b, d), _J3k[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3k, _J3k, _n3k);
       break;
 
     case 11:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3l[i] * std::pow(std::pow(pi - a, c), _I3l[i]) * std::pow(std::pow(theta - b, d), _J3l[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3l, _J3l, _n3l);
       break;
 
     case 12:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3m[i] * std::pow(std::pow(pi - a, c), _I3m[i]) * std::pow(std::pow(theta - b, d), _J3m[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3m, _J3m, _n3m);
       break;
 
-    case 13:
+    case 13: /// Note: this is the only different case
       for (unsigned int i = 0; i < N; ++i)
         sum += _n3n[i] * std::pow(pi - a, _I3n[i]) * std::pow(theta - b, _J3n[i]);
 
@@ -768,92 +753,255 @@ densityRegion3(Real pressure, Real temperature)
       break;
 
     case 14:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3o[i] * std::pow(std::pow(pi - a, c), _I3o[i]) * std::pow(std::pow(theta - b, d), _J3o[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3o, _J3o, _n3o);
       break;
 
     case 15:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3p[i] * std::pow(std::pow(pi - a, c), _I3p[i]) * std::pow(std::pow(theta - b, d), _J3p[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3p, _J3p, _n3p);
       break;
 
     case 16:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3q[i] * std::pow(std::pow(pi - a, c), _I3q[i]) * std::pow(std::pow(theta - b, d), _J3q[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3q, _J3q, _n3q);
       break;
 
     case 17:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3r[i] * std::pow(std::pow(pi - a, c), _I3r[i]) * std::pow(std::pow(theta - b, d), _J3r[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3r, _J3r, _n3r);
       break;
 
     case 18:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3s[i] * std::pow(std::pow(pi - a, c), _I3s[i]) * std::pow(std::pow(theta - b, d), _J3s[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3s, _J3s, _n3s);
       break;
 
     case 19:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3t[i] * std::pow(std::pow(pi - a, c), _I3t[i]) * std::pow(std::pow(theta - b, d), _J3t[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3t, _J3t, _n3t);
       break;
 
     case 20:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3u[i] * std::pow(std::pow(pi - a, c), _I3u[i]) * std::pow(std::pow(theta - b, d), _J3u[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3u, _J3u, _n3u);
       break;
 
     case 21:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3v[i] * std::pow(std::pow(pi - a, c), _I3v[i]) * std::pow(std::pow(theta - b, d), _J3v[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3v, _J3v, _n3v);
       break;
 
     case 22:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3w[i] * std::pow(std::pow(pi - a, c), _I3w[i]) * std::pow(std::pow(theta - b, d), _J3w[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3w, _J3w, _n3w);
       break;
 
     case 23:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3x[i] * std::pow(std::pow(pi - a, c), _I3x[i]) * std::pow(std::pow(theta - b, d), _J3x[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3x, _J3x, _n3x);
       break;
 
     case 24:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3y[i] * std::pow(std::pow(pi - a, c), _I3y[i]) * std::pow(std::pow(theta - b, d), _J3y[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3y, _J3y, _n3y);
       break;
 
     case 25:
-      for (unsigned int i = 0; i < N; ++i)
-        sum += _n3z[i] * std::pow(std::pow(pi - a, c), _I3z[i]) * std::pow(std::pow(theta - b, d), _J3z[i]);
-
-      volume = vstar * std::pow(sum, e);
+      volume = vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3z, _J3z, _n3z);
       break;
   }
 
   /// Density is the inverse of volume
   return 1.0 / volume;
+}
+
+Real
+dDensityRegion3_dP(Real pressure, Real temperature)
+{
+  /**
+   * Region 3 is subdivided into 26 subregions, each with a given backwards equation
+   * to directly calculate density from pressure and temperature without the need for
+   * expensive iterations.
+   */
+
+   /// TODO: calculates density again - pass in density as function to avoid recompilation
+
+  /// The subregion that the point is in:
+  unsigned int subregion = subregion3(pressure, temperature);
+
+  Real vstar, pi, theta, a, b, c, d, e;
+  unsigned int N;
+
+  vstar = _par3[subregion][0];
+  pi = pressure / _par3[subregion][1] / 1.0e6;
+  theta = (temperature + _t_c2k) / _par3[subregion][2];
+  a = _par3[subregion][3];
+  b = _par3[subregion][4];
+  c = _par3[subregion][5];
+  d = _par3[subregion][6];
+  e = _par3[subregion][7];
+  N = _par3N[subregion];
+
+  Real sum = 0.0;
+  Real density = 0.0;
+  Real dvolume = 0.0;
+  Real dsum = 0.0;
+
+  switch(subregion)
+  {
+    case 0:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3a, _J3a, _n3a));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3a, _J3a, _n3a);
+      break;
+
+    case 1:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3b, _J3b, _n3b));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3b, _J3b, _n3b);
+      break;
+
+    case 2:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3c, _J3c, _n3c));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3c, _J3c, _n3c);
+      break;
+
+    case 3:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3d, _J3d, _n3d));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3d, _J3d, _n3d);
+     break;
+
+    case 4:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3e, _J3e, _n3e));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3e, _J3e, _n3e);
+      break;
+
+    case 5:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3f, _J3f, _n3f));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3f, _J3f, _n3f);
+      break;
+
+    case 6:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3g, _J3g, _n3g));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3g, _J3g, _n3g);
+      break;
+
+    case 7:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3h, _J3h, _n3h));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3h, _J3h, _n3h);
+      break;
+
+    case 8:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3i, _J3i, _n3i));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3i, _J3i, _n3i);
+      break;
+
+    case 9:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3j, _J3j, _n3j));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3j, _J3j, _n3j);
+      break;
+
+    case 10:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3k, _J3k, _n3k));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3k, _J3k, _n3k);
+      break;
+
+    case 11:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3l, _J3l, _n3l));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3l, _J3l, _n3l);
+      break;
+
+    case 12:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3m, _J3m, _n3m));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3m, _J3m, _n3m);
+      break;
+
+    case 13: /// Note: this is the only different case
+      for (unsigned int i = 0; i < N; ++i)
+      {
+        sum += _n3n[i] * std::pow(pi - a, _I3n[i]) * std::pow(theta - b, _J3n[i]);
+        dsum += _n3n[i] * _I3n[i] * std::pow(pi - a, _I3n[i] - 1) * std::pow(theta - b, _J3n[i]);
+      }
+      density = 1.0 / (vstar * std::exp(sum));
+      dvolume = vstar * dsum * std::exp(sum);
+      break;
+
+    case 14:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3o, _J3o, _n3o));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3o, _J3o, _n3o);
+      break;
+
+    case 15:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3p, _J3p, _n3p));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3p, _J3p, _n3p);
+      break;
+
+    case 16:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3q, _J3q, _n3q));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3q, _J3q, _n3q);
+      break;
+
+    case 17:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3r, _J3r, _n3r));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3r, _J3r, _n3r);
+      break;
+
+    case 18:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3s, _J3s, _n3s));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3s, _J3s, _n3s);
+      break;
+
+    case 19:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3t, _J3t, _n3t));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3t, _J3t, _n3t);
+      break;
+
+    case 20:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3u, _J3u, _n3u));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3u, _J3u, _n3u);
+      break;
+
+    case 21:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3v, _J3v, _n3v));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3v, _J3v, _n3v);
+      break;
+
+    case 22:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3w, _J3w, _n3w));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3w, _J3w, _n3w);
+      break;
+
+    case 23:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3x, _J3x, _n3x));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3x, _J3x, _n3x);
+      break;
+
+    case 24:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3y, _J3y, _n3y));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3y, _J3y, _n3y);
+      break;
+
+    case 25:
+      density = 1.0 / (vstar * subregionVolume(pi, theta, a, b, c, d, e, N, _I3z, _J3z, _n3z));
+      dvolume = vstar * dSubregionVolume_dP(pi, theta, a, b, c, d, e, N, _I3z, _J3z, _n3z);
+      break;
+  }
+
+  return - density * density * dvolume / _par3[subregion][1] / 1.0e6 ;
+}
+
+Real
+subregionVolume(Real pi, Real theta, Real a, Real b, Real c, Real d, Real e, unsigned int N, const int I[], const int J[], const Real n[])
+{
+  Real sum = 0.0;
+
+  for (unsigned int i = 0; i < N; ++i)
+    sum += n[i] * std::pow(std::pow(pi - a, c), I[i]) * std::pow(std::pow(theta - b, d), J[i]);
+
+  return std::pow(sum, e);
+}
+
+Real
+dSubregionVolume_dP(Real pi, Real theta, Real a, Real b, Real c, Real d, Real e, unsigned int N, const int I[], const int J[], const Real n[])
+{
+  Real sum = 0.0;
+  Real dsum = 0.0;
+
+  for (unsigned int i = 0; i < N; ++i)
+  {
+    sum += n[i] * std::pow(std::pow(pi - a, c), I[i]) * std::pow(std::pow(theta - b, d), J[i]);
+    dsum += n[i] * I[i] * c * std::pow(pi - a, c - 1.0) * std::pow(std::pow(pi - a, c), I[i] - 1) * std::pow(std::pow(theta - b, d), J[i]);
+  }
+
+  return e * std::pow(sum, e - 1.0) * dsum;
 }
 
 Real
@@ -872,9 +1020,36 @@ densityRegion5(Real pressure, Real temperature)
   /// The residual part
   Real part1 = 0.0;
   for (unsigned int i = 0; i < 6; ++i)
-    part1 += _n5r[i] * _I5r[i]  * std::pow(pi, _I5r[i] - 1) * std::pow(tau, _J5r[i]);
+    part1 += _n5r[i] * _I5r[i] * std::pow(pi, _I5r[i] - 1) * std::pow(tau, _J5r[i]);
 
   /// The density is then
   return p_star5 / (_Rw * tk * (part0 + part1)) / 1000.0;
+}
+
+Real
+dDensityRegion5_dP(Real pressure, Real temperature)
+{
+  Real tk = temperature + _t_c2k;
+  Real t_star5 = 1000.0;
+  Real p_star5 = 1.0e6;
+
+  Real pi = pressure / p_star5;
+  Real tau = t_star5 / tk;
+
+  /// The derivative of the ideal gas part wrt pressure
+  Real part0 = 1.0 / pi;
+  Real dpart0 = - 1.0 / pi / pi;
+
+  /// The derivative of the residual part wrt pressure
+  Real part1 = 0.0;
+  Real dpart1 = 0.0;
+  for (unsigned int i = 0; i < 6; ++i)
+  {
+    part1 += _n5r[i] * _I5r[i] * std::pow(pi, _I5r[i] - 1) * std::pow(tau, _J5r[i]);
+    dpart1 += _n5r[i] * _I5r[i] * (_I5r[i] - 1) * std::pow(pi, _I5r[i] - 2) * std::pow(tau, _J5r[i]);
+  }
+
+  /// The derivative of density wrt pressure is then
+  return - (dpart0 + dpart1) / (_Rw * tk * (part0 + part1) * (part0 + part1)) / 1000.0;
 }
 }
