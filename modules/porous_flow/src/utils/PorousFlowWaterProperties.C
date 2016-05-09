@@ -22,6 +22,18 @@ molarMass()
   return _Mh2o;
 }
 
+Real
+criticalPressure()
+{
+  return _p_critical;
+}
+
+Real
+criticalTemperature()
+{
+  return _t_critical;
+}
+
 unsigned int
 inRegion(Real pressure, Real temperature)
 {

@@ -26,6 +26,18 @@ namespace PorousFlowMethaneProperties
   Real molarMass();
 
   /**
+   * Methane critical pressure.
+   * @return critical pressure (Pa)
+   */
+  Real criticalPressure();
+
+  /**
+   * Methane critical temperature.
+   * @return critical temperature (C)
+   */
+  Real criticalTemperature();
+
+  /**
    * CH4 gas density as a function of  pressure and temperature assuming an
    * ideal gas
    *
@@ -86,6 +98,10 @@ namespace PorousFlowMethaneProperties
   const Real _t_c2k = 273.15;
   /// Molar mass of pure CH4
   const Real _Mch4 = 16.0425e-3;
+  /// Critical pressure (Pa)
+  const Real _p_critical = 4.5992e6;
+  /// Critical temperature (C)
+  const Real _t_critical = -82.586;
 }
 
 #endif // POROUSFLOWMETHANEPROPERTIES_H

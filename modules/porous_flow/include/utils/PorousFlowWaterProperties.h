@@ -26,6 +26,18 @@ std::string fluidName();
 Real molarMass();
 
 /**
+ * Water critical pressure.
+ * @return critical pressure (Pa)
+ */
+Real criticalPressure();
+
+/**
+ * Water critical temperature.
+ * @return critical temperature (C)
+ */
+Real criticalTemperature();
+
+/**
  * Density of water
  * From IAPWS IF97 Revised Release on the IAPWS Industrial
  * Formulation 1997 for the Thermodynamic Properties of Water

@@ -24,6 +24,18 @@ molarMass()
 }
 
 Real
+criticalPressure()
+{
+  return _p_critical;
+}
+
+Real
+criticalTemperature()
+{
+  return _t_critical;
+}
+
+Real
 density(Real pressure, Real temperature)
 
 {
