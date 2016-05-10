@@ -246,8 +246,6 @@ Real dDensityRegion5_dP(Real pressure, Real temperature);
  */
 Real dViscosity_dDensity(Real temperature, Real density);
 
-Real dDensity_dT(Real pressure, Real temperature);
-
 /**
  * Provides the correct subregion index for a (P,T) point in
  * region 3.

@@ -35,14 +35,10 @@ protected:
   MaterialProperty<Real> & _density_nodal_old;
   /// Derivative of fluid density wrt phase pore pressure at the nodes
   MaterialProperty<Real> & _ddensity_nodal_dp;
-  /// Derivative of fluid density wrt temperature at the nodes
-  MaterialProperty<Real> & _ddensity_nodal_dt;
   /// Fluid phase density at the qps
   MaterialProperty<Real> & _density_qp;
   /// Derivative of fluid density wrt phase pore pressure at the qps
   MaterialProperty<Real> & _ddensity_qp_dp;
-  /// Derivative of fluid density wrt temperature at the qps
-  MaterialProperty<Real> & _ddensity_qp_dt;
   /// Fluid phase viscosity at the nodes
   MaterialProperty<Real> & _viscosity_nodal;
 };

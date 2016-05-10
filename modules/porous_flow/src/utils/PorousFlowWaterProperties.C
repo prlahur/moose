@@ -9,7 +9,6 @@
 
 namespace PorousFlowWaterProperties
 {
-
 std::string
 fluidName()
 {
@@ -398,12 +397,6 @@ dViscosity_dDensity(Real temperature, Real density)
 
   /// The derivative of viscosity wrt density is then
   return viscosity(temperature, density) * (sum1 + rhobar * sum2) / _rho_critical;
-}
-
-Real
-dDensity_dT(Real /* pressure */, Real /* temperature */)
-{
-  return 0.; // FIXME: not implemented yet
 }
 
 Real
