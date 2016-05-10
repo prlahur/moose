@@ -66,13 +66,15 @@ inRegion(Real pressure, Real temperature)
     else
       region = 2;
   }
-  else if (temperature > 350.0 && temperature <= 800.0)
+  else if (temperature > 350.0 && temperature <= 590.0)
   {
     if (pressure <= b23p(temperature))
       region = 2;
     else
       region = 3;
   }
+  else if (temperature > 590.0 && temperature <= 800.0)
+    region = 2;
   else
    region = 5;
 
