@@ -9,6 +9,7 @@
 #define POROUSFLOWDENSITYCONSTBULK_H
 
 #include "PorousFlowFluidPropertiesBase.h"
+#include "PorousFlowConstantBulkProperties.h"
 
 class PorousFlowDensityConstBulk;
 
@@ -27,27 +28,11 @@ public:
 
 protected:
   virtual void initQpStatefulProperties();
+
   virtual void computeQpProperties();
 
-  /**
-   * Density calucaled assuming a constant bulk modulus
-   *
-   * @param pressure gas pressure (Pa)
-   * @return density (kg/m^3)
-   */
-  Real density(Real pressure) const;
-
-  /**
-   * Derivative of the density of a constant bulk density a function of
-   * pressure.
-   *
-   * @param pressure gas pressure (Pa)
-   * @return derivative of density (kg/m^3) with respect to pressure
-   */
-  Real dDensity_dP(Real pressure) const;
-
   /// density at zero porepressure
-  const Real _dens0;
+  const Real _density_p0;
 
   /// constant bulk modulus
   const Real _bulk;
@@ -63,7 +48,7 @@ protected:
 
   /// Fluid phase density at the qps
   MaterialProperty<Real> & _density_qp;
-
+  
   /// Derivative of fluid density wrt phase pore pressure at the qps
   MaterialProperty<Real> & _ddensity_qp_dp;
 };

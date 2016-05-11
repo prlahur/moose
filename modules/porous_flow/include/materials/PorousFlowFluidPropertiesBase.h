@@ -26,7 +26,7 @@ public:
   PorousFlowFluidPropertiesBase(const InputParameters & parameters);
 
 protected:
-  /// Somehow should be able to make this pure virtual?
+
   virtual void computeQpProperties();
 
   /// Phase number of fluid that this relative permeability relates to
@@ -54,10 +54,10 @@ protected:
   const VariableName _temperature_variable_name;
 
   /// Conversion from degrees Celsius to degrees Kelvin
-  const Real _t_c2k;
-
+  Real _t_c2k;
+  
   /// Universal gas constant
-  const Real _R;
+  Real _R;
 };
 
 #endif //POROUSFLOWFLUIDPROPERTIESBASE_H
