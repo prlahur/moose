@@ -18,6 +18,8 @@
 
 #include "AddFluidPropertiesAction.h"
 
+#include "BrentsMethod.h"
+
 template<>
 InputParameters validParams<FluidPropertiesApp>()
 {
