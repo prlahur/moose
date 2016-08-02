@@ -11,13 +11,16 @@
 template<>
 InputParameters validParams<CO2FluidProperties>()
 {
-  InputParameters params = validParams<SinglePhaseFluidProperties>();
-  params.addClassDescription("Fluid properties for methane (CH4)");
+  InputParameters params = validParams<FluidProperties>();
+  //InputParameters params = validParams<SinglePhaseFluidPropertiesPT>();
+  params.addClassDescription("Fluid properties for carbon dioxide (CO2)");
   return params;
 }
 
 CO2FluidProperties::CO2FluidProperties(const InputParameters & parameters) :
-    SinglePhaseFluidProperties(parameters)
+    FluidProperties(parameters)
+//    SinglePhaseFluidProperties(parameters)
+
 {
 }
 
@@ -494,11 +497,12 @@ CO2FluidProperties::eosSWProperties(Real pressure, Real temperature, Real & dens
   Real lower_density = 1.0;
   Real upper_density = 1000.0;
 
-  BrentsMethod::bracket(pressureDifference, lower_density, upper_density, temperature, pressure);
+  auto pressure_diff = [&] (Real x) {return pressureEOS(x, temperature) - pressure; };
+  BrentsMethod::bracket(pressure_diff, lower_density, upper_density);
 
   /// Now find the density using Brent's method
   Real eps = 1.0e-12;
-  density = BrentsMethod::root(pressureDifference, lower_density, upper_density, temperature, pressure, eps);
+  //density = BrentsMethod::root(pressureDifference, lower_density, upper_density, temperature, pressure, eps);
 
   /// Using this density, calculate all other properties
   eosSW(density, temperature, pressure, enthalpy, internal_energy, cv, true);

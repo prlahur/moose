@@ -22,7 +22,9 @@ InputParameters validParams<CO2FluidProperties>();
  * R. Span and W. Wagner, J. Phys. Chem. Ref. Data, volume 25, no. 6, 1996,
  * pp. 1509-1596
  */
-class CO2FluidProperties : public SinglePhaseFluidProperties
+//class CO2FluidProperties : public SinglePhaseFluidProperties
+class CO2FluidProperties : public FluidProperties
+
 {
 public:
   CO2FluidProperties(const InputParameters & parameters);
