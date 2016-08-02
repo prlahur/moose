@@ -12,13 +12,14 @@
 
 #include "FluidPropertiesMaterial.h"
 #include "FluidPropertiesMaterialPT.h"
+#include "CO2FluidPropertiesMaterial.h"
+
 #include "IdealGasFluidProperties.h"
 #include "StiffenedGasFluidProperties.h"
 #include "MethaneFluidProperties.h"
+#include "CO2FluidProperties.h"
 
 #include "AddFluidPropertiesAction.h"
-
-#include "BrentsMethod.h"
 
 template<>
 InputParameters validParams<FluidPropertiesApp>()
@@ -68,10 +69,12 @@ FluidPropertiesApp::registerObjects(Factory & factory)
 {
   registerMaterial(FluidPropertiesMaterial);
   registerMaterial(FluidPropertiesMaterialPT);
+  registerMaterial(CO2FluidPropertiesMaterial);
 
   registerUserObject(IdealGasFluidProperties);
   registerUserObject(StiffenedGasFluidProperties);
   registerUserObject(MethaneFluidProperties);
+  registerUserObject(CO2FluidProperties);
 }
 
 // External entry point for dynamic syntax association

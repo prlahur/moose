@@ -80,25 +80,25 @@ public:
    * CO2 molar mass.
    * @return molar mass (kg/mol)
    */
-  Real molarMass();
+  Real molarMass() const;
 
   /**
    * CO2 critical pressure.
    * @return critical pressure (Pa)
    */
-  Real criticalPressure();
+  Real criticalPressure() const;
 
   /**
    * CO2 critical temperature.
    * @return critical temperature (C)
    */
-  Real criticalTemperature();
+  Real criticalTemperature() const;
 
   /**
    * CO2 critical density.
    * @return critical density (kg/m^3)
    */
-  Real criticalDensity();
+  Real criticalDensity() const;
 
   /**
    * Span and Wagner Equation Of State for CO2 (reference at top of header)
@@ -111,7 +111,7 @@ public:
    * @param[out] isochoric heat capacity (kJ/kg)
    * @param all if false, only calculate presure, otherwise calculate all properties
    */
-  void eosSW(Real density, Real temperature, Real & pressure, Real & enthalpy, Real & internal_energy, Real & cv, bool all);
+  void eosSW(Real density, Real temperature, Real & pressure, Real & enthalpy, Real & internal_energy, Real & cv, bool all) const;
 
   /**
    * Melting pressure as a function of temperature. Used to delineate solid phase
@@ -123,7 +123,7 @@ public:
    * @param temperature CO2 temperature (C)
    * @return melting pressure (Pa)
    */
-  Real meltingPressure(Real temperature);
+  Real meltingPressure(Real temperature) const;
 
   /**
    * Sublimation pressure as a function of temperature. Used to delineate solid phase
@@ -135,7 +135,7 @@ public:
    * @param temperature CO2 temperature (C)
    * @return sublimation pressure (Pa)
    */
-  Real sublimationPressure(Real temperature);
+  Real sublimationPressure(Real temperature) const;
 
   /**
    * Vapour pressure as a function of temperature. Used to delineate liquid phase
@@ -147,7 +147,7 @@ public:
    * @param temperature CO2 temperature (C)
    * @return vapour pressure (Pa)
    */
-  Real vapourPressure(Real temperature);
+  Real vapourPressure(Real temperature) const;
 
   /**
    * Saturated liquid density of CO2. Valid for temperatures between the triple
@@ -158,7 +158,7 @@ public:
    * @param temperature CO2 temperature (C)
    * @return saturated liquid density (kg/m^3)
    */
-  Real saturatedLiquidDensity(Real temperature);
+  Real saturatedLiquidDensity(Real temperature) const;
 
   /**
    * Saturated vapour density of CO2. Valid for temperatures between the triple
@@ -169,7 +169,7 @@ public:
    * @param temperature CO2 temperature (C)
    * @return saturated vapour density (kg/m^3)
    */
-  Real saturatedVapourDensity(Real temperature);
+  Real saturatedVapourDensity(Real temperature) const;
 
   /**
    * Calculates pressure as a function of density and temperature using the
@@ -179,7 +179,7 @@ public:
    * @param temperature CO2 temperature (C)
    * @return CO2 pressure (Pa)
    */
-  Real pressureEOS(Real density, Real temperature);
+  Real pressureEOS(Real density, Real temperature) const;
 
   /**
    * Function used in root-finding that provides the difference in specified
@@ -190,7 +190,7 @@ public:
    * @param pressure specified CO2 pressure (Pa)
    * @return difference in pressure between input pressure and calculated pressure at input density (Pa)
    */
-  Real pressureDifference(Real density, Real temperature, Real pressure);
+//  Real pressureDifference(Real density, Real temperature, Real pressure) const;
 
   /**
    * Calculate density, enthalpy and internal energy of CO2 for a given pressure and
@@ -207,19 +207,7 @@ public:
    * @param[out] internal energy (kJ/kg)
    * @param[out] isochoric heat capacity (kJ/kg)
    */
-  void eosSWProperties(Real pressure, Real temperature, Real & density, Real & enthalpy, Real & internal_energy, Real & cv);
-
-  /**
-   * CO2 gas viscosity as a function of temperature and density.
-   * From Fenghour et al., The viscosity of carbon dioxide, J. Phys. Chem. Ref.
-   * Data, 27, 31-44 (1998).
-   * Note: the critical enhancement is not implemented.
-   *
-   * @param temperature CO2 temperature (C)
-   * @param density CO2 density (kg/m^3)
-   * @return viscosity (Pa.s)
-   */
-  Real viscosity(Real temperature, Real density);
+  void eosSWProperties(Real pressure, Real temperature, Real & density, Real & enthalpy, Real & internal_energy, Real & cv) const;
 
   /**
    * Henry's law constant coefficients for dissolution of CO2 into water.
@@ -229,7 +217,7 @@ public:
    *
    * @return constants for Henry's constant (-)
    */
-  std::vector<Real> henryConstants();
+  std::vector<Real> henryConstants() const;
 
   /**
    * Partial density of dissolved CO2. From Garcia, Density of aqueous
@@ -238,7 +226,7 @@ public:
    * @param temperature fluid temperature (C)
    * @return partial molar density (kg/m^3)
    */
-  Real partialDensity(Real temperature);
+  Real partialDensity(Real temperature) const;
 
   /**
    * The derivative of CO2 viscosity with respect to density
@@ -247,7 +235,7 @@ public:
    * @param density CO2 density (kg/m^3)
    * @return derivative of CO2 viscosity wrt density
    */
-  Real dViscosity_dDensity(Real temperature, Real density);
+  Real dViscosity_dDensity(Real temperature, Real density) const;
 
 protected:
 /**

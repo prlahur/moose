@@ -29,31 +29,31 @@ CO2FluidProperties::~CO2FluidProperties()
 }
 
 Real
-CO2FluidProperties::molarMass()
+CO2FluidProperties::molarMass() const
 {
   return _Mco2; //kg/mol
 }
 
 Real
-CO2FluidProperties::criticalPressure()
+CO2FluidProperties::criticalPressure() const
 {
   return _critical_pressure;
 }
 
 Real
-CO2FluidProperties::criticalTemperature()
+CO2FluidProperties::criticalTemperature() const
 {
   return _critical_temperature;
 }
 
 Real
-CO2FluidProperties::criticalDensity()
+CO2FluidProperties::criticalDensity() const
 {
   return _critical_density;
 }
 
 Real
-CO2FluidProperties::meltingPressure(Real temperature)
+CO2FluidProperties::meltingPressure(Real temperature) const
 {
   if (temperature < _triple_point_temperature)
     mooseError("Temperature is below the triple point temperature in PorousFlowCO2PropertiesSW::meltingPressure");
@@ -69,7 +69,7 @@ CO2FluidProperties::meltingPressure(Real temperature)
 }
 
 Real
-CO2FluidProperties::sublimationPressure(Real temperature)
+CO2FluidProperties::sublimationPressure(Real temperature) const
 {
   if (temperature > _triple_point_temperature)
     mooseError("Temperature is above the triple point temperature in PorousFlowCO2PropertiesSW::sublimationPressure");
@@ -86,7 +86,7 @@ CO2FluidProperties::sublimationPressure(Real temperature)
 }
 
 Real
-CO2FluidProperties::vapourPressure(Real temperature)
+CO2FluidProperties::vapourPressure(Real temperature) const
 {
   if (temperature < _triple_point_temperature || temperature > _critical_temperature)
     mooseError("Temperature is out of range in PorousFlowCO2PropertiesSW::vapourPressure");
@@ -103,7 +103,7 @@ CO2FluidProperties::vapourPressure(Real temperature)
 }
 
 Real
-CO2FluidProperties::saturatedLiquidDensity(Real temperature)
+CO2FluidProperties::saturatedLiquidDensity(Real temperature) const
 {
   if (temperature < _triple_point_temperature || temperature > _critical_temperature)
     mooseError("Temperature is out of range in PorousFlowCO2PropertiesSW::saturatedLiquiDensity");
@@ -121,7 +121,7 @@ CO2FluidProperties::saturatedLiquidDensity(Real temperature)
 }
 
 Real
-CO2FluidProperties::saturatedVapourDensity(Real temperature)
+CO2FluidProperties::saturatedVapourDensity(Real temperature) const
 {
   if (temperature < _triple_point_temperature || temperature > _critical_temperature)
     mooseError("Temperature is out of range in PorousFlowCO2PropertiesSW::saturatedVapourDensity");
@@ -153,7 +153,7 @@ CO2FluidProperties::saturatedVapourDensity(Real temperature)
  *                       - delta tau d2phir_ddt)^2 / (tau^2 (d2phi0_dt2 + d2phir_dt2))
  */
 void
-CO2FluidProperties::eosSW(Real density, Real temperature, Real & pressure, Real & enthalpy, Real & internal_energy, Real & cv, bool all)
+CO2FluidProperties::eosSW(Real density, Real temperature, Real & pressure, Real & enthalpy, Real & internal_energy, Real & cv, bool all) const
 {
   /// Temperature in K
   Real tk = temperature + _t_c2k;
@@ -445,7 +445,7 @@ CO2FluidProperties::eosSW(Real density, Real temperature, Real & pressure, Real 
 }
 
 Real
-CO2FluidProperties::pressureEOS(Real density, Real temperature)
+CO2FluidProperties::pressureEOS(Real density, Real temperature) const
 {
   /// Check that the input parameters are within the region of validity
   if (temperature <= - _t_c2k || temperature > 1100.0 || density <= 0.0)
@@ -472,14 +472,14 @@ CO2FluidProperties::pressureEOS(Real density, Real temperature)
   return pressure;
 }
 
-Real
-CO2FluidProperties::pressureDifference(Real density, Real temperature, Real pressure)
-{
-  return pressureEOS(density, temperature) - pressure;
-}
+// Real
+// CO2FluidProperties::pressureDifference(Real density, Real temperature, Real pressure)
+// {
+//   return pressureEOS(density, temperature) - pressure;
+// }
 
 void
-CO2FluidProperties::eosSWProperties(Real pressure, Real temperature, Real & density, Real & enthalpy, Real & internal_energy, Real & cv)
+CO2FluidProperties::eosSWProperties(Real pressure, Real temperature, Real & density, Real & enthalpy, Real & internal_energy, Real & cv) const
 {
   /// Check that the pressure and temperature are within the valid range
   if (pressure <= 0.0)
@@ -494,15 +494,15 @@ CO2FluidProperties::eosSWProperties(Real pressure, Real temperature, Real & dens
     mooseError("Input pressure and temperature in PorousFlowCO2PropertiesSW::eosSWProperties correspond to solid CO2 phase");
 
   /// Determine a bracketing interval for the density used in the root finding algortihm
-  Real lower_density = 1.0;
+  Real lower_density = 900.0;
   Real upper_density = 1000.0;
 
   auto pressure_diff = [&] (Real x) {return pressureEOS(x, temperature) - pressure; };
+
   BrentsMethod::bracket(pressure_diff, lower_density, upper_density);
 
   /// Now find the density using Brent's method
-  Real eps = 1.0e-12;
-  //density = BrentsMethod::root(pressureDifference, lower_density, upper_density, temperature, pressure, eps);
+  density = BrentsMethod::root(pressure_diff, lower_density, upper_density, 1.e-12);
 
   /// Using this density, calculate all other properties
   eosSW(density, temperature, pressure, enthalpy, internal_energy, cv, true);
@@ -511,7 +511,10 @@ CO2FluidProperties::eosSWProperties(Real pressure, Real temperature, Real & dens
 Real
 CO2FluidProperties::rho(Real pressure, Real temperature) const
 {
-  return 0.0; ///FIXME
+  Real density, enthalpy, internal_energy, cv;
+  eosSWProperties(pressure, temperature, density, enthalpy, internal_energy, cv);
+
+  return density;
 }
 
 void
@@ -522,13 +525,7 @@ CO2FluidProperties::rho_dpT(Real pressure, Real temperature, Real & rho, Real & 
 }
 
 Real
-CO2FluidProperties::mu(Real /*pressure*/, Real temperature) const
-{
- return 0.; ///FIXME
-}
-
-Real
-CO2FluidProperties::viscosity(Real temperature, Real density)
+CO2FluidProperties::mu(Real density, Real temperature) const
 {
   Real tk = temperature + _t_c2k;
   Real tstar = tk / 251.196;
@@ -537,7 +534,7 @@ CO2FluidProperties::viscosity(Real temperature, Real density)
   unsigned int j[5] = {1, 1, 4, 1, 2};
   unsigned int i[5] = {1, 2, 6, 8, 8};
 
-  // Zero-denisty viscosity
+  // Zero-density viscosity
   Real sum = 0.0;
 
   for (unsigned int n = 0; n < 5; ++n)
@@ -560,7 +557,7 @@ CO2FluidProperties::viscosity(Real temperature, Real density)
 }
 
 Real
-CO2FluidProperties::partialDensity(Real temperature)
+CO2FluidProperties::partialDensity(Real temperature) const
 {
   Real t2 = temperature * temperature;
   Real t3 = t2 * temperature;
@@ -571,7 +568,7 @@ CO2FluidProperties::partialDensity(Real temperature)
 }
 
 Real
-CO2FluidProperties::dViscosity_dDensity(Real temperature, Real density)
+CO2FluidProperties::dViscosity_dDensity(Real temperature, Real density) const
 {
   Real tk = temperature + _t_c2k;
   Real tstar = tk / 251.196;
@@ -593,14 +590,9 @@ CO2FluidProperties::dViscosity_dDensity(Real temperature, Real density)
 }
 
 std::vector<Real>
-CO2FluidProperties::henryConstants()
+CO2FluidProperties::henryConstants() const
 {
-  std::vector<Real> co2henry;
-  co2henry.push_back(-8.55445);
-  co2henry.push_back(4.01195);
-  co2henry.push_back(9.52345);
-
-  return co2henry;
+  return {-8.55445, 4.01195, 9.52345};
 }
 
 void
