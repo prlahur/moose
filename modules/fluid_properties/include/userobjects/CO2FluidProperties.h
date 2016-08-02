@@ -35,7 +35,7 @@ public:
    * (assuming an ideal gas).
    *
    * @param pressure fluid pressure (Pa)
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @return density (kg/m^3)
    */
   virtual Real rho(Real pressure, Real temperature) const;
@@ -45,7 +45,7 @@ public:
    * derivatives wrt pressure and temperature (assuming an ideal gas).
    *
    * @param pressure fluid pressure (Pa)
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @param[out] rho density (kg/m^3)
    * @param[out] drho_dp derivative of density wrt pressure
    * @param[out] drho_dT derivative of density wrt temperature
@@ -57,7 +57,7 @@ public:
    * From Irvine Jr, T. F. and Liley, P. E. (1984) Steam and Gas Tables with
    * Computer Equations.
    *
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @return viscosity (Pa.s)
    */
   virtual Real mu(Real pressure, Real temperature) const;
@@ -69,7 +69,7 @@ public:
    * Computer Equations.
    *
    * @param pressure fluid pressure (Pa)
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @param[out] mu viscosity (Pa.s)
    * @param[out] dmu_dp derivative of viscosity wrt pressure
    * @param[out] dmu_dT derivative of viscosity wrt temperature
@@ -77,34 +77,47 @@ public:
   virtual void mu_dpT(Real pressure, Real temperature, Real & mu, Real & dmu_dp, Real & dmu_dT) const;
 
   /**
-   * CO2 molar mass.
+   * CO2 molar mass
    * @return molar mass (kg/mol)
    */
   Real molarMass() const;
 
   /**
-   * CO2 critical pressure.
+   * CO2 critical pressure
    * @return critical pressure (Pa)
    */
   Real criticalPressure() const;
 
   /**
-   * CO2 critical temperature.
-   * @return critical temperature (C)
+   * CO2 critical temperature
+   * @return critical temperature (K)
    */
   Real criticalTemperature() const;
 
   /**
-   * CO2 critical density.
+   * CO2 critical density
    * @return critical density (kg/m^3)
    */
   Real criticalDensity() const;
 
   /**
+   * CO2 triple point pressure
+   * @return triple point pressure (Pa)
+   */
+  Real triplePointPressure() const;
+
+  /**
+   * CO2 triple point temperature
+   * @return triple point temperature (K)
+   */
+  Real triplePointTemperature() const;
+
+
+  /**
    * Span and Wagner Equation Of State for CO2 (reference at top of header)
    *
    * @param density CO2 density (kg/m^3)
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @param[out] pressure (Pa)
    * @param[out] enthalpy (kJ/kg)
    * @param[out] internal energy (kJ/kg)
@@ -120,7 +133,7 @@ public:
    *
    * Eq. 3.10, from Span and Wagner (reference at top of header)
    *
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @return melting pressure (Pa)
    */
   Real meltingPressure(Real temperature) const;
@@ -132,7 +145,7 @@ public:
    *
    * Eq. 3.12, from Span and Wagner (reference at top of header)
    *
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @return sublimation pressure (Pa)
    */
   Real sublimationPressure(Real temperature) const;
@@ -144,7 +157,7 @@ public:
    *
    * Eq. 3.13, from Span and Wagner (reference at top of header)
    *
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @return vapour pressure (Pa)
    */
   Real vapourPressure(Real temperature) const;
@@ -155,7 +168,7 @@ public:
    *
    * Eq. 3.14, from Span and Wagner (reference at top of header)
    *
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @return saturated liquid density (kg/m^3)
    */
   Real saturatedLiquidDensity(Real temperature) const;
@@ -166,7 +179,7 @@ public:
    *
    * Eq. 3.15, from Span and Wagner (reference at top of header)
    *
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @return saturated vapour density (kg/m^3)
    */
   Real saturatedVapourDensity(Real temperature) const;
@@ -176,21 +189,10 @@ public:
    * Span and Wagner EOS.
    *
    * @param density CO2 density (kg/m^3)
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @return CO2 pressure (Pa)
    */
   Real pressureEOS(Real density, Real temperature) const;
-
-  /**
-   * Function used in root-finding that provides the difference in specified
-   * pressure and pressure calculated by the Span and Wagner EOS.
-   *
-   * @param density CO2 density (kg)
-   * @param temperature CO2 temperature (C)
-   * @param pressure specified CO2 pressure (Pa)
-   * @return difference in pressure between input pressure and calculated pressure at input density (Pa)
-   */
-//  Real pressureDifference(Real density, Real temperature, Real pressure) const;
 
   /**
    * Calculate density, enthalpy and internal energy of CO2 for a given pressure and
@@ -201,7 +203,7 @@ public:
    * Valid for 0 K < temperature < 1100 K, P > 0 Pa
    *
    * @param pressure CO2 pressure (Pa)
-   * @param temperature CO2 temperature (C)
+   * @param temperature CO2 temperature (K)
    * @param[out] density (kg/m^3)
    * @param[out] enthalpy (kJ/kg)
    * @param[out] internal energy (kJ/kg)
@@ -223,7 +225,7 @@ public:
    * Partial density of dissolved CO2. From Garcia, Density of aqueous
    * solutions of CO2, LBNL-49023 (2001).
    *
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @return partial molar density (kg/m^3)
    */
   Real partialDensity(Real temperature) const;
@@ -231,7 +233,7 @@ public:
   /**
    * The derivative of CO2 viscosity with respect to density
    *
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @param density CO2 density (kg/m^3)
    * @return derivative of CO2 viscosity wrt density
    */
@@ -247,19 +249,19 @@ protected:
  */
 
 /// Conversion of temperature from Celcius to Kelvin
-const Real _t_c2k = 273.15;
+const Real _T_c2k = 273.15;
 /// Molar mass of CO2
 const Real _Mco2 = 44.0e-3;
 /// Critical pressure (Pa)
 const Real _critical_pressure = 7.3773e6;
 /// Critical temperature (C)
-const Real _critical_temperature = 30.9782;
+const Real _critical_temperature = 304.1282;
 /// Critical density (kg/m^3)
 const Real _critical_density = 467.6;
 /// Triple point pressure (Pa)
 const Real _triple_point_pressure = 0.51795e6;
 /// Triple point temperature (C)
-const Real _triple_point_temperature = -56.558;
+const Real _triple_point_temperature = 216.592;
 /// Universal gas constant (J/mol/K)
 const Real _R = 8.31451;
 };
