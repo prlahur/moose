@@ -12,7 +12,7 @@
 
 #include "FluidPropertiesMaterial.h"
 #include "FluidPropertiesMaterialPT.h"
-#include "CO2FluidPropertiesMaterial.h"
+#include "CO2FluidPropertiesTestMaterial.h"
 
 #include "IdealGasFluidProperties.h"
 #include "StiffenedGasFluidProperties.h"
@@ -69,7 +69,7 @@ FluidPropertiesApp::registerObjects(Factory & factory)
 {
   registerMaterial(FluidPropertiesMaterial);
   registerMaterial(FluidPropertiesMaterialPT);
-  registerMaterial(CO2FluidPropertiesMaterial);
+  registerMaterial(CO2FluidPropertiesTestMaterial);
 
   registerUserObject(IdealGasFluidProperties);
   registerUserObject(StiffenedGasFluidProperties);

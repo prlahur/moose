@@ -1,0 +1,22 @@
+[Tests]
+  [./melting]
+    type = CSVDiff
+    input = 'melting.i'
+    csvdiff = 'melting_out.csv'
+  [../]
+  [./sublimation]
+    type = CSVDiff
+    input = 'sublimation.i'
+    csvdiff = 'sublimation_out.csv'
+  [../]
+  [./vapour]
+    type = CSVDiff
+    input = 'vapour.i'
+    csvdiff = 'vapour_out.csv'
+  [../]
+  [./partial_density]
+    type = CSVDiff
+    input = 'partial_density.i'
+    csvdiff = 'partial_density_out.csv'
+  [../]
+[]

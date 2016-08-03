@@ -8,7 +8,7 @@
 #ifndef CO2FLUIDPROPERTIES_H
 #define CO2FLUIDPROPERTIES_H
 
-#include "SinglePhaseFluidProperties.h"
+#include "SinglePhaseFluidPropertiesPT.h"
 
 class CO2FluidProperties;
 
@@ -22,8 +22,7 @@ InputParameters validParams<CO2FluidProperties>();
  * R. Span and W. Wagner, J. Phys. Chem. Ref. Data, volume 25, no. 6, 1996,
  * pp. 1509-1596
  */
-//class CO2FluidProperties : public SinglePhaseFluidProperties
-class CO2FluidProperties : public FluidProperties
+class CO2FluidProperties : public SinglePhaseFluidPropertiesPT
 
 {
 public:
@@ -38,7 +37,7 @@ public:
    * @param temperature fluid temperature (K)
    * @return density (kg/m^3)
    */
-  virtual Real rho(Real pressure, Real temperature) const;
+  virtual Real rho(Real pressure, Real temperature) const override;
 
   /**
    * CO2 gas density as a function of pressure and temperature, and
@@ -50,31 +49,35 @@ public:
    * @param[out] drho_dp derivative of density wrt pressure
    * @param[out] drho_dT derivative of density wrt temperature
    */
-  virtual void rho_dpT(Real pressure, Real temperature, Real & rho, Real & drho_dp, Real & drho_dT) const;
+  virtual void rho_dpT(Real pressure, Real temperature, Real & rho, Real & drho_dp, Real & drho_dT) const override;
 
   /**
-   * CO2 gas viscosity as a function of temperature.
-   * From Irvine Jr, T. F. and Liley, P. E. (1984) Steam and Gas Tables with
-   * Computer Equations.
+   * CO2 viscosity as a function of  density and temperature.
+   * From Fenghour et al., The viscosity of carbon dioxide, J. Phys. Chem. Ref.
+   * Data, 27, 31-44 (1998)
+   * Note: critical enhancement not included
+   * Valid for 217 K < T < 1000K and rho < 1400 kg/m^3
    *
+   * @param density fluid density (kg/m^3)
    * @param temperature fluid temperature (K)
    * @return viscosity (Pa.s)
    */
-  virtual Real mu(Real pressure, Real temperature) const;
+  virtual Real mu(Real density, Real temperature) const override;
 
   /**
-   * CO2 gas viscosity as a function of temperature, and derivative as a
-   * function of temperature.
-   * From Irvine Jr, T. F. and Liley, P. E. (1984) Steam and Gas Tables with
-   * Computer Equations.
+   * CO2 viscosity as a function of  density and temperature.
+   * From Fenghour et al., The viscosity of carbon dioxide, J. Phys. Chem. Ref.
+   * Data, 27, 31-44 (1998)
+   * Note: critical enhancement not included
+   * Valid for 217 K < T < 1000K and rho < 1400 kg/m^3
    *
-   * @param pressure fluid pressure (Pa)
+   * @param density fluid density (kg/m^3)
    * @param temperature fluid temperature (K)
    * @param[out] mu viscosity (Pa.s)
-   * @param[out] dmu_dp derivative of viscosity wrt pressure
+   * @param[out] dmu_drho derivative of viscosity wrt density
    * @param[out] dmu_dT derivative of viscosity wrt temperature
    */
-  virtual void mu_dpT(Real pressure, Real temperature, Real & mu, Real & dmu_dp, Real & dmu_dT) const;
+  virtual void mu_drhoT(Real density, Real temperature, Real & mu, Real & dmu_drho, Real & dmu_dT) const override;
 
   /**
    * CO2 molar mass
@@ -111,7 +114,6 @@ public:
    * @return triple point temperature (K)
    */
   Real triplePointTemperature() const;
-
 
   /**
    * Span and Wagner Equation Of State for CO2 (reference at top of header)
@@ -230,14 +232,28 @@ public:
    */
   Real partialDensity(Real temperature) const;
 
-  /**
-   * The derivative of CO2 viscosity with respect to density
-   *
-   * @param temperature fluid temperature (K)
-   * @param density CO2 density (kg/m^3)
-   * @return derivative of CO2 viscosity wrt density
-   */
-  Real dViscosity_dDensity(Real temperature, Real density) const;
+  /// Internal energy from pressure and temperature (kJ/kg)
+  virtual Real e(Real pressure, Real temperature) const override;
+  /// Internal energy and its derivatives wrt pressure and temperature
+  virtual void e_dpT(Real pressure, Real temperature, Real & e, Real & de_dp, Real & de_dT) const override;
+  /// Density and internal energy from pressure and temperature and derivatives wrt pressure and temperature
+  virtual void rho_e_dpT(Real pressure, Real temperature, Real & rho, Real & drho_dp, Real & drho_dT, Real & e, Real & de_dp, Real & de_dT) const override;
+  /// Speed of sound (m/s)
+  virtual Real c(Real pressure, Real temperature) const override;
+  /// Isobaric specific heat capacity (kJ/kg/K)
+  virtual Real cp(Real pressure, Real temperature) const override;
+  /// Isochoric specific heat capacity (kJ/kg/K)
+  virtual Real cv(Real pressure, Real temperature) const override;
+  /// Thermal conductivity (W/m/K)
+  virtual Real k(Real pressure, Real temperature) const override;
+  /// Specific entropy (kJ/kg/K)
+  virtual Real s(Real pressure, Real temperature) const override;
+  /// Specific enthalpy (kJ/kg)
+  virtual Real h(Real p, Real T) const override;
+  /// Specific enthalpy and its derivatives
+  virtual void h_dpT(Real pressure, Real temperature, Real & h, Real & dh_dp, Real & dh_dT) const override;
+  /// Thermal expansion coefficient (-)
+  virtual Real beta(Real pressure, Real temperature) const override;
 
 protected:
 /**
@@ -248,19 +264,17 @@ protected:
  * pp. 1509-1596
  */
 
-/// Conversion of temperature from Celcius to Kelvin
-const Real _T_c2k = 273.15;
-/// Molar mass of CO2
+/// Molar mass of CO2 (kg/mol)
 const Real _Mco2 = 44.0e-3;
 /// Critical pressure (Pa)
 const Real _critical_pressure = 7.3773e6;
-/// Critical temperature (C)
+/// Critical temperature (K)
 const Real _critical_temperature = 304.1282;
 /// Critical density (kg/m^3)
 const Real _critical_density = 467.6;
 /// Triple point pressure (Pa)
 const Real _triple_point_pressure = 0.51795e6;
-/// Triple point temperature (C)
+/// Triple point temperature (K)
 const Real _triple_point_temperature = 216.592;
 /// Universal gas constant (J/mol/K)
 const Real _R = 8.31451;
