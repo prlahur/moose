@@ -19,4 +19,9 @@
     input = 'partial_density.i'
     csvdiff = 'partial_density_out.csv'
   [../]
+  [./co2]
+    type = CSVDiff
+    input = 'co2.i'
+    csvdiff = 'co2_out.csv'
+  [../] 
 []
