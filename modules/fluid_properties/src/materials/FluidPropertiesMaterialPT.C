@@ -45,7 +45,7 @@ void
 FluidPropertiesMaterialPT::computeQpProperties()
 {
   _rho[_qp] = _fp.rho(_pressure[_qp], _temperature[_qp]);
-  _mu[_qp] = _fp.mu(_pressure[_qp], _temperature[_qp]);
+  _mu[_qp] = _fp.mu(_rho[_qp], _temperature[_qp]);
   _cp[_qp] = _fp.cp(_pressure[_qp], _temperature[_qp]);
   _cv[_qp] = _fp.cv(_pressure[_qp], _temperature[_qp]);
   _k[_qp] = _fp.k(_pressure[_qp], _temperature[_qp]);
