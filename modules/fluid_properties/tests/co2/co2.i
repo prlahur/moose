@@ -1,6 +1,44 @@
 # Test thermophysical property calculations in CO2FluidProperties
 #
-
+# Comparison with values from Span and Wagner, "A New Equation of State for
+# Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature
+# to 1100K at Pressures up to 800 MPa", J. Phys. Chem. Ref. Data, 25 (1996)
+#
+# Viscosity values from Fenghour et al., "The viscosity of carbon dioxide",
+# J. Phys. Chem. Ref. Data, 27, 31-44 (1998)
+#
+# Thermal conductivity from Scalabrin et al., A Reference Multiparameter Thermal
+# Conductivity Equation for Carbon Dioxide with an Optimized Functional Form,
+# J. Phys. Chem. Ref. Data 35 (2006)
+#
+#  --------------------------------------------------------------
+#  Pressure (Mpa)             |   1       |    1      |   1
+#  Temperature (K)            |  280      |  360      |  500
+#  --------------------------------------------------------------
+#  Expected values
+#  --------------------------------------------------------------
+#  Density (kg/m^3)           |  20.199   |  15.105   |  10.664
+#  Internal energy (kJ/kg/K)  |  -75.892  |  -18.406  |  91.829
+#  Enthalpy (kJ/kg)           |  -26.385  |  47.797   |  185.60
+#  Entropy (kJ/kg/K)          |  -0.51326 |  -0.28033 |  0.04225
+#  cv (kJ/kg/K)               |  0.67092  |  0.72664  |  0.82823
+#  cp (kJ/kg/K)               |  0.92518  |  0.94206  |  1.0273
+#  Speed of sound (m/s)       |  252.33   |  289.00   |  339.81
+#  Viscosity (1e-6Pa.s)       |  14.15    |  17.94    |  24.06
+#  Thermal cond. (mW/m/K)     |  15.71    |  22.12    |  33.55
+#  --------------------------------------------------------------
+#  Calculated values
+#  --------------------------------------------------------------
+#  Density (kg/m^3)           |  20.199   |  15.105   |  10.664
+#  Internal energy (kJ/kg/K)  |  -75.892  |  -18.406  |  91.829
+#  Enthalpy (kJ/kg)           |  -26.385  |  47.797   |  185.60
+#  Entropy (kJ/kg/K)          |  -0.51326 |  -0.28033 |  0.04225
+#  cv (kJ/kg/K)               |  0.67092  |  0.72664  |  0.82823
+#  cp (kJ/kg/K)               |  0.92399  |  0.94170  |  1.0272
+#  Speed of sound (m/s)       |  252.76   |  289.19   |  339.88
+#  Viscosity (1e-6 Pa.s)      |  14.15    |  17.94    |  24.06
+#  Thermal cond. (mW/m/K)     |  15.72    |  21.92    |  33.47
+#  --------------------------------------------------------------
 
 [Mesh]
   type = GeneratedMesh
@@ -53,12 +91,24 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
+  [./cp]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./c]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./k]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
 []
 
 [Functions]
   [./tic]
     type = ParsedFunction
-    value = if(x<1,280,if(x<2,350,500))
+    value = if(x<1,280,if(x<2,360,500))
   [../]
 []
 
@@ -92,6 +142,21 @@
     type = MaterialRealAux
      variable = cv
      property = cv
+  [../]
+  [./cp]
+    type = MaterialRealAux
+     variable = cp
+     property = cp
+  [../]
+  [./c]
+    type = MaterialRealAux
+     variable = c
+     property = c
+  [../]
+  [./k]
+    type = MaterialRealAux
+     variable = k
+     property = k
   [../]
 []
 
@@ -214,6 +279,51 @@
     type = ElementalVariableValue
     elementid = 2
     variable = cv
+  [../]
+  [./cp0]
+    type = ElementalVariableValue
+    elementid = 0
+    variable = cp
+  [../]
+  [./cp1]
+    type = ElementalVariableValue
+    elementid = 1
+    variable = cp
+  [../]
+  [./cp2]
+    type = ElementalVariableValue
+    elementid = 2
+    variable = cp
+  [../]
+  [./c0]
+    type = ElementalVariableValue
+    elementid = 0
+    variable = c
+  [../]
+  [./c1]
+    type = ElementalVariableValue
+    elementid = 1
+    variable = c
+  [../]
+  [./c2]
+    type = ElementalVariableValue
+    elementid = 2
+    variable = c
+  [../]
+  [./k0]
+    type = ElementalVariableValue
+    elementid = 0
+    variable = k
+  [../]
+  [./k1]
+    type = ElementalVariableValue
+    elementid = 1
+    variable = k
+  [../]
+  [./k2]
+    type = ElementalVariableValue
+    elementid = 2
+    variable = k
   [../]
 []
 

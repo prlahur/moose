@@ -14,7 +14,7 @@
 # Results calculated by CO2FluidProperties are
 # -------------------------------------------------
 # Temperature (K)   |  373.15  |  473.35  |  573.15
-# Density (kg/m^3)  |  1216.8  |  892.4   |  596.2
+# Density (kg/m^3)  |  1217.1  |  892.6   |  596.4
 # -------------------------------------------------
 #
 # These results are within the expected accuracy

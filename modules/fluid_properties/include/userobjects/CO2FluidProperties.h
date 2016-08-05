@@ -273,6 +273,15 @@ public:
   Real d2phiSW_dt2(Real delta, Real tau) const;
 
   /**
+   * Second derivative of Helmholtz free energy wrt delta and tau
+   *
+   * @param delta scaled density (-)
+   * @param tau scaled temperature (-)
+   * @return second derivative of Helmholtz free energy wrt delta and tau
+   */
+  Real d2phiSW_ddt(Real delta, Real tau) const;
+
+  /**
    * Henry's law constant coefficients for dissolution of CO2 into water
    * From Guidelines on the Henry's constant and vapour
    * liquid distribution constant for gases in H20 and D20 at high
@@ -326,14 +335,15 @@ public:
   virtual Real cv(Real pressure, Real temperature) const override;
   /**
    * Thermal conductivity
-   * From Vesovic et al., The transport properties of carbon dioxide, J. Phys.
-   * Chem. Ref. Data 19 (1990)
+   * From Scalabrin et al., A Reference Multiparameter Thermal Conductivity
+   * Equation for Carbon Dioxide with an Optimized Functional Form, J. Phys.
+   * Chem. Ref. Data 35 (2006)
    *
-   * @param pressure CO2 pressure (Pa)
+   * @param density CO2 density (kg/m^3)
    * @param temperature CO2 temperature (K)
    * @return thermal conductivity (W/m/K)
    */
-  virtual Real k(Real pressure, Real temperature) const override;
+  virtual Real k(Real density, Real temperature) const override;
   /**
    * Specific entropy
    * From Span and Wagner (reference above)
@@ -366,7 +376,7 @@ protected:
    */
 
   /// Molar mass of CO2 (kg/mol)
-  const Real _Mco2 = 44.0e-3;
+  const Real _Mco2 = 44.0098e-3;
   /// Critical pressure (Pa)
   const Real _critical_pressure = 7.3773e6;
   /// Critical temperature (K)
@@ -377,8 +387,8 @@ protected:
   const Real _triple_point_pressure = 0.51795e6;
   /// Triple point temperature (K)
   const Real _triple_point_temperature = 216.592;
-  /// Universal gas constant (J/mol/K)
-  const Real _R = 8.31451;
+  /// Specific gas constant (J/mol/K)
+  const Real _Rco2 = 188.9241;
 
   /// Coefficients for the ideal gas component of the Helmholtz free energy
   std::vector<Real> _a0 {1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678};
