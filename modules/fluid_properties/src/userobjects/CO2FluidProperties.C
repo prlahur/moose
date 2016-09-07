@@ -12,7 +12,7 @@ template<>
 InputParameters validParams<CO2FluidProperties>()
 {
   InputParameters params = validParams<SinglePhaseFluidPropertiesPT>();
-  params.addClassDescription("Fluid properties for carbon dioxide (CO2)");
+  params.addClassDescription("Fluid properties for carbon dioxide (CO2) using the Span & Wagner EOS");
   return params;
 }
 
@@ -127,76 +127,6 @@ CO2FluidProperties::saturatedVapourDensity(Real temperature) const
     * std::pow(1.0 - Tstar, 7.0 / 3.0) - 29.742252 * std::pow(1.0 - Tstar, 14.0 / 3.0));
 
   return _critical_density * std::exp(logdensity);
-}
-
-/**
- * The eosSW function calculates the thermophysical properties of CO2 using a Helmholtz
- * formulation. Each of the properties is given by the free energy phi = phi0 + phir,
- * and their derivatives wrt tau (T_c/T) and delta (rho/rho_c)
- * The relations for the properties are:
- * Pressure: p = rho R T (1 + delta * dphir_dd)
- * Internal energy: u = R T tau (dphi0_dt + dphir_dt)
- * Enthalpy: h = R T (1 + tau (dphi0_dt + dphir_dt) + delta * dphir_dd)
- * Isochoric heat capacity: cv = - R tau^2 (d2phi0_dt2 + d2phir_dt2)
- * Isobaric heat capacity: cp = R (- tau^2 (d2phi0_dt2 + d2phir_dt2) + (1 + delta dphir_dd - delta tau d2phir_ddt)^2
- *                              / (1 + 2 delta dphir_dd + delta^2 d2phir_dd2)
- * Speed of sound: s^2 = R T (1 + 2 delta dphir_dd + delta^2 d2phir_dd2)   - (1 + delta dphir_dd
- *                       - delta tau d2phir_ddt)^2 / (tau^2 (d2phi0_dt2 + d2phir_dt2))
- */
-void
-CO2FluidProperties::eosSW(Real density, Real temperature, Real & pressure, Real & enthalpy, Real & internal_energy, Real & cv, bool all) const
-{
-  // Check the validity of the inputs
-  if (temperature < 216.0 || temperature > 1100.0 || density <= 0.0)
-   mooseError("Temperature or density out of range in CO2FLuidProperties::eosSW");
-
-  // Scale the input density and temperature
-  Real delta = density / _critical_density;
-  Real tau = _critical_temperature / temperature;
-
-  // Local variables used in the calculation
-  Real Psi, sum, theta, Delta, Psi_dt, Delta_dt;
-
-  /**
-   * When the boolean flag 'all' is false, only the pressure is calculated. This is
-   * used when iteratively calculating the density for a given pressure and temperature.
-   * Therefore, only the terms required to calculate the pressure are calculated when the
-   * flag is false.
-   *
-   */
-
-  Real dphir_dd = dphiSW_dd(delta, tau);
-
-  /// pressure
-  pressure = _Rco2 * temperature * density * (1.0 + delta * dphir_dd);
-
-  /// Calculate all other properties if 'all' is true
-  if (all)
-  {
-    /**
-     * To calculate all of the other properties, we need to first compute
-     * all of the remaining derivatives of the Helmholtz free energy wrt tau and delta
-     * (noting that we have already calculated dphir_dd).
-     *
-     * To begin, calculate the derivatives of the ideal part of the free energy psi0
-     */
-
-
-   /// Isobaric heat capacity: cp = R (- tau^2 (d2phi0_dt2 + d2phir_dt2) + (1 + delta dphir_dd - delta tau d2phir_ddt)^2
-   ///                             / (1 + 2 delta dphir_dd + delta^2 d2phir_dd2)
-
-
-  /**
-   * Compute the enthalpy, internal energy, isochoric and isobaric heat capacities, and the
-   * speed of sound.
-   * Note: the reference state for the enthalpy is 298.15 K and 0.101325 MPa.
-   * Note: divide by 1000 to get kJ
-   */
-   //enthalpy = _R * temperature / _Mco2 * (tau * (dphi0_dt + dphir_dt) + 1.0 + delta * dphir_dd) / 1000.0;
-   //internal_energy = _R * temperature / _Mco2 * tau * (dphi0_dt + dphir_dt) / 1000.0;
-   //cv = - _R * tau * tau * (d2phi0_dt2 + d2phir_dt2);
-
-  }
 }
 
 Real
@@ -376,7 +306,7 @@ CO2FluidProperties::d2phiSW_dt2(Real delta, Real tau) const
 
   Real d2phi0dt2 = - 2.5 / tau / tau - sum0;
 
-  /// Second derivative of the residual component wrt tau
+  // Second derivative of the residual component wrt tau
   Real d2phirdt2 = 0.0;
   Real theta, Delta, Psi, dPsi_dt, dDelta_dt, d2Delta_dt2, d2Psi_dt2;
 
@@ -454,7 +384,6 @@ CO2FluidProperties::d2phiSW_ddt(Real delta, Real tau) const
   return d2phirddt;
 }
 
-
 Real
 CO2FluidProperties::pressureSW(Real density, Real temperature) const
 {
@@ -490,31 +419,18 @@ CO2FluidProperties::pressure(Real density, Real temperature) const
   return pressure;
 }
 
-void
-CO2FluidProperties::eosSWProperties(Real pressure, Real temperature, Real & density, Real & enthalpy, Real & internal_energy, Real & cv) const
-{
-  // Check that the pressure and temperature are within the valid range
-  if (pressure <= 0.0)
-    mooseError("Input pressure in CO2FLuidProperties::eosSWProperties must be greater than 0");
-
-  if (temperature < 216.0 || temperature > 1100.0)
-    mooseError("Input temperature in CO2FLuidProperties::eosSWProperties must be between (216 K < temperature < 1100 K)");
-
-  // Check that the pressure and temperature are not in the solid phase region
-  if(((temperature > _triple_point_temperature) && (pressure > meltingPressure(temperature)))
-  || ((temperature < _triple_point_temperature) && (pressure > sublimationPressure(temperature))))
-    mooseError("Input pressure and temperature in CO2FLuidProperties::eosSWProperties correspond to solid CO2 phase");
-
-  // The density for the given pressure and temperature
-  density = rho(pressure, temperature);
-
-  // Using this density, calculate all other properties without iteration
-  eosSW(density, temperature, pressure, enthalpy, internal_energy, cv, true);
-}
-
 Real
 CO2FluidProperties::rho(Real pressure, Real temperature) const
 {
+  // Check that the input parameters are within the region of validity
+  if (temperature < 216.0 || temperature > 1100.0 || pressure <= 0.0)
+    mooseError("Parameters out of range in CO2FLuidProperties::rho");
+
+  // Also check that the pressure and temperature are not in the solid phase region
+  if(((temperature > _triple_point_temperature) && (pressure > meltingPressure(temperature)))
+  || ((temperature < _triple_point_temperature) && (pressure > sublimationPressure(temperature))))
+    mooseError("Input pressure and temperature in CO2FLuidProperties::rho correspond to solid CO2 phase");
+
   Real density;
   // Initial estimate of a bracketing interval for the density
   Real lower_density = 100.0;
@@ -534,7 +450,14 @@ CO2FluidProperties::rho(Real pressure, Real temperature) const
 void
 CO2FluidProperties::rho_dpT(Real pressure, Real temperature, Real & rho, Real & drho_dp, Real & drho_dT) const
 {
-  ///FIXME
+  rho = this->rho(pressure, temperature);
+  // Scale the density and temperature
+  Real delta = rho / _critical_density;
+  Real tau = _critical_temperature / temperature;
+  Real dpdd = dphiSW_dd(delta, tau);
+
+  drho_dp = 1.0 / (_Rco2 * temperature * delta * (2.0 * dpdd + delta * d2phiSW_dd2(delta, tau)));
+  drho_dT = pressure * (tau * d2phiSW_ddt(delta, tau) - dpdd) / (temperature * dpdd);
 }
 
 Real

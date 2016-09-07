@@ -21,6 +21,10 @@ InputParameters validParams<CO2FluidProperties>();
  * Span and Wagner, "A New Equation of State for Carbon Dioxide Covering the Fluid Region
  * from the Triple-Point Temperature to 1100K at Pressures up to 800 MPa",
  * J. Phys. Chem. Ref. Data, 25 (1996)
+ *
+ * Note: the Span and Wagner EOS uses density and temperature as the primary variables. As
+ * a result, density must first be found using iteration, after which the other properties
+ * can be calculated directly.
  */
 class CO2FluidProperties : public SinglePhaseFluidPropertiesPT
 
@@ -118,19 +122,6 @@ public:
   Real triplePointTemperature() const;
 
   /**
-   * Span and Wagner Equation Of State for CO2 (reference above)
-   *
-   * @param density CO2 density (kg/m^3)
-   * @param temperature CO2 temperature (K)
-   * @param[out] pressure (Pa)
-   * @param[out] enthalpy (kJ/kg)
-   * @param[out] internal energy (kJ/kg)
-   * @param[out] isochoric heat capacity (kJ/kg)
-   * @param all if false, only calculate presure, otherwise calculate all properties
-   */
-  void eosSW(Real density, Real temperature, Real & pressure, Real & enthalpy, Real & internal_energy, Real & cv, bool all) const;
-
-  /**
    * Melting pressure. Used to delineate solid and liquid phases
    * Valid for temperatures greater than the triple point temperature
    *
@@ -208,23 +199,6 @@ public:
    * @return CO2 pressure (Pa)
    */
   Real pressureSW(Real density, Real temperature) const;
-
-  /**
-   * Calculate density, enthalpy and internal energy of CO2 for a given pressure and
-   * temperature using the Span and Wagner EOS (see documentation for eosSW()).
-   * Uses Brent's method to determine density, then uses that density to calculate
-   * enthalpy and internal energy.
-   *
-   * Valid for 0 K < temperature < 1100 K, P > 0 Pa
-   *
-   * @param pressure CO2 pressure (Pa)
-   * @param temperature CO2 temperature (K)
-   * @param[out] density (kg/m^3)
-   * @param[out] enthalpy (kJ/kg)
-   * @param[out] internal energy (kJ/kg)
-   * @param[out] isochoric heat capacity (kJ/kg)
-   */
-  void eosSWProperties(Real pressure, Real temperature, Real & density, Real & enthalpy, Real & internal_energy, Real & cv) const;
 
   /**
    * Helmholtz free energy for CO2
