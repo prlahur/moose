@@ -53,6 +53,7 @@
 #include "PorousFlowEnthalpy.h"
 #include "PorousFlowDiffusionCoeffConst.h"
 #include "PorousFlowSingleComponentFluid.h"
+#include "PorousFlowFluidStateWaterNCG.h"
 
 // Kernels
 #include "PorousFlowAdvectiveFlux.h"
@@ -165,6 +166,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowEnthalpy);
   registerMaterial(PorousFlowDiffusionCoeffConst);
   registerMaterial(PorousFlowSingleComponentFluid);
+  registerMaterial(PorousFlowFluidStateWaterNCG);
 
   // Kernels
   registerKernel(PorousFlowAdvectiveFlux);
