@@ -46,12 +46,12 @@
     family = MONOMIAL
   [../]
   [./x0_water]
-    order = FIRST
-    family = LAGRANGE
+    order = CONSTANT
+    family = MONOMIAL
   [../]
   [./x0_gas]
-    order = FIRST
-    family = LAGRANGE
+    order = CONSTANT
+    family = MONOMIAL
   [../]
   [./x1_water]
     order = CONSTANT
@@ -158,6 +158,22 @@
     property = mass_fraction
     phase = 1
     fluid_component = 1
+    execute_on = timestep_end
+  [../]
+  [./x0_water]
+    type = PorousFlowPropertyAux
+    variable = x0_water
+    property = mass_fraction
+    phase = 0
+    fluid_component = 0
+    execute_on = timestep_end
+  [../]
+  [./x0_gas]
+    type = PorousFlowPropertyAux
+    variable = x0_gas
+    property = mass_fraction
+    phase = 1
+    fluid_component = 0
     execute_on = timestep_end
   [../]
   #[./enthalpy_water]
@@ -269,42 +285,6 @@
   #  type = PorousFlowMassFraction
   #  mass_fraction_vars = 'x0_water x0_gas'
   #[../]
-  [./dens0]
-    type = PorousFlowDensityConstBulk
-    density_P0 = 1000
-    bulk_modulus = 1e9
-    phase = 0
-  [../]
-  [./dens1]
-    type = PorousFlowDensityConstBulk
-    density_P0 = 20
-    bulk_modulus = 1e9
-    phase = 1
-  [../]
-  #[./dens_all]
-  #  type = PorousFlowJoiner
-  #  include_old = true
-  #  material_property = PorousFlow_fluid_phase_density
-  #[../]
-  [./dens_qp_all]
-    type = PorousFlowJoiner
-    material_property = PorousFlow_fluid_phase_density_qp
-    at_qps = true
-  [../]
-  [./visc0]
-    type = PorousFlowViscosityConst
-    viscosity = 1e-3
-    phase = 0
-  [../]
-  [./visc1]
-    type = PorousFlowViscosityConst
-    viscosity = 1e-4
-    phase = 1
-  [../]
-  #[./visc_all]
-  #  type = PorousFlowJoiner
-  #  material_property = PorousFlow_viscosity
-  #[../]
   [./permeability]
     type = PorousFlowPermeabilityConst
     permeability = '1e-12 0 0 0 1e-12 0 0 0 1e-12'
@@ -327,11 +307,11 @@
     type = PorousFlowPorosityConst
     porosity = 0.1
   [../]
-  #[./rock_heat]
-  #  type = PorousFlowMatrixInternalEnergy
-  #  specific_heat_capacity = 1.0
-  #  density = 125
-  #[../]
+  [./rock_heat]
+    type = PorousFlowMatrixInternalEnergy
+    specific_heat_capacity = 1.0
+    density = 125
+  [../]
   #[./fluid_energy0]
   #  type = PorousFlowInternalEnergyIdeal
   #  specific_heat_capacity = 2

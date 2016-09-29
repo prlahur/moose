@@ -46,18 +46,39 @@ PorousFlowFluidStateWaterNCG::PorousFlowFluidStateWaterNCG(const InputParameters
 void
 PorousFlowFluidStateWaterNCG::initQpStatefulProperties()
 {
+  // Set the size of all the vectors
   _fluid_viscosity_nodal[_qp].resize(_num_phases);
   _fluid_density_nodal[_qp].resize(_num_phases);
+  _fluid_density_qp[_qp].resize(_num_phases);
+
   _mass_frac[_qp].resize(_num_phases);
 
   for (unsigned int ph = 0; ph < _num_phases; ++ph)
     _mass_frac[_qp][ph].resize(_num_components);
+
+  // Set the size of the derivatives wrt PorousFlow variables
+  _dfluid_density_nodal_dvar[_qp].resize(_num_phases);
+  _dfluid_density_qp_dvar[_qp].resize(_num_phases);
+  _dfluid_viscosity_nodal_dvar[_qp].resize(_num_phases);
+
+  for (unsigned int ph = 0; ph < _num_phases; ++ph)
+  {
+    _dfluid_density_nodal_dvar[_qp][ph].resize(_num_var);
+    _dfluid_density_qp_dvar[_qp][ph].resize(_num_var);
+    _dfluid_viscosity_nodal_dvar[_qp][ph].resize(_num_var);
+  }
 }
 
 void
 PorousFlowFluidStateWaterNCG::computeQpProperties()
 {
+  // Properties at the nodes
   thermophysicalProperties(_porepressure_nodal[_qp], _temperature_nodal[_qp], _fluid_density_nodal[_qp], _fluid_viscosity_nodal[_qp], _mass_frac[_qp]);
+
+  // Properties at the qps
+  std::vector<Real> mu_qp = _fluid_viscosity_nodal[_qp];
+  std::vector<std::vector<Real> > x_qp = _mass_frac[_qp];
+  thermophysicalProperties(_porepressure_qp[_qp], _temperature_qp[_qp], _fluid_density_qp[_qp], mu_qp, x_qp, true);
 }
 
 void
@@ -69,8 +90,6 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(std::vector<Real> pressur
   Real pv = _water_fp.pSat(Tk);
   // Partial pressure of NCG
   Real pncg = pressure[_ncg_phase_number] - pv;
-  _console << "pv " << pv << std::endl;
-  _console << "water pressure " << pressure[_aqueous_phase_number] << std::endl;
 
   // The density of the liquid water phase
   Real water_density = _water_fp.rho(pressure[_aqueous_phase_number], Tk);
@@ -86,7 +105,7 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(std::vector<Real> pressur
 
   // The mass fraction of NCG in liquid and gas phases
   Real xncgl = dissolved(pncg, Tk);
-  Real xncgg = ncg_density / vapor_density;
+  Real xncgg = ncg_density / gas_density;
 
   // Assume that the liquid density is not modified by the solute
   // TODO: modify this to account for changes due to solute
@@ -95,11 +114,6 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(std::vector<Real> pressur
   // The properties in each phase can now be stored in the appropriate std::vector
   rho[_aqueous_phase_number] = liquid_density;
   rho[_ncg_phase_number] = gas_density;
-
-  xmass[_aqueous_phase_number][_aqueous_fluid_component] = 1.0 - xncgl;
-  xmass[_aqueous_phase_number][_ncg_fluid_component] = xncgl;
-  xmass[_ncg_phase_number][_aqueous_fluid_component] = 1.0 - xncgg;
-  xmass[_ncg_phase_number][_ncg_fluid_component] = xncgg;
 
   // If using nodal pressure and temperature, also calculate the viscosity
   if (!qps)
@@ -117,6 +131,11 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(std::vector<Real> pressur
     // Store the viscosity in the passed std::vector
     mu[_aqueous_phase_number] = liquid_viscosity;
     mu[_ncg_phase_number] = gas_viscosity;
+
+    xmass[_aqueous_phase_number][_aqueous_fluid_component] = 1.0 - xncgl;
+    xmass[_aqueous_phase_number][_ncg_fluid_component] = xncgl;
+    xmass[_ncg_phase_number][_aqueous_fluid_component] = 1.0 - xncgg;
+    xmass[_ncg_phase_number][_ncg_fluid_component] = xncgg;
   }
 }
 
