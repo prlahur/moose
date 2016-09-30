@@ -11,19 +11,24 @@ template<>
 InputParameters validParams<BrineFluidProperties>()
 {
   InputParameters params = validParams<MultiComponentFluidPropertiesPT>();
-  params.addRequiredParam<UserObjectName>("water_fp", "The water fluid properties UserObject");
   params.addClassDescription("Fluid properties for brine");
   return params;
 }
 
 BrineFluidProperties::BrineFluidProperties(const InputParameters & parameters) :
     MultiComponentFluidPropertiesPT(parameters),
-    _water_fp(getUserObject<Water97FluidProperties>("water_fp")),
     _Mnacl(58.443e-3),
-    _Mh2o(_water_fp.molarMass()),
     _T_triple_nacl(1073.85),
     _p_triple_nacl(50.0)
 {
+  std::string water_name = "water";
+  {
+    std::string class_name = "Water97FluidProperties";
+    InputParameters params = _app.getFactory().getValidParams(class_name);
+    _fe_problem.addUserObject(class_name, water_name, params);
+  }
+  _water_fp = &_fe_problem.getUserObject<Water97FluidProperties>(water_name);
+  _Mh2o = _water_fp->molarMass();
 }
 
 BrineFluidProperties::~BrineFluidProperties()
@@ -81,7 +86,7 @@ BrineFluidProperties::rho(Real pressure, Real temperature, Real xnacl) const
 
   // The density of water at temperature Tv
   // Note: convert Tv to Kelvin to calculate water density
-  water_density = _water_fp.rho(pressure, Tv + _T_c2k);
+  water_density = _water_fp->rho(pressure, Tv + _T_c2k);
 
   // The brine density is given by the water density scaled by the ratio of
   // brine molar mass to pure water molar mass
@@ -116,7 +121,7 @@ BrineFluidProperties::mu(Real water_density, Real temperature, Real xnacl) const
   Real a = 1.0 + 0.0816 * mol + 0.0122 * mol2 + 0.128e-3 * mol3 + 0.629e-3 * Tc
            * (1.0 - std::exp(-0.7 * mol));
 
-  return a * _water_fp.mu(water_density, temperature);
+  return a * _water_fp->mu(water_density, temperature);
 }
 
 Real
@@ -152,7 +157,7 @@ BrineFluidProperties::h(Real pressure, Real temperature, Real xnacl) const
 
   // The brine enthalpy is then given by the enthalpy of water at temperature Th
   // Note: water enthalpy requires temperature in Kelvin
-  return _water_fp.h(pressure, Th + _T_c2k);
+  return _water_fp->h(pressure, Th + _T_c2k);
 }
 
 void
@@ -203,7 +208,7 @@ BrineFluidProperties::cp(Real pressure, Real temperature, Real xnacl) const
   // The brine isobaric heat capacity is then given by the isobaric heat
   // capacity of water at temperature Th multiplied by q2
   // Note: water isobaric heat capacity requires temperature in Kelvin
-  return q2 * _water_fp.cp(pressure, Th + _T_c2k);
+  return q2 * _water_fp->cp(pressure, Th + _T_c2k);
 }
 
 Real
@@ -238,7 +243,7 @@ BrineFluidProperties::k(Real water_density, Real temperature, Real xnacl) const
   Real Tc = temperature - _T_c2k;
 
   Real S = 100.0 * _Mnacl * mol / (1.0 + _Mnacl * mol);
-  Real lambdaw = _water_fp.k(water_density, temperature);
+  Real lambdaw = _water_fp->k(water_density, temperature);
   Real lambda = 1.0 - (2.3434e-3 - 7.924e-6 * Tc + 3.924e-8 * Tc * Tc) * S +
     (1.06e-5 - 2.0e-8 * Tc - 1.2e-10 * Tc * Tc) * S * S;
 
@@ -262,13 +267,13 @@ BrineFluidProperties::pSat(Real temperature, Real xnacl) const
 
   // The brine vapour pressure is then found by evaluating the saturation pressure for pure water
   // using this effective temperature
-  return _water_fp.pSat(th20);
+  return _water_fp->pSat(th20);
 }
 
 Real
 BrineFluidProperties::rhoWater (Real pressure, Real temperature) const
 {
-  return _water_fp.rho(pressure, temperature);
+  return _water_fp->rho(pressure, temperature);
 }
 
 Real
@@ -314,9 +319,9 @@ BrineFluidProperties::hHalite(Real pressure, Real temperature) const
   // Correlation requires temperature in Celcius
   Real Tc = temperature - _T_c2k;
   // Triple point temperature of water (in C)
-  Real Tt = _water_fp.triplePointTemperature() - _T_c2k;
+  Real Tt = _water_fp->triplePointTemperature() - _T_c2k;
   // Triple point presure of water (in bar)
-  Real pt = _water_fp.triplePointPressure() * 1.0e-5;
+  Real pt = _water_fp->triplePointPressure() * 1.0e-5;
 
   // Note: the enthalpy of halite is 0 at the triple point of water
   return (8.7664e2 * (Tc - Tt) + 6.4139e-2 * (Tc * Tc - Tt * Tt) +

@@ -56,12 +56,8 @@
 
 [Modules]
   [./FluidProperties]
-    [./water]
-      type = Water97FluidProperties
-    [../]
     [./brine]
       type = BrineFluidProperties
-      water_fp = water
     [../]
   []
 []

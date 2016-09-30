@@ -259,11 +259,11 @@ protected:
   Real massFractionToMoleFraction(Real xnacl) const;
 
   /// Water97FluidProperties UserObject
-  const Water97FluidProperties & _water_fp;
+  const Water97FluidProperties * _water_fp;
   /// Molar mass of NaCl (kg/mol)
   const Real _Mnacl;
   /// Molar mass of water (H2O) (kg/mol)
-  const Real _Mh2o;
+  Real _Mh2o;
   /// Triple point temperature of NaCl (K)
   const Real _T_triple_nacl;
   /// Triple point pressure of NaCl (Pa)
