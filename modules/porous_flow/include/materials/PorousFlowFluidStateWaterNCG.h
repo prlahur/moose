@@ -31,14 +31,7 @@ protected:
 
   virtual void computeQpProperties() override;
 
-  /**
-   * Calculates the thermophysical properties for each phase
-   *
-   * @param pressure phase pressure (Pa)
-   * @param temperature phase temperature (C)
-   * @return gas dens
-   */
-  void thermophysicalProperties(std::vector<Real> pressure, Real temperature, std::vector<Real> & rho, std::vector<Real> & mu, std::vector<std::vector<Real> > & xmass, bool qps = false) const;
+  virtual void thermophysicalProperties(Ecalc node_or_qp, Eprops props) const override;
 
   /**
    * Dissolved mass fraction of NCG in water calculated using Henry's law

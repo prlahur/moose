@@ -36,8 +36,7 @@ PorousFlowFluidStateBase::PorousFlowFluidStateBase(const InputParameters & param
     _pressure_variable_name(_dictator.pressureVariableNameDummy()),
     _saturation_variable_name(_dictator.saturationVariableNameDummy()),
     _temperature_variable_name(_dictator.temperatureVariableNameDummy()),
-    _mass_fraction_variable_name(_dictator.massFractionVariableNameDummy()),
-
+    _mass_fraction_variable_name(_dictator.massFractionVariableNameDummy())
 {
 }
 

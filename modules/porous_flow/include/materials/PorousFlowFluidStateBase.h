@@ -25,8 +25,19 @@ public:
 
 protected:
   virtual void initQpStatefulProperties() override;
-
   virtual void computeQpProperties() override;
+
+  /// Enum to control calculation of properties at either the nodes or qps
+  enum Ecalc { AT_NODE = 0, AT_QP = 1 };
+  /// Enum to control calculation of only stateful properties or all properties
+  enum Eprops { ALL_PROPERTIES = 0, STATEFUL_ONLY = 1};
+
+  /**
+   * Calculates the thermophysical properties and derivatives for each phase
+   * and fluid component at the nodes and qps as required. If stateful is STATEFUL,
+   * only those properties where old values are required are calculated
+   */
+  virtual void thermophysicalProperties(Ecalc node_or_qp, Eprops props) const = 0;
 
   /// Derivatives of porepressure variable wrt PorousFlow variables at the nodes
   const MaterialProperty<std::vector<std::vector<Real> > > & _dporepressure_nodal_dvar;

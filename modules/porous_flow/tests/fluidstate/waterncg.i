@@ -356,8 +356,43 @@
   [../]
 []
 
+[Postprocessors]
+  [./density_water]
+    type = ElementIntegralVariablePostprocessor
+    variable = density_water
+  [../]
+  [./density_gas]
+    type = ElementIntegralVariablePostprocessor
+    variable = density_gas
+  [../]
+  [./viscosity_water]
+    type = ElementIntegralVariablePostprocessor
+    variable = viscosity_water
+  [../]
+  [./viscosity_gas]
+    type = ElementIntegralVariablePostprocessor
+    variable = viscosity_gas
+  [../]
+  [./x1_water]
+    type = ElementIntegralVariablePostprocessor
+    variable = x1_water
+  [../]
+  [./x0_water]
+    type = ElementIntegralVariablePostprocessor
+    variable = x0_water
+  [../]
+  [./x1_gas]
+    type = ElementIntegralVariablePostprocessor
+    variable = x1_gas
+  [../]
+  [./x0_gas]
+    type = ElementIntegralVariablePostprocessor
+    variable = x0_gas
+  [../]
+[]
+
 [Outputs]
-  exodus = true
+  csv = true
 []
 
 [Problem]
