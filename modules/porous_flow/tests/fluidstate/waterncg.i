@@ -309,6 +309,16 @@
     type = ElementIntegralVariablePostprocessor
     variable = pwater
   [../]
+  [./x0mass]
+    type = PorousFlowFluidMass
+    fluid_component = 0
+    phase = '0 1'
+  [../]
+  [./x1mass]
+    type = PorousFlowFluidMass
+    fluid_component = 1
+    phase = '0 1'
+  [../]
 []
 
 [Outputs]
