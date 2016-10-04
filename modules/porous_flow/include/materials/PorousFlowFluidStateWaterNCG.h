@@ -38,9 +38,10 @@ protected:
    *
    * @param pressure NCG partial pressure (Pa)
    * @param temperature fluid temperature (C)
-   * @return xncgl mass fraction of NCG in water (-)
+   * @param[out] xncgl mass fraction of NCG in water (-)
+   * @param[out] dxncgl_dp derivative of mass fraction of NCG in water wrt pressure
    */
-  Real dissolved(Real pressure, Real temperature) const;
+  void dissolved(Real pressure, Real temperature, Real & xncgl, Real & dxncgl_dp) const;
 
 
   /// Pore pressure at the nodes

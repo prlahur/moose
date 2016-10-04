@@ -69,22 +69,6 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  #[./enthalpy_water]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
-  #[./enthalpy_gas]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
-  #[./energy_water]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
-  #[./energy_gas]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
 []
 
 [AuxKernels]
@@ -176,34 +160,6 @@
     fluid_component = 0
     execute_on = timestep_end
   [../]
-  #[./enthalpy_water]
-  #  type = PorousFlowPropertyAux
-  #  variable = enthalpy_water
-  #  property = enthalpy
-  #  phase = 0
-  #  execute_on = timestep_end
-  #[../]
-  #[./enthalpy_gas]
-  #  type = PorousFlowPropertyAux
-  #  variable = enthalpy_gas
-  #  property = enthalpy
-  #  phase = 1
-  #  execute_on = timestep_end
-  #[../]
-  #[./energy_water]
-  #  type = PorousFlowPropertyAux
-  #  variable = energy_water
-  #  property = internal_energy
-  #  phase = 0
-  #  execute_on = timestep_end
-  #[../]
-  #[./energy_gas]
-  #  type = PorousFlowPropertyAux
-  #  variable = energy_gas
-  #  property = internal_energy
-  #  phase = 1
-  #  execute_on = timestep_end
-  #[../]
 []
 
 [Kernels]
@@ -227,14 +183,6 @@
     fluid_component = 1
     variable = sgas
   [../]
-  #[./energy_dot]
-  #  type = PorousFlowEnergyTimeDerivative
-  #  variable = temperature
-  #[../]
-  #[./convection]
-  #  type = PorousFlowConvectiveFlux
-  #  variable = temperature
-  #[../]
 []
 
 [UserObjects]
@@ -271,8 +219,8 @@
     phase0_porepressure = pwater
     phase1_saturation = sgas
     m = 0.5
-    p0 = 1e5
-    pc_max = 1e7
+    p0 = 1e4
+    pc_max = 1e8
     sat_lr = 0.1
     sat_ls = 1
   [../]
@@ -281,10 +229,6 @@
     gas_fp = co2
     water_fp = water
   [../]
-  #[./massfrac]
-  #  type = PorousFlowMassFraction
-  #  mass_fraction_vars = 'x0_water x0_gas'
-  #[../]
   [./permeability]
     type = PorousFlowPermeabilityConst
     permeability = '1e-12 0 0 0 1e-12 0 0 0 1e-12'
@@ -307,43 +251,11 @@
     type = PorousFlowPorosityConst
     porosity = 0.1
   [../]
-  [./rock_heat]
-    type = PorousFlowMatrixInternalEnergy
-    specific_heat_capacity = 1.0
-    density = 125
-  [../]
-  #[./fluid_energy0]
-  #  type = PorousFlowInternalEnergyIdeal
-  #  specific_heat_capacity = 2
-  #  phase = 0
-  #[../]
-  #[./fluid_energy1]
-  #  type = PorousFlowInternalEnergyIdeal
-  #  specific_heat_capacity = 1
-  #  phase = 1
-  #[../]
-  #[./energy_all]
-  #  type = PorousFlowJoiner
-  #  include_old = true
-  #  material_property = PorousFlow_fluid_phase_internal_energy_nodal
-  #[../]
-  #[./enthalpy0]
-  #  type = PorousFlowEnthalpy
-  #  phase = 0
-  #[../]
-  #[./enthalpy1]
-  #  type = PorousFlowEnthalpy
-  #  phase = 1
-  #[../]
-  #[./enthalpy_all]
-  #  type = PorousFlowJoiner
-  #  material_property = PorousFlow_fluid_phase_enthalpy_nodal
-  #[../]
 []
 
 [Executioner]
   type = Transient
-  solve_type = Newton
+  solve_type = NEWTON
   dt = 1
   end_time = 1
   nl_abs_tol = 1e-12
@@ -389,12 +301,16 @@
     type = ElementIntegralVariablePostprocessor
     variable = x0_gas
   [../]
+  [./sg]
+    type = ElementIntegralVariablePostprocessor
+    variable = sgas
+  [../]
+  [./pwater]
+    type = ElementIntegralVariablePostprocessor
+    variable = pwater
+  [../]
 []
 
 [Outputs]
   csv = true
-[]
-
-[Problem]
-  solve = false
 []
