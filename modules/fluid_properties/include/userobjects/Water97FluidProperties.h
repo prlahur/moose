@@ -568,6 +568,12 @@ public:
    */
   virtual Real henryConstant(Real temperature) const override;
 
+  /**
+   * Henry's law constant
+   * Note: not implemented in this fluid property
+   */
+  virtual void henryConstant_dT(Real temperature, Real & Kh, Real & dKh_dT) const override;
+
 protected:
   /// Water molar mass (kg/mol)
   const Real _Mh2o;
