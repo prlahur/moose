@@ -197,7 +197,7 @@
 [Modules]
   [./FluidProperties]
     [./co2]
-      type = MethaneFluidProperties
+      type = CO2FluidProperties
     [../]
     [./water]
       type = Water97FluidProperties

@@ -37,29 +37,25 @@ protected:
    * Dissolved mass fraction of NCG in water calculated using Henry's law
    *
    * @param pressure NCG partial pressure (Pa)
-   * @param temperature fluid temperature (C)
+   * @param temperature fluid temperature (K)
    * @param[out] xncgl mass fraction of NCG in water (-)
    * @param[out] dxncgl_dp derivative of mass fraction of NCG in water wrt pressure
+   * @param[out] dxncgl_dT derivative of mass fraction of NCG in water wrt temperature
    */
-  void dissolved(Real pressure, Real temperature, Real & xncgl, Real & dxncgl_dp) const;
+  void dissolved(Real pressure, Real temperature, Real & xncgl, Real & dxncgl_dp, Real & dxncgl_dT) const;
 
+  /**
+   * Enthalpy of dissolution of NCG in water calculated using Henry's constant
+   * From Himmelblau, Partial molal heats and entropies of solution for gases dissolved
+   * in water from the freezing to the near critical point, J. Phys. Chem. 63 (1959)
+   *
+   * @param temperature fluid temperature (K)
+   * @param Kh Henry's constant (Pa)
+   * @param dKh_dT derivative of Henry's constant wrt temperature
+   * @return enthalpy of dissolution (kJ/kg)
+   */
+  Real enthalpyDissolution(Real temperature, Real Kh, Real dKh_dT) const;
 
-  /// Pore pressure at the nodes
-  const MaterialProperty<std::vector<Real> > & _porepressure_nodal;
-  /// Pore pressure at the qps
-  const MaterialProperty<std::vector<Real> > & _porepressure_qp;
-  /// Fluid temperature at the nodes
-  const MaterialProperty<Real> & _temperature_nodal;
-  /// Fluid temperature at the qps
-  const MaterialProperty<Real> & _temperature_qp;
-  /// Mass fraction matrix
-  MaterialProperty<std::vector<std::vector<Real> > > & _mass_frac;
-  /// Old value of mass fraction matrix
-  MaterialProperty<std::vector<std::vector<Real> > > & _mass_frac_old;
-  /// Gradient of the mass fraction matrix at the quad points
-  MaterialProperty<std::vector<std::vector<RealGradient> > > & _grad_mass_frac;
-  /// Derivative of the mass fraction matrix with respect to the Porous Flow variables
-  MaterialProperty<std::vector<std::vector<std::vector<Real> > > > & _dmass_frac_dvar;
   /// Phase number of the aqueous phase
   const unsigned int _aqueous_phase_number;
   /// Phase number of the NCG phase
@@ -76,8 +72,6 @@ protected:
   const Real _Mh2o;
   /// Molar mass of non-condensable gas (kg/mol)
   const Real _Mncg;
-  /// Conversion from degrees Celsius to degrees Kelvin
-  const Real _T_c2k;
 };
 
 #endif //POROUSFLOWFLUIDSTATEWATERNCG_H

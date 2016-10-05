@@ -22,14 +22,6 @@ InputParameters validParams<PorousFlowFluidStateWaterNCG>()
 PorousFlowFluidStateWaterNCG::PorousFlowFluidStateWaterNCG(const InputParameters & parameters) :
     PorousFlowFluidStateBase(parameters),
 
-    _porepressure_nodal(getMaterialProperty<std::vector<Real> >("PorousFlow_porepressure_nodal")),
-    _porepressure_qp(getMaterialProperty<std::vector<Real> >("PorousFlow_porepressure_qp")),
-    _temperature_nodal(getMaterialProperty<Real>("PorousFlow_temperature_nodal")),
-    _temperature_qp(getMaterialProperty<Real>("PorousFlow_temperature_qp")),
-    _mass_frac(declareProperty<std::vector<std::vector<Real> > >("PorousFlow_mass_frac")),
-    _mass_frac_old(declarePropertyOld<std::vector<std::vector<Real> > >("PorousFlow_mass_frac")),
-    _grad_mass_frac(declareProperty<std::vector<std::vector<RealGradient> > >("PorousFlow_grad_mass_frac")),
-    _dmass_frac_dvar(declareProperty<std::vector<std::vector<std::vector<Real> > > >("dPorousFlow_mass_frac_dvar")),
     _aqueous_phase_number(getParam<unsigned int>("water_phase_number")),
     _ncg_phase_number(1 - _aqueous_phase_number),
     _aqueous_fluid_component(getParam<unsigned int>("water_fluid_component")),
@@ -37,9 +29,7 @@ PorousFlowFluidStateWaterNCG::PorousFlowFluidStateWaterNCG(const InputParameters
     _water_fp(getUserObject<Water97FluidProperties>("water_fp")),
     _ncg_fp(getUserObject<SinglePhaseFluidPropertiesPT>("gas_fp")),
     _Mh2o(_water_fp.molarMass()),
-//  _Mncg(_ncg_fp.molarMass())
-    _Mncg(44.0098e-3),//FIXME: delete when molarmass() is available
-    _T_c2k(273.15)
+    _Mncg(_ncg_fp.molarMass())
 {
 }
 
@@ -119,8 +109,8 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(Ecalc node_or_qp, Eprops 
   Real dgas_density_dT = dncg_density_dT + dvapor_density_dT;
 
   // The mass fraction of NCG in liquid and gas phases
-  Real xncgl, dxncgl_dp;
-  dissolved(pncg, Tk, xncgl, dxncgl_dp);
+  Real xncgl, dxncgl_dp, dxncgl_dT;
+  dissolved(pncg, Tk, xncgl, dxncgl_dp, dxncgl_dT);
 
   Real xncgg = ncg_density / gas_density;
   Real dxncgg_dp = (dncg_density_dp - dgas_density_dp * ncg_density / gas_density) / gas_density;
@@ -175,14 +165,16 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(Ecalc node_or_qp, Eprops 
       Real ncg_viscosity, dncg_viscosity_drho, dncg_viscosity_dT;
       _ncg_fp.mu_drhoT(ncg_density, Tk, ncg_viscosity, dncg_viscosity_drho, dncg_viscosity_dT);
 
-      // Assume that the viscosities are not modified by the solute
-      Real gas_viscosity = ncg_viscosity;
+      // Assume that the viscosity of the gas phase is a weighted sum of the individual viscosities,
+      // but that the liquid phase viscosity is unchanged by the presence of dissolved NCG
+      Real gas_viscosity = xncgg * ncg_viscosity + (1.0 - xncgg) * vapor_viscosity;
       Real liquid_viscosity = water_viscosity;
 
       // The derivative of viscosity wrt pressure is given by the chain rule
-      Real dgas_viscosity_dp = dncg_viscosity_drho * dncg_density_dp;
+      Real dgas_viscosity_dp = dxncgg_dp * (ncg_viscosity - vapor_viscosity) + xncgg * dncg_viscosity_drho * dncg_density_dp +
+        (1.0 - xncgg) * dvapor_viscosity_drho * dvapor_density_dp;
       Real dliquid_viscosity_dp = dwater_viscosity_drho * dwater_density_dp;
-      Real dgas_viscosity_dT = dncg_viscosity_dT;
+      Real dgas_viscosity_dT = dxncgg_dT * (ncg_viscosity - vapor_viscosity) + xncgg * dncg_viscosity_dT + (1.0 - xncgg) * dvapor_viscosity_dT;
       Real dliquid_viscosity_dT = dwater_viscosity_dT;
 
       _fluid_viscosity_nodal[_qp][_aqueous_phase_number] = liquid_viscosity;
@@ -205,7 +197,9 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(Ecalc node_or_qp, Eprops 
 
         // The mass fractions for each fluid component in each phase (no temperature derivate yet)
         _dmass_frac_dvar[_qp][_aqueous_phase_number][_aqueous_fluid_component][v] = - dxncgl_dp * _dporepressure_nodal_dvar[_qp][_aqueous_phase_number][v];
+        _dmass_frac_dvar[_qp][_aqueous_phase_number][_aqueous_fluid_component][v] += - dxncgl_dT * _dtemperature_nodal_dvar[_qp][v];
         _dmass_frac_dvar[_qp][_aqueous_phase_number][_ncg_fluid_component][v] = dxncgl_dp * _dporepressure_nodal_dvar[_qp][_aqueous_phase_number][v];
+        _dmass_frac_dvar[_qp][_aqueous_phase_number][_ncg_fluid_component][v] += dxncgl_dT * _dtemperature_nodal_dvar[_qp][v];
         _dmass_frac_dvar[_qp][_ncg_phase_number][_aqueous_fluid_component][v] = - dxncgg_dp * _dporepressure_nodal_dvar[_qp][_ncg_phase_number][v];
         _dmass_frac_dvar[_qp][_ncg_phase_number][_aqueous_fluid_component][v] += - dxncgg_dT * _dtemperature_nodal_dvar[_qp][v];
         _dmass_frac_dvar[_qp][_ncg_phase_number][_ncg_fluid_component][v] = dxncgg_dp * _dporepressure_nodal_dvar[_qp][_ncg_phase_number][v];
@@ -216,13 +210,23 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(Ecalc node_or_qp, Eprops 
 }
 
 void
-PorousFlowFluidStateWaterNCG::dissolved(Real pressure, Real temperature, Real & xncgl, Real & dxncgl_dp) const
+PorousFlowFluidStateWaterNCG::dissolved(Real pressure, Real temperature, Real & xncgl, Real & dxncgl_dp, Real & dxncgl_dT) const
 {
   // The dissolved mole fraction of NCG in water is given by Henry's law
-  Real Xncgl = pressure / _ncg_fp.henryConstant(temperature);
+  Real Kh, dKh_dT;
+  _ncg_fp.henryConstant_dT(temperature, Kh, dKh_dT);
+  Real Xncgl = pressure / Kh;
   // The mass fraction is then
   xncgl = Xncgl * _Mncg / (Xncgl * _Mncg + (1.0 - Xncgl) * _Mh2o);
 
   // Derivative wrt pressure
   dxncgl_dp = xncgl * xncgl * _Mh2o / (pressure * Xncgl * _Mncg);
+  // Derivative wrt temperature
+  dxncgl_dT = - xncgl * _Mh2o * dKh_dT / (Xncgl * _Mncg + (1.0 - Xncgl) * _Mh2o);
+}
+
+Real
+PorousFlowFluidStateWaterNCG::enthalpyDissolution(Real temperature, Real Kh, Real dKh_dT) const
+{
+  return - _R * temperature * temperature * _Mncg * dKh_dT / Kh;
 }

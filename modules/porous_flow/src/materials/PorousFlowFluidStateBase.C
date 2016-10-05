@@ -18,12 +18,21 @@ InputParameters validParams<PorousFlowFluidStateBase>()
 PorousFlowFluidStateBase::PorousFlowFluidStateBase(const InputParameters & parameters) :
     PorousFlowMaterialVectorBase(parameters),
 
+    _porepressure_nodal(getMaterialProperty<std::vector<Real> >("PorousFlow_porepressure_nodal")),
+    _porepressure_qp(getMaterialProperty<std::vector<Real> >("PorousFlow_porepressure_qp")),
+    _temperature_nodal(getMaterialProperty<Real>("PorousFlow_temperature_nodal")),
+    _temperature_qp(getMaterialProperty<Real>("PorousFlow_temperature_qp")),
+    _mass_frac(declareProperty<std::vector<std::vector<Real> > >("PorousFlow_mass_frac")),
+    _mass_frac_old(declarePropertyOld<std::vector<std::vector<Real> > >("PorousFlow_mass_frac")),
+    _grad_mass_frac(declareProperty<std::vector<std::vector<RealGradient> > >("PorousFlow_grad_mass_frac")),
+
     _dporepressure_nodal_dvar(getMaterialProperty<std::vector<std::vector<Real> > >("dPorousFlow_porepressure_nodal_dvar")),
     _dporepressure_qp_dvar(getMaterialProperty<std::vector<std::vector<Real> > >("dPorousFlow_porepressure_qp_dvar")),
     _dsaturation_nodal_dvar(getMaterialProperty<std::vector<std::vector<Real> > >("dPorousFlow_saturation_nodal_dvar")),
     _dsaturation_qp_dvar(getMaterialProperty<std::vector<std::vector<Real> > >("dPorousFlow_saturation_qp_dvar")),
     _dtemperature_nodal_dvar(getMaterialProperty<std::vector<Real> >("dPorousFlow_temperature_nodal_dvar")),
     _dtemperature_qp_dvar(getMaterialProperty<std::vector<Real> >("dPorousFlow_temperature_qp_dvar")),
+    _dmass_frac_dvar(declareProperty<std::vector<std::vector<std::vector<Real> > > >("dPorousFlow_mass_frac_dvar")),
 
     _fluid_density_nodal(declareProperty<std::vector<Real> >("PorousFlow_fluid_phase_density")),
     _fluid_density_nodal_old(declarePropertyOld<std::vector<Real> >("PorousFlow_fluid_phase_density")),
@@ -36,7 +45,10 @@ PorousFlowFluidStateBase::PorousFlowFluidStateBase(const InputParameters & param
     _pressure_variable_name(_dictator.pressureVariableNameDummy()),
     _saturation_variable_name(_dictator.saturationVariableNameDummy()),
     _temperature_variable_name(_dictator.temperatureVariableNameDummy()),
-    _mass_fraction_variable_name(_dictator.massFractionVariableNameDummy())
+    _mass_fraction_variable_name(_dictator.massFractionVariableNameDummy()),
+
+    _T_c2k(273.15),
+    _R(8.3144621)
 {
 }
 
