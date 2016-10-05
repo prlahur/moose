@@ -20,6 +20,8 @@ PorousFlowFluidStateBase::PorousFlowFluidStateBase(const InputParameters & param
 
     _porepressure_nodal(getMaterialProperty<std::vector<Real> >("PorousFlow_porepressure_nodal")),
     _porepressure_qp(getMaterialProperty<std::vector<Real> >("PorousFlow_porepressure_qp")),
+    _gradp_qp(getMaterialProperty<std::vector<RealGradient> >("PorousFlow_grad_porepressure_qp")),
+    _gradT_qp(getMaterialProperty<RealGradient>("PorousFlow_grad_temperature_qp")),
     _temperature_nodal(getMaterialProperty<Real>("PorousFlow_temperature_nodal")),
     _temperature_qp(getMaterialProperty<Real>("PorousFlow_temperature_qp")),
     _mass_frac(declareProperty<std::vector<std::vector<Real> > >("PorousFlow_mass_frac")),

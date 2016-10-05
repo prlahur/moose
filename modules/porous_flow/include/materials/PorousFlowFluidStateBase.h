@@ -43,6 +43,10 @@ protected:
   const MaterialProperty<std::vector<Real> > & _porepressure_nodal;
   /// Pore pressure at the qps
   const MaterialProperty<std::vector<Real> > & _porepressure_qp;
+  /// Gradient of the pore pressure at the qps
+  const MaterialProperty<std::vector<RealGradient> > & _gradp_qp;
+  /// Gradient of the temperature at the qps
+  const MaterialProperty<RealGradient> & _gradT_qp;
   /// Fluid temperature at the nodes
   const MaterialProperty<Real> & _temperature_nodal;
   /// Fluid temperature at the qps

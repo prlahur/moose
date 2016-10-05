@@ -42,10 +42,12 @@ PorousFlowFluidStateWaterNCG::initQpStatefulProperties()
   _fluid_viscosity_nodal[_qp].resize(_num_phases);
 
   _mass_frac[_qp].resize(_num_phases);
+  _grad_mass_frac[_qp].resize(_num_phases);
   _dmass_frac_dvar[_qp].resize(_num_phases);
   for (unsigned int ph = 0; ph < _num_phases; ++ph)
   {
     _mass_frac[_qp][ph].resize(_num_components);
+    _grad_mass_frac[_qp][ph].resize(_num_components);
     _dmass_frac_dvar[_qp][ph].resize(_num_components);
     for (unsigned int comp = 0; comp < _num_components; ++comp)
       _dmass_frac_dvar[_qp][ph][comp].assign(_num_var, 0.0);
@@ -127,6 +129,16 @@ PorousFlowFluidStateWaterNCG::thermophysicalProperties(Ecalc node_or_qp, Eprops 
   {
     _fluid_density_qp[_qp][_aqueous_phase_number] = liquid_density;
     _fluid_density_qp[_qp][_ncg_phase_number] = gas_density;
+
+    // Gradient of mass fraction is calculated using the chain rule
+    _grad_mass_frac[_qp][_aqueous_phase_number][_aqueous_fluid_component] = - dxncgl_dp *
+      _gradp_qp[_qp][_aqueous_phase_number] - dxncgl_dT * _gradT_qp[_qp];
+    _grad_mass_frac[_qp][_aqueous_phase_number][_ncg_fluid_component] = dxncgl_dp *
+      _gradp_qp[_qp][_aqueous_phase_number] + dxncgl_dT * _gradT_qp[_qp];
+    _grad_mass_frac[_qp][_ncg_phase_number][_aqueous_fluid_component] = - dxncgg_dp *
+      _gradp_qp[_qp][_ncg_phase_number] - dxncgg_dT * _gradT_qp[_qp];
+    _grad_mass_frac[_qp][_ncg_phase_number][_ncg_fluid_component] = dxncgg_dp *
+      _gradp_qp[_qp][_ncg_phase_number] + dxncgg_dT * _gradT_qp[_qp];
 
     // Derivatives wrt PorousFlow variables
     for (unsigned v = 0; v < _num_var; ++v)
