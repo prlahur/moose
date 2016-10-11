@@ -226,3 +226,9 @@ NaClFluidProperties::henryConstant(Real /*temperature*/) const
 {
   mooseError("NaClFluidProperties::henryConstant not valid");
   return 0.0;}
+
+void
+NaClFluidProperties::henryConstant_dT(Real /* temperature */, Real & /* Kh */, Real & /* dKh_dT */) const
+{
+  mooseError("NaClFluidProperties::henryConstant_dT() not defined");
+}

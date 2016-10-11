@@ -220,6 +220,15 @@ public:
    */
   virtual Real henryConstant(Real temperature) const override;
 
+  /**
+   * Henry's law constant (not valid for NaCl)
+   *
+   * @param temperature fluid temperature (K)
+   * @param[out] Kh Henry's constant (Pa)
+   * @param[out] dKh_dT derivative of Henry's constant wrt temperature
+   */
+  virtual void henryConstant_dT(Real temperature, Real & Kh, Real & dKh_dT) const override;
+
 protected:
   /// NaCl molar mass (kg/mol)
   const Real _Mnacl;
