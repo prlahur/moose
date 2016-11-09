@@ -17,6 +17,9 @@ InputParameters validParams<PorousFlowDictator>()
   params.addRequiredCoupledVar("porous_flow_vars", "List of primary variables that are used in the PorousFlow simulation.  Jacobian entries involving derivatives wrt these variables will be computed.  In single-phase models you will just have one (eg \'pressure\'), in two-phase models you will have two (eg \'p_water p_gas\', or \'p_water s_water\'), etc.");
   params.addRequiredParam<unsigned int>("number_fluid_phases", "The number of fluid phases in the simulation");
   params.addRequiredParam<unsigned int>("number_fluid_components", "The number of fluid components in the simulation");
+  params.addParam<unsigned int>("number_primary_species", 0,"The number of primary chemical species in the simulation");
+  params.addParam<unsigned int>("number_secondary_species", 0,"The number of secondary chemical species in the simulation");
+  params.addParam<unsigned int>("number_minerals", 0,"The number of minerals in the simulation");  
   return params;
 }
 
@@ -26,7 +29,10 @@ PorousFlowDictator::PorousFlowDictator(const InputParameters & parameters) :
     ZeroInterface(parameters),
     _num_variables(coupledComponents("porous_flow_vars")),
     _num_phases(getParam<unsigned int>("number_fluid_phases")),
-    _num_components(getParam<unsigned int>("number_fluid_components"))
+    _num_components(getParam<unsigned int>("number_fluid_components")),
+    _num_primary(getParam<unsigned int>("number_primary_species")),
+    _num_secondary(getParam<unsigned int>("number_secondary_species")),
+    _num_minerals(getParam<unsigned int>("number_minerals"))
 {
   _moose_var_num.resize(_num_variables);
   for (unsigned int i = 0; i < _num_variables; ++i)
@@ -58,6 +64,27 @@ PorousFlowDictator::numComponents() const
 {
   return _num_components;
 }
+
+unsigned int
+PorousFlowDictator::numPrimarySpecies() const
+{
+  return _num_primary;
+}
+
+unsigned int
+PorousFlowDictator::numSecondarySpecies() const
+{
+  return _num_secondary;
+}
+
+unsigned int
+PorousFlowDictator::numMinerals() const 
+{
+  return _num_minerals;
+}
+
+
+
 
 unsigned int
 PorousFlowDictator::porousFlowVariableNum(unsigned int moose_var_num) const

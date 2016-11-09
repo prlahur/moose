@@ -38,8 +38,19 @@ protected:
   /// Number of fluid components
   const unsigned int _num_components;
 
+  /// Number of primary species
+  const unsigned int _num_primary;
+
+  /// Number of secondary species
+  const unsigned int _num_secondary;
+
+  /// Number of minerals
+  const unsigned int _num_minerals;
+  
   /// Number of PorousFlow variables
   const unsigned int _num_var;
+
+  
 };
 
 #endif //POROUSFLOWMATERIALVECTORBASE_H

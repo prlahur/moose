@@ -22,6 +22,9 @@ PorousFlowMaterialVectorBase::PorousFlowMaterialVectorBase(const InputParameters
     _node_number(getMaterialProperty<unsigned int>("PorousFlow_node_number")),
     _num_phases(_dictator.numPhases()),
     _num_components(_dictator.numComponents()),
+    _num_primary(_dictator.numPrimarySpecies()),
+    _num_secondary(_dictator.numSecondarySpecies()),
+    _num_minerals(_dictator.numMinerals()),    
     _num_var(_dictator.numVariables())
 {
 }

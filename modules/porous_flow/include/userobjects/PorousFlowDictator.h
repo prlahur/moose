@@ -55,6 +55,15 @@ class PorousFlowDictator :
   /// the number of fluid components
   unsigned int numComponents() const;
 
+  /// the number of primary chemical species
+  unsigned int numPrimarySpecies() const;
+
+  /// the number of secondary chemical species
+  unsigned int numSecondarySpecies() const;
+
+  /// the number of minerals
+  unsigned int numMinerals() const;
+    
   /**
    * the PorousFlow variable number
    * @param moose_var_num the MOOSE variable number
@@ -116,6 +125,15 @@ class PorousFlowDictator :
   /// number of fluid components
   const unsigned int _num_components;
 
+  /// number of primary species
+  const unsigned int _num_primary;
+
+  /// number of secondary species
+  const unsigned int _num_secondary;
+
+  /// number of minerals
+  const unsigned int _num_minerals;
+  
  private:
   /// _moose_var_num[i] = the moose variable number corresponding to porous flow variable i
   std::vector<unsigned int> _moose_var_num;
