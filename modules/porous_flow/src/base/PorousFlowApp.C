@@ -1,3 +1,10 @@
+/****************************************************************/
+/* MOOSE - Multiphysics Object Oriented Simulation Environment  */
+/*                                                              */
+/*          All contents are licensed under LGPL V2.1           */
+/*             See LICENSE for full restrictions                */
+/****************************************************************/
+
 #include "PorousFlowApp.h"
 #include "Moose.h"
 #include "TensorMechanicsApp.h"
@@ -73,6 +80,7 @@
 #include "PorousFlowChemistryTimeDerivative.h"
 #include "PorousFlowChemistryConvection.h"
 #include "PorousFlowChemistrySink.h"
+#include "PorousFlowChemistryDispersiveFlux.h"
 
 // BoundaryConditions
 #include "PorousFlowSink.h"
@@ -195,6 +203,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerKernel(PorousFlowChemistryTimeDerivative);
   registerKernel(PorousFlowChemistryConvection);
   registerKernel(PorousFlowChemistrySink);
+  registerKernel(PorousFlowChemistryDispersiveFlux);
 
   // BoundaryConditions
   registerBoundaryCondition(PorousFlowSink);
