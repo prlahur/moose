@@ -1,0 +1,7 @@
+[Tests]
+  [./ad01]
+    type = 'CSVDiff'
+    input = 'ad01.i'
+    csvdiff = 'ad01_out_gc_0021.csv'
+  [../]
+[]

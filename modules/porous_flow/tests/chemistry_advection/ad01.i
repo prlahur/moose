@@ -2,7 +2,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 1
-  nx = 10
+  xmax = 2
+  nx = 20
 []
 
 [GlobalParams]
@@ -14,12 +15,12 @@
 
 [Variables]
   [./gc]
+    initial_condition = 0.1
   [../]
   [./phis]
     initial_condition = 0.1
   [../]
 []
-
 
 [BCs]
   [./gc]
@@ -41,13 +42,14 @@
   [../]
   [./gc_diff]
     type = PorousFlowChemistryDispersiveFlux
-    disp_long = 0.2
-    disp_trans = 0.2
+    disp_long = 0
+    disp_trans = 0
     variable = gc
   [../]
   [./gc_source]
     type = PorousFlowChemistrySink
     variable = gc
+    Ceq = 0.1
     coefficient = 1E-1
   [../]
   [./phist]
@@ -57,12 +59,17 @@
   [./phis_source]
     type = PorousFlowChemistrySink
     variable = phis
+    Ceq = 0.1
     coefficient = -1E-2
   [../]
 []
 
 [AuxVariables]
   [./pp]
+  [../]
+  [./vel]
+    family = MONOMIAL
+    order = CONSTANT
   [../]
 []
 
@@ -72,6 +79,12 @@
     variable = pp
     function = '1-x'
     execute_on = initial
+  [../]
+  [./vel]
+    type =PorousFlowDarcyVelocityComponent
+    variable = vel
+    fluid_phase = 0
+    component = x
   [../]
 []
 
@@ -104,7 +117,7 @@
   [../]
   [./visc0]
     type = PorousFlowViscosityConst
-     viscosity = 1E3
+    viscosity = 1E3
     phase = 0
   [../]
   [./visc_all]
@@ -171,6 +184,15 @@
   end_time = 10
 []
 
+[VectorPostprocessors]
+  [./gc]
+    type = NodalValueSampler
+    sort_by = id
+    variable = 'gc vel'
+  [../]
+[]
+
 [Outputs]
-  exodus = true
+  csv = true
+  execute_on = final
 []
