@@ -275,8 +275,45 @@
     difference_tol = 1E10
   [../]
   [./disp04]
-    type = 'PetscJacobianTester'
     input = 'disp04.i'
+    type = 'PetscJacobianTester'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
+
+  [./chemdt01]
+    input = 'chemdt01.i'
+    type = 'PetscJacobianTester'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
+  [./chemdt02]
+    input = 'chemdt02.i'
+    type = 'PetscJacobianTester'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
+  [./chemsink01]
+    input = 'chemsink01.i'
+    type = 'PetscJacobianTester'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
+  [./chemsink02]
+    input = 'chemsink02.i'
+    type = 'PetscJacobianTester'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
+  [./chemflux02]
+    input = 'chemflux02.i'
+    type = 'PetscJacobianTester'
+    ratio_tol = 1E-7
+    difference_tol = 1E10
+  [../]
+  [./chemdisp01]
+    input = 'chemdisp01.i'
+    type = 'PetscJacobianTester'
     ratio_tol = 1E-7
     difference_tol = 1E10
   [../]

@@ -60,6 +60,10 @@ PorousFlowGeneralisedConcentrations::initQpStatefulProperties()
 
   // the derivative matrix is fixed for all time
   // so it can be built here instead of in computeQpProperties
+  /**
+   * Note that in certain kernels (such as the dispersion kernel)
+   * we assume that dgen_conc_dvar = d(grad(gen_conv))/(d(grad(var)))
+   */
   unsigned int i = 0;
   for (unsigned int ph = 0; ph < _num_phases; ++ph)
   {
