@@ -1,24 +1,6 @@
-# Simple equilibrium reaction example to illustrate the use of the AqueousEquilibriumReactions
-# action.
-# In this example, a single primary species a is transported by diffusion and convection
-# from the left of the porous medium, reacting to form an equilibrium species pa2 according to
-# the equilibrium reaction specified in the AqueousEquilibriumReactions block as:
-#
-#  reactions = '2a = pa2 1'
-#
-# where the 2 is the weight of the equilibrium species, and the 1 refers to the equilibrium
-# constant (log10(Keq) = 1).
-#
-# The AqueousEquilibriumReactions action creates all the required kernels and auxkernels
-# to compute the reaction given by the above equilibrium reaction equation.
-#
-# Specifically, it adds to following:
-# * An AuxVariable named 'pa2' (given in the reactions equations)
-# * A AqueousEquilibriumRxnAux AuxKernel for this AuxVariable with all parameters
-# * A CoupledBEEquilibriumSub Kernel for each primary species with all parameters
-# * A CoupledDiffusionReactionSub Kernel for each primary species with all parameters
-# * A CoupledConvectionReactionSub Kernel for each primary species with all parameters if
-# pressure is a coupled variable
+# Simple equilibrium reaction example.
+# This simulation is identical to 1species.i, but explicitly includes the AuxVariables,
+# AuxKernels, and Kernels that the action in 1species.i adds
 
 [Mesh]
   type = GeneratedMesh
@@ -47,6 +29,18 @@
   [./pressure]
     order = FIRST
     family = LAGRANGE
+  [../]
+  [./pa2]
+  [../]
+[]
+
+[AuxKernels]
+  [./pa2eq]
+    type = AqueousEquilibriumRxnAux
+    variable = pa2
+    v = a
+    sto_v = 2
+    log_k = 1
   [../]
 []
 
@@ -80,6 +74,34 @@
   [./a_conv]
     type = PrimaryConvection
     variable = a
+    p = pressure
+  [../]
+  [./aeq]
+    type = CoupledBEEquilibriumSub
+    variable = a
+    v = a
+    log_k = 1
+    weight = 2
+    sto_v = 1
+    sto_u = 1
+  [../]
+  [./adiff]
+    type = CoupledDiffusionReactionSub
+    variable = a
+    v = a
+    log_k = 1
+    weight = 2
+    sto_v = 1
+    sto_u = 1
+  [../]
+  [./aconv]
+    type = CoupledConvectionReactionSub
+    variable = a
+    v = a
+    log_k = 1
+    weight = 2
+    sto_v = 1
+    sto_u = 1
     p = pressure
   [../]
 []
