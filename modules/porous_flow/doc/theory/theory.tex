@@ -482,10 +482,7 @@ saturated vapour pressure of the bulk aqueous (liquid water) phase.}
 \subsubsection{Diffusion and hydrodynamic dispersion}
 
 Diffusion and dispersion are proportional to the gradient of
-$\massfrac_{\phase}^{\species}$.  The TOUGH2 manual\footnote{TOUGH2
-  Users's Guide, Version 2.  Karsten Pruess, Curt Oldenburg, George
-  Moridis.  Earth Sciences Division, LBNL, Univ California, Berkeley.
-  November 1999, revised August 2011.  LBNL-43134 (revised).}, in
+$\massfrac_{\phase}^{\species}$.  The TOUGH2 manual \cite{pruess1999}, in
 Appendix~D, contains a nice discussion of diffusion-dispersion.  Here
 we use the common expression
 \begin{equation}
@@ -557,10 +554,7 @@ porosity and permeability described in
 flow and chemical reactions is via the equations of state used within
 the terms of \hyperref[heat.cons.eqn]{Eqn~(\ref*{heat.cons.eqn})}, as
 well as the source term $q^{T}$.  Joule-Thompson effects\footnote{See
-  for instance Eqn~(1) of SA Mathias et al. ``Analytical solution for
-  Joule-Thomson cooling during CO$_{2}$ geo-sequestration in depleted
-  oil and gas reservoirs''
-  http://www.osti.gov/scitech/servlets/purl/985333} may be included
+  for instance Eqn~(1) of \cite{mathias2010}} may be included
 via the fluid properties (\hyperref[eos]{Chapter~\ref*{eos}}).
 
 Here it is assumed the liquids and
@@ -1164,7 +1158,7 @@ s = \sum_{i}f(P_{i})w_{i}\delta(x - x_{i}) \ .
 Here $s$ is a volume source, measured in kg.m$^{-3}$.s$^{-1}$ (or
 J.m$^{-3}$.s$^{-1}$ for heat flow), which when integrated over the
 finite element yields just the sink ``strength'', $f$, which has units
-kg.s$^{-1}$ for fluid flow, or J.s$^{-1}$ for heat flow.  
+kg.s$^{-1}$ for fluid flow, or J.s$^{-1}$ for heat flow.
 The strength, $f$, is a function of porepressure or temperature, and
 may involve other quantities, as enumerated below.  The convention
 followed is:
@@ -1255,10 +1249,7 @@ types of $L$ are used in groundwater models.
 \subsection{Peaceman Boreholes}
 
 Wellbores are implemented using the method first described by
-Peaceman\footnote{DW Peaceman ``Interpretation of well-block pressures
-  in numerical reservoir simulation with nonsquare grid blocks and
-  anisotropic permeability'' Society of Petroleum Engineers of AIME,
-  June 1983, pp 531--543}  Here $f$ is a
+Peaceman \cite{peaceman1983}.  Here $f$ is a
 special function (measured in kg.s$^{-1}$ in standard
 units) defined in terms of the pressure at a
 point at the wall of the wellbore (which is an input parameter)
@@ -1340,9 +1331,7 @@ r_{e} = 0.28 \frac{\sqrt{\sqrt{\kappa_{xx}/\kappa_{yy}}L_{x}^{2} +
 Here $L_{x}$ and $L_{y}$ are the finite-difference spatial sizes.
 Other authors have generalised Peaceman's approach to writing $W$ for
 different geometrical situations.  Some of these are contained in the
-article by, Chen and Zhang\footnote{Z Chen and Y Zhang ``Well flow models for various
-  numerical methods'' International Journal of Numerical Analysis and
-  Modelling 6 (2009) 375--388}, where they show that for a
+article by Chen and Zhang \cite{chen2009}, where they show that for a
 finite element situation with square elements of size $L$, the
 borehole at a nodal position, and isotropic permeability
 \begin{equation}
@@ -1388,6 +1377,20 @@ obtain the following quantities:
 
 \section{Water and steam}
 \label{water.and.steam.sec}
+
+The IAPWS Industrial Formulation 1997 \cite{iapws1997} for the properties of water and steam are
+implemented in the \texttt{fluid\_properties} module. This formulation calculates
+properties of water and steam using pressure and temperature as inputs. The IAPWS-IF97
+formulation is split into five different regions in the phase diagram that are valid for
+\begin{align}
+  273.15 \,\mathrm{K} \le T \le 1073.15 \,\mathrm{ K}, \quad & p \le 100 \,\mathrm{MPa}, \nonumber \\
+  1073.15 \,\mathrm{K} < T \le 2273.15 \,\mathrm{ K}, \quad & p \le 50 \,\mathrm{MPa}.
+\end{align}
+
+All five regions are implemented in the \texttt{fluid\_properties} module. To avoid iteration
+in region 3 of the IAPWS-IF97 formulation, the backwards equations from \cite{iapws1997region3}
+are implemented.
+
 A high-precision equation of state for water and steam can be used to
 obtain the following quantities:
 \begin{enumerate}
@@ -1440,10 +1443,7 @@ Simplified fluid properties:
 
 \subsection{Van Genuchten}
 
-van Genuchten's capillary-pressure relationship\footnote{van
-  Genuchten, M. Th., ``A closed for equation for predicting the
-  hydraulic conductivity of unsaturated soils'' Soil Sci. Soc., 44,
-  892-898 (1980)} is
+van Genuchten's capillary-pressure relationship \cite{vangenuchten1980} is
 \begin{eqnarray}
 S_{\mathrm{eff}} & = & \left\{
 \begin{array}{ll}
@@ -1520,9 +1520,7 @@ I encourage users to set $m>0.5$.
 
 \subsection{Broadbridge-White}
 
-The Broadbridge-White\footnote{P Broadbridge, I White ``Constant rate rainfall
-infiltration: A versatile nonlinear model, 1 Analytical solution''.
-Water Resources Research 24 (1988) 145--154.} capillarity relationship
+The Broadbridge-White \cite{broadbridge1988} capillarity relationship
 valid for small $K_{n}$ is
 \begin{equation}
 S_{\mathrm{eff}} = S_{n} + (S_{s} - S_{n}) \frac{c}{1 + L(x)} \ .
@@ -1534,19 +1532,12 @@ x = (c - 1) e^{c - 1 - c P/\lambda} \ ,
 and $L(x)$ is the Lambert W-function that satisfies $L(z)e^{L(z)}=z$.
 This is of limited use in real simulations, and is only used in the Porous
 Flow module for comparison with the analytical solutions of
-Broadbridge and White, and Warrick, Lomen and Islas\footnote{AW
-  Warrick, DO Lomen and A Islas, ``An analytical solution to Richards'
-  Equation for a Draining Soil Profile'', Water Resources Research 26
-  (1990) 253--258.} for multi-phase infiltration and drainage
+Broadbridge and White \cite{broadbridge1988} and Warrick, Lomen and Islas \cite{warrick1990} for multi-phase infiltration and drainage
 problems.
 
 \subsection{Rogers-Stallybrass-Clements}
 
-The Rogers-Stallybrass-Clements capillary relationship\footnote{C
-  Rogers, MP Stallybrass and DL Clements ``On two phase filtration
-  under gravity and with boundary infiltration: application of a
-  Backlund transformation'' Nonlinear Analysis, Theory, Methods and
-  Applications 7 (1983) 785--799} is
+The Rogers-Stallybrass-Clements capillary relationship \cite{rsc1983} is
 \begin{equation}
 S_{\mathrm{eff}} = \frac{1}{\sqrt{1 + \exp((P_{c} - A)/B)}} \ ,
 \label{eqn.rsc.seff}
@@ -1570,8 +1561,7 @@ where $P$ is the fluid pressure.  It is common to use $\rho_{0} =
 \section{Tortuosity and diffusion coefficients}
 
 The tortuosity may be constant, or it may follow the
-Millington-Quirk\footnote{Millington and Quirk, Permeability of Porous
-  Solids, Trans. Faraday Soc., 57, 1200- 1207, 1961} form
+Millington-Quirk \cite{millington-quirk1961} form
 \begin{equation}
 \tau_{\phase} = \phi^{1/3}S_{\phase}^{10/3}
 \end{equation}
@@ -1622,7 +1612,7 @@ where $\phi$ is the porosity, and $a$ is a user-defined constant.
 
 \subsection{Kozeny-Carman}
 
-Using the Kozeny-Carman relationship\footnote{Oelkers
+Using the Kozeny-Carman relationship \footnote{Oelkers
 1996: Reviews in Mineralogy v. 34, p. 131-192}
 \begin{equation}
 k_{ij} = k_{ij}^{0} \frac{\phi^{n}}{(1 - \phi)^{m}} \ .
@@ -1716,7 +1706,7 @@ At first glance this expression may appear rather obscure.  It has
 been constructed to satisfy the following requirements:
 \begin{enumerate}
 \item As $x\rightarrow 0$, $\phi\rightarrow B$, which is necessary for
-continuity at $x=0$.  
+continuity at $x=0$.
 \item As $x\rightarrow\infty$, $\phi\rightarrow 0$, which is
   physically desireable.
 \item The expression is monotonically decreasing, which is both
@@ -1872,9 +1862,7 @@ derivative is evaluated at the nodes.  Specifically, $M^{\species}$ at
 a node depends only on the independent variables at that node.  It has
 been shown in many papers that this lumping is advantageous for mass
 conservation and reduces spurious oscillations of the pressure around
-sharp fronts\footnote{MA Celia, ET Bouloutas and RL Zabra ``A general
-  mass-conservative numerical solution for the unsaturated flow
-  equation''  Water Resources Research 26 (1990) 1483--1496.}
+sharp fronts \cite{celia1990}.
 
 The cause of oscillations around sharp fronts, and how mass lumping
 removes the oscillations, can be illustrated through a simple example.
@@ -2024,9 +2012,7 @@ R_{a} \equiv m_{a}I_{a} \ \ \ \mbox{if}\ \ \ I_{a}\geq 0 \ .
 \end{equation}
 The nodes for which $I_{a}\geq 0$ are called ``upwind nodes'', since
 fluid is flowing from them to the ``downwind nodes''.  I think this
-approach was first introduced by Dalen\footnote{V Dalen ``Simplified
-  finite-element models for reservoir flow problems'' SPEJ (Oct 1979)
-  333--343} in 1979.
+approach was first introduced by Dalen \cite{dalen1979} in 1979.
 
 The residual at the downwind nodes is determined by conserving mass.
 Specifically, let
@@ -2062,10 +2048,10 @@ found to be effective for various types of PorousFlow simulations.
 \item {\tt pc\_type = bjacobi, ksp\_type = bcgs}.
 \item {\tt pc\_type = bjacobi, ksp\_type = gmres}.
 \item {\tt pc\_type = asm, pc\_asm\_overlap = 2, sub\_pc\_type = lu,
-  sub\_pc\_factor\_shift\_type = NONZERO, 
+  sub\_pc\_factor\_shift\_type = NONZERO,
   ksp\_type = gmres}.
 \item {\tt pc\_type = asm, pc\_asm\_overlap = 2, sub\_pc\_type = lu,
-  sub\_pc\_factor\_shift\_type = NONZERO, 
+  sub\_pc\_factor\_shift\_type = NONZERO,
   ksp\_type = gmres} along with the following options {\tt
   -ksp\_diagonal\_scale -ksp\_diagonal\_scale\_fix
   -ksp\_gmres\_modifiedgramschmidt}.
@@ -2097,7 +2083,7 @@ criterion.
   steadystate if $P = -(\rho_{0} g + \epsilon)z$.  Here $\epsilon$
   needn't be constant: it may switch in sign, but its magnitude
   $|\epsilon|$ is roughly the same over the domain of interest.  For instance, for
-  water, an error of 
+  water, an error of
   $|\epsilon|=1$\,Pa.m$^{-1}$ might be suitable in your problem.
 
 Then recall
@@ -2774,5 +2760,8 @@ yields
 \end{equation}
 as written in \hyperref[eqn.phi.dog]{Eqn~(\ref*{eqn.phi.dog})}.
 
-\end{document}
+\clearpage
+\bibliography{theory}
+\bibliographystyle{unsrt}
 
+\end{document}
