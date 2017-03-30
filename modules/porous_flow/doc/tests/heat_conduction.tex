@@ -1,46 +1,5 @@
-\documentclass[]{scrreprt}
-\usepackage{amsmath,amsfonts,graphicx}
-\usepackage{multirow}
-\usepackage{pslatex}
-\usepackage{tabularx}
-\usepackage{comment}
-\usepackage{xspace}
-\usepackage{array}
-
-\usepackage{hyperref}
-
-\usepackage{caption}
-\DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
-
-\graphicspath{
-{figures/}
-}
-
-\def\species{\mathrm{sp}}
-\def\phase{\beta}
-\def\massfrac{\chi}
-\def\flux{\mathbf{F}}
-\def\darcyvel{\mathbf{v}}
-\def\energydens{\mathcal{E}}
-\def\d{\mathrm{d}}
-\def\diag{\mathrm{diag}\,}
-
-\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
-
-\setcounter{secnumdepth}{3}
-
-
-\begin{document}
-
-
-\title{Heat-Conduction Tests}
-\author{CSIRO}
-\maketitle
-
-\tableofcontents
-
-\chapter{Simple heat conduction in 1D}
+\chapter{Heat conduction}
+\section{Simple heat conduction in 1D}
 
 Porous-flow heat conduction is governed by the equation
 \begin{equation}
@@ -156,8 +115,3 @@ These tests are part of the automatic test suite.
   10$^2$ seconds with 10 timesteps.}
 \label{heat_conduction.fig}
 \end{figure}
-
-
-
-\end{document}
-

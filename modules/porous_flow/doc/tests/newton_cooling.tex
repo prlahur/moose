@@ -1,29 +1,5 @@
-\documentclass[]{scrreprt}
-\usepackage{amsmath,amsfonts,graphicx}
-
-\def\species{\mathrm{sp}}
-\def\phase{\mathrm{ph}}
-\def\massfrac{\chi}
-\def\flux{\mathbf{F}}
-\def\darcyvel{\mathbf{v}}
-\def\energydens{\mathcal{E}}
-\def\d{\mathrm{d}}
-
-\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
-
-\setcounter{secnumdepth}{3}
-
-
-\begin{document}
-
-
-\title{Newton-Cooling Tests}
-\author{CSIRO}
-\maketitle
-
-\tableofcontents
-
-\chapter{Classic Newton cooling in a bar}
+\chapter{Newton cooling}
+\section{Classic Newton cooling in a bar}
 
 Without fluids, mechanical deformation and sinks, the heat equation is
 \begin{equation}
@@ -72,7 +48,7 @@ $T_{0}=2$ and $T_{e}=1$.  The solution is shown in Figure~\ref{nc_heat.fig}
 \end{figure}
 
 
-\chapter{Porepressure sink in a bar}
+\section{Porepressure sink in a bar}
 \label{pp.sec}
 
 These tests demonstrate that MOOSE behaves correctly when a simulation
@@ -184,7 +160,7 @@ converge.  The results are shown in Figure~\ref{nc.fig}.
 \end{figure}
 
 
-\chapter{Porepressure sink in a bar with heat}
+\section{Porepressure sink in a bar with heat}
 \label{pp.heat.sec}
 
 The simulation of Section~\ref{pp.sec} is re-run, but this time
@@ -328,11 +304,3 @@ MOOSE produces this result exactly, as illustrated in Figure~\ref{nc08.fig}
 \label{nc08.fig}
 \end{center}
 \end{figure}
-
-
-
-
-
-\end{document}
-
-

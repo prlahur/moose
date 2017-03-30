@@ -1,46 +1,4 @@
-\documentclass[]{scrreprt}
-\usepackage{amsmath,amsfonts,graphicx}
-\usepackage{multirow}
-\usepackage{pslatex}
-\usepackage{tabularx}
-\usepackage{comment}
-\usepackage{xspace}
-\usepackage{array}
-
-\usepackage{hyperref}
-
-\usepackage{caption}
-\DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
-
-\graphicspath{
-{figures/}
-}
-
-\def\species{\mathrm{sp}}
-\def\phase{\mathrm{ph}}
-\def\massfrac{\chi}
-\def\flux{\mathbf{F}}
-\def\darcyvel{\mathbf{v}}
-\def\energydens{\mathcal{E}}
-\def\d{\mathrm{d}}
-
-\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
-
-\setcounter{secnumdepth}{3}
-
-
-\begin{document}
-
-
-\title{Pressure-Pulse Tests}
-\author{CSIRO}
-\maketitle
-
-\tableofcontents
-
 \chapter{Presssure-pulse in 1D}
-
 
 Richards' equation for flow through a fully saturated medium without
 gravity and without sources is just Darcy's equation
@@ -109,8 +67,3 @@ These are part of the automatic test suite.
   identical results for the water porepressure.}
 \label{pressure_pulse.fig}
 \end{figure}
-
-
-
-\end{document}
-

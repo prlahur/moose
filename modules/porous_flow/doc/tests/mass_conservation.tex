@@ -1,44 +1,3 @@
-\documentclass[]{scrreprt}
-\usepackage{amsmath,amsfonts,graphicx}
-\usepackage{multirow}
-\usepackage{pslatex}
-\usepackage{tabularx}
-\usepackage{comment}
-\usepackage{xspace}
-\usepackage{array}
-
-\usepackage{hyperref}
-
-\usepackage{caption}
-\DeclareCaptionFont{white}{\color{white}}
-\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
-
-\graphicspath{
-{figures/}
-}
-
-\def\species{\mathrm{sp}}
-\def\phase{\mathrm{ph}}
-\def\massfrac{\chi}
-\def\flux{\mathbf{F}}
-\def\darcyvel{\mathbf{v}}
-\def\energydens{\mathcal{E}}
-\def\d{\mathrm{d}}
-
-\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
-
-\setcounter{secnumdepth}{3}
-
-
-\begin{document}
-
-
-\title{Mass-Conservation Tests}
-\author{CSIRO}
-\maketitle
-
-\tableofcontents
-
 \chapter{PorousFlowFluidMass postprocessor}
 
 \section{Single-phase, single-component}
@@ -144,7 +103,3 @@ Species & Phase & Total mass (Eq. (\ref{eq:mass})) & Total mass (MOOSE) \\
 \hline
 \end{tabular}
 \end{center}
-
-
-\end{document}
-

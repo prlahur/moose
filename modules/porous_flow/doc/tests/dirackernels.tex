@@ -1,41 +1,5 @@
-\documentclass[]{scrreprt}
-\usepackage{amsmath,amsfonts,graphicx}
-%\usepackage{multirow}
-%\usepackage{pslatex}
-%\usepackage{tabularx}
-%\usepackage{comment}
-%\usepackage{xspace}
-%\usepackage{array}
-
-%\usepackage{hyperref}
-
-%\usepackage{caption}
-%\DeclareCaptionFont{white}{\color{white}}
-%\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
-
-\def\species{\mathrm{sp}}
-\def\phase{\mathrm{ph}}
-\def\massfrac{\chi}
-\def\flux{\mathbf{F}}
-\def\darcyvel{\mathbf{v}}
-\def\energydens{\mathcal{E}}
-\def\d{\mathrm{d}}
-
-\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
-
-\setcounter{secnumdepth}{3}
-
-
-\begin{document}
-
-
-\title{DiracKernel Tests}
-\author{CSIRO}
-\maketitle
-
-\tableofcontents
-
-\chapter{Geometric tests}
+\chapter{Dirac kernels}
+\section{Geometric tests}
 
 The test suite contains tests that demonstrate:
 \begin{itemize}
@@ -46,7 +10,7 @@ The test suite contains tests that demonstrate:
   is not extracted from those nodes.
 \end{itemize}
 
-\chapter{Peaceman borehole fluxes}
+\section{Peaceman borehole fluxes}
 
 The automatic test suite contains four tests that check that the Peaceman flux
 \begin{equation}
@@ -115,7 +79,7 @@ Eqn~(\ref{bh.propto.eqn}) is indeed correctly implemented in MOOSE.
 \label{bh02_05.fig}
 \end{figure}
 
-\chapter{Comparison with analytic solution}
+\section{Comparison with analytic solution}
 The Richards' equation for a fully-saturated medium with $\rho \propto
 \exp(P/B)$ and large constant bulk modulus $B$ becomes Darcy's equation
 \begin{equation}
@@ -170,8 +134,6 @@ $r=300$\,m; and the outer pressure is $P_{R}=10$\,MPa.
 \label{bh07.mesh.fig}
 \end{figure}
 
-
-
 \begin{figure}[htb]
 \centering
 \includegraphics[width=12cm]{bh07.pdf}
@@ -180,8 +142,3 @@ $r=300$\,m; and the outer pressure is $P_{R}=10$\,MPa.
   distribution surrounding single borehole.}
 \label{bh07.fig}
 \end{figure}
-
-
-
-\end{document}
-

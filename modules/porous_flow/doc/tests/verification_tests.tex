@@ -1,0 +1,72 @@
+\documentclass[12pt]{report}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage{xspace}
+\usepackage{array}
+\usepackage{authblk}
+
+\setlength\oddsidemargin{-5mm}
+\setlength\topmargin{-2.0cm}
+\setlength\evensidemargin{-5mm}
+\setlength\textwidth{170mm}
+\setlength\textheight{240mm}
+\setlength\parindent{0mm}
+\setlength\parskip{5mm}
+
+\def\species{\mathrm{sp}}
+\def\phase{\mathrm{ph}}
+\def\massfrac{\chi}
+\def\flux{\mathbf{F}}
+\def\darcyvel{\mathbf{v}}
+\def\energydens{\mathcal{E}}
+\def\d{\mathrm{d}}
+\def\diag{\mathrm{diag}\,}
+
+\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
+\DeclareMathOperator{\erfc}{erfc}
+
+\begin{document}
+
+\title{MOOSE's PorousFlow module:\\verification tests}
+
+\author{Andy Wilkins}
+\author{Chris Green}
+\affil{CSIRO}
+
+\maketitle
+
+\abstract{This document describes the physics captured by MOOSE's
+  PorousFlow module, as well as describing various numerical aspects
+  and tips to ensure good convergence.
+
+Each nontrivial test in the test suite {\em has its own separate
+  documentation} and these should help users understand more clearly
+how to build a PorousFlow input file.
+
+Within this document, black text indicates funcionality that has been
+implemented and tested \textcolor{red}{and red text indicates
+  functionality that should be implemented by December 2017}.  }
+
+\tableofcontents
+
+\include{mass_conservation}
+\include{jacobian}
+\include{dirackernels}
+\include{sinks}
+\include{gravity}
+\include{pressure_pulse}
+\include{dispersion}
+\include{broadbridge_white}
+\include{rogers_stallybrass_clements}
+\include{buckley_leveret}
+\include{heat_conduction}
+\include{heat_advection}
+\include{newton_cooling}
+\include{poro_elasticity}
+\include{plastic_heat}
+
+\end{document}

@@ -1,29 +1,5 @@
-\documentclass[]{report}
-\usepackage{amsmath,amsfonts,graphicx}
-
-\def\species{\mathrm{sp}}
-\def\phase{\mathrm{ph}}
-\def\massfrac{\chi}
-\def\flux{\mathbf{F}}
-\def\darcyvel{\mathbf{v}}
-\def\energydens{\mathcal{E}}
-\def\d{\mathrm{d}}
-
-\newcommand{\uo}{\mbox{UO\textsubscript{2}}\xspace}
-
-\setcounter{secnumdepth}{3}
-\DeclareMathOperator{\erfc}{erfc}
-
-\begin{document}
-
-
-\title{Diffusion and hydrodynamic dispersion Tests}
-\author{CSIRO}
-\maketitle
-
-\tableofcontents
-
-\chapter{Diffusion}
+\chapter{Diffusion and dispersion}
+\section{Diffusion}
 
 The results of MOOSE are compared with the classical diffusion profile
 for a simple 1D model with mass diffusion. In this example, the left end of
@@ -45,7 +21,7 @@ The comparison between MOOSE and the analytical solution is presented in Figure 
 \label{fig:diff}
 \end{figure}
 
-\chapter{Hydrodynamic dispersion}
+\section{Hydrodynamic dispersion}
 
 The MOOSE results are compared to known analytical solutions for simple problems in order to vertify that the MOOSE implementation is working properly. For a simple 1D model with no diffusion and constant velocity $v$, an analytical solution for the mass fraction profile is given by Javendel et al. (1984)\footnote{Javandel, I, Doughty, C, Tsang, C-f, Groundwater Transport, Handbook of Mathematical Models, AGU, 1984},
 \begin{align}
@@ -69,7 +45,3 @@ The comparison between the automatic test problem \emph{disp01} and the analytic
 \caption{Mass fraction profile from hydrodynamic dispersion only using a more refined grid and smaller time steps}
 \label{fig:dispheavy}
 \end{figure}
-
-
-
-\end{document}
