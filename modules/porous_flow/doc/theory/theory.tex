@@ -1350,36 +1350,68 @@ the geometry.  The user may specify this quantity via the {\tt
 \chapter{Equations of state and other functions}
 \label{eos}
 
-This chapter briefly outlines the Porous Flow Materials.
+This chapter briefly outlines the fluid properties available to the PorousFlow module.
 
-\section{Brine}
+\section{Fluid properties}
 
-A high-precision equation of state for brine can be used to
-obtain the following quantities:
+The PorousFlow module accesses fluids properties such as density or viscosity from the
+fluid descriptions available in the {\tt FluidProperties} module. This module provides
+a consistent interface to fluid properties, enabling the user to easily swap fluids in the input
+file.
+
+Each of the fluids available in the {\tt FluidProperties} module provide the following thermophysical
+properties:
+
 \begin{enumerate}
-\item density
-\item viscosity
-\item internal energy
-\item enthalpy
+  \item density
+  \item viscosity
+  \item internal energy
+  \item enthalpy
+  \item isobaric specific heat capacity
+  \item isochoric specific heat capacity
+  \item thermal conductivity
+  \item specific entropy
 \end{enumerate}
 
+as well as derivatives of each of these with respect to their variables.
 
-\section{CO$_{2}$}
+The following are the fluids that are currently available in the {\tt FluidProperties}
+module.
 
-A high-precision equation of state for CO$_{2}$ can be used to
-obtain the following quantities:
-\begin{enumerate}
-\item density
-\item viscosity
-\item internal energy
-\item enthalpy
-\end{enumerate}
+\subsection{Ideal gas}
+\label{ideal.gas.sec}
 
-\section{Water and steam}
+A simple formulation that is suitable for ideal gases, where properties are derived from
+the ideal gas law
+\begin{equation}
+  P = \rho R T.
+  \label{eq:idealgas}
+\end{equation}
+
+\subsection{Simplified fluid}
+\label{simplified.fluid.sec}
+
+A simplified fluid based on a constant bulk modulus density fluid, where density is
+\begin{equation}
+  \rho = \rho_{0}\exp(P/K_{f} - \alpha_{f} T),
+  \label{eq:simplifiedfluid}
+\end{equation}
+where $K_{f}$ (the bulk modulus) and $\alpha_{f}$ (the thermal expansion coefficient) are
+constant, is also available.
+
+In this formulation, viscosity and thermal conductivity are constant, while internal
+energy and enthalpy are given by
+\begin{equation}
+  \energydens = C_{v}T, \quad h = C_{p}T,
+\end{equation}
+where $C_{v}$ (the specific heat capacity at constant volume), and $C_{p}$ (the
+specific heat capacity at constant pressure), are both constant.
+
+\subsection{Water and steam}
 \label{water.and.steam.sec}
 
 The IAPWS Industrial Formulation 1997 \cite{iapws1997} for the properties of water and steam are
-implemented in the \texttt{fluid\_properties} module. This formulation calculates
+implemented in the \texttt{FluidProperties} module. This formulation calculates
 properties of water and steam using pressure and temperature as inputs. The IAPWS-IF97
 formulation is split into five different regions in the phase diagram that are valid for
 \begin{align}
@@ -1391,50 +1423,41 @@ All five regions are implemented in the \texttt{fluid\_properties} module. To av
 in region 3 of the IAPWS-IF97 formulation, the backwards equations from \cite{iapws1997region3}
 are implemented.
 
-A high-precision equation of state for water and steam can be used to
-obtain the following quantities:
-\begin{enumerate}
-\item density
-\item viscosity
-\item internal energy
-\item enthalpy
-\end{enumerate}
+Viscosity is calculated using the IAPWS 2008 formulation \cite{iapws2008}. Note that the critical
+enhancement has not been implemented.
 
-\section{An ideal gas}
+Thermal conductivity is calculated using the IAPS 1985 formualtion \cite{iaps1985}. Although there
+is a newer formulation available \cite{iapws2011}, it is significantly more complicated, so has not
+been implemented yet.
 
-The following quantities can be obtained for an ideal gas
-\begin{enumerate}
-\item density
-\item viscosity
-\item internal energy
-\item enthalpy
-\end{enumerate}
+\subsection{Brine}
 
-\section{Methane}
+A high-precision and consistent formulation for fluid properties for binary salt (NaCl) and water
+mixtures at pressures and temperatures of interest is provided by Driesner and Heinrich \cite{driesner2007a}
+and Driesner \cite{driesner2007b}. Density, enthalpy, internal energy and specific heat capacity are
+calculated using the formulations provided in \cite{driesner2007a} and \cite{driesner2007b}.
 
-A high-precision equation of state for methane can be used to
-obtain the following quantities:
-\begin{enumerate}
-\item density
-\item viscosity
-\item internal energy
-\item enthalpy
-\end{enumerate}
+Viscosity and thermal conductivity of brine are calculated using the formulation of Phillips et al \cite{phillips1981}.
 
-\section{A simplified fluid}
+Brine vapor pressure is calculated using the formulation presented in Haas Jr.\cite{haas1976}. Solubility of
+solid salt (halite) in water is given by Potter et al \cite{potter1977}.
 
-Simplified fluid properties:
-\begin{enumerate}
-\item density $\rho = \rho_{0}\exp(P/K_{f} - \alpha_{f} T)$, where $K_{f}$ (the
-  bulk modulus) and $\alpha_{f}$ (the thermal expansion coefficient) are
-  constant.
-\item viscosity is constant
-\item internal energy $\energydens = C_{v}T$, where $C_{v}$ (the
-  specific heat capacity at constant volume) is constant.
-\item enthalpy $h = C_{p}T$, where $C_{p}$ (the specific heat capacity
-  at constant pressure) is constant.
-\item Constant thermal conductivity
-\end{enumerate}
+\subsection{CO$_{2}$}
+
+Fluid properties for CO$_2$ are mainly calculated using the Span and Wagener equation of state \cite{spanwagner1996}. This
+formulation uses density and temperature as the primary variables with which to calculate properties
+such as density, enthalpy and internal energy. However, the {\tt FluidProperties} module uses pressure and
+temperature in its interface, which is suitable for use in the PorousFlow module. As a result, CO$_2$
+properties are typically calculated by first calculating density iteratively for a given pressure and temperature.
+This density is then used to calculate the other properties, such as internal energy, directly.
+
+Viscosity is calculated using the formulation presented in Fenghour et al \cite{fenghour1998}, while
+thermal conductivity is taken from Scalabrin et al \cite{scalabrin2006}.
+
+\subsection{Methane}
+
+Density of methane is calculated assuming an ideal gas, while all other properties are calculated using
+the formulations provided in Irvine and Liley \cite{irvine1984}.
 
 \section{\textcolor{blue}{CO$_{2}$ and brine}}
 
