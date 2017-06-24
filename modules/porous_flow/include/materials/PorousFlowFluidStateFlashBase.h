@@ -194,6 +194,8 @@ protected:
   std::vector<FluidStateProperties> _fsp;
   /// Capillary pressure UserObject
   const PorousFlowCapillaryPressure & _pc_uo;
+  bool _is_delta;
+  Real _prop;
 };
 
 #endif // POROUSFLOWFLUIDSTATEFLASHBASE_H

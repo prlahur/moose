@@ -30,7 +30,7 @@
   [./z]
     type = RandomIC
     min = 0.01
-    max = 0.2
+    max = 0.06
     variable = z
   [../]
 []
@@ -69,8 +69,7 @@
     type = PorousFlowCapillaryPressureVG
     m = 0.5
     alpha = 1e1
-    pc_max = -1e4
-    sat_lr = 0.1
+    pc_max = -1e1
   [../]
 []
 
@@ -126,7 +125,7 @@
   [../]
   [./relperm1]
     type = PorousFlowRelativePermeabilityCorey
-    n = 3
+    n = 2
     phase = 1
     at_nodes = true
   [../]

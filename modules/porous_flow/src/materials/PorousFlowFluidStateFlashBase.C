@@ -89,7 +89,9 @@ PorousFlowFluidStateFlashBase::PorousFlowFluidStateFlashBase(const InputParamete
     _nr_max_its(42),
     _nr_tol(1.0e-12),
     _is_initqp(false),
-    _pc_uo(getUserObject<PorousFlowCapillaryPressure>("capillary_pressure"))
+    _pc_uo(getUserObject<PorousFlowCapillaryPressure>("capillary_pressure")),
+    _is_delta(false),
+    _prop(0.0)
 {
   // Check that the number of total mass fractions provided as primary variables is correct
   if (_num_z_vars != _num_components - 1)
