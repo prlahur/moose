@@ -19,7 +19,9 @@ validParams<PrimaryTimeDerivative>()
 }
 
 PrimaryTimeDerivative::PrimaryTimeDerivative(const InputParameters & parameters)
-  : TimeDerivative(parameters), _porosity(getMaterialProperty<Real>("porosity"))
+  : DerivativeMaterialInterface<TimeDerivative>(parameters),
+    _porosity(getMaterialProperty<Real>("porosity")),
+    _dporosity_dt(getDefaultMaterialProperty<Real>("dporosity_dt"))
 {
 }
 
@@ -32,5 +34,6 @@ PrimaryTimeDerivative::computeQpResidual()
 Real
 PrimaryTimeDerivative::computeQpJacobian()
 {
-  return _porosity[_qp] * TimeDerivative::computeQpJacobian();
+  return _porosity[_qp] * TimeDerivative::computeQpJacobian() +
+         _dporosity_dt[_qp] * TimeDerivative::computeQpResidual();
 }

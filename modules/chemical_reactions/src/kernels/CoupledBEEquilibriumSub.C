@@ -43,6 +43,7 @@ CoupledBEEquilibriumSub::CoupledBEEquilibriumSub(const InputParameters & paramet
     _gamma_eq(coupledValue("gamma_eq")),
     _gamma_eq_old(coupledValueOld("gamma_eq")),
     _porosity(getMaterialProperty<Real>("porosity")),
+    _porosity_old(getMaterialPropertyOld<Real>("porosity")),
     _u_old(valueOld())
 {
   const unsigned int n = coupledComponents("v");

@@ -11,18 +11,17 @@
 #define PRIMARYTIMEDERIVATIVE
 
 #include "TimeDerivative.h"
+#include "DerivativeMaterialInterface.h"
 
-// Forward Declaration
 class PrimaryTimeDerivative;
 
 template <>
 InputParameters validParams<PrimaryTimeDerivative>();
 
 /**
- * Define the Kernel for a CoupledConvectionReactionSub operator that looks like:
- * storage * delta pressure / delta t
+ * Derivative of primary species concentration with respect to time
  */
-class PrimaryTimeDerivative : public TimeDerivative
+class PrimaryTimeDerivative : public DerivativeMaterialInterface<TimeDerivative>
 {
 public:
   PrimaryTimeDerivative(const InputParameters & parameters);
@@ -31,8 +30,10 @@ protected:
   virtual Real computeQpResidual() override;
   virtual Real computeQpJacobian() override;
 
-  /// Material property of porosity
+  /// Porosity
   const MaterialProperty<Real> & _porosity;
+  /// Derivative of porosity wrt time
+  const MaterialProperty<Real> & _dporosity_dt;
 };
 
 #endif // PRIMARYTIMEDERIVATIVE
