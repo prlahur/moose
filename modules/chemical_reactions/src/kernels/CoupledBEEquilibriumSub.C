@@ -92,7 +92,8 @@ CoupledBEEquilibriumSub::computeQpResidual()
     val_old *= std::pow((*_gamma_v_old[i])[_qp] * (*_v_vals_old[i])[_qp], _sto_v[i]);
   }
 
-  return _porosity[_qp] * _weight * _test[_i][_qp] * (val_new - val_old) / _dt;
+  return _weight * _test[_i][_qp] * (_porosity[_qp] * _val_new - _porosity_old[_qp] * _val_old) /
+         _dt;
 }
 
 Real
