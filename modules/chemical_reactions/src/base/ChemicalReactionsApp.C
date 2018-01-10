@@ -37,7 +37,8 @@
 
 #include "LangmuirMaterial.h"
 #include "MollifiedLangmuirMaterial.h"
-#include "MineralPorosity.h"
+#include "MineralVolumeFraction.h"
+#include "SolidKineticPorosity.h"
 
 #include "TotalMineralVolumeFraction.h"
 
@@ -105,7 +106,8 @@ ChemicalReactionsApp::registerObjects(Factory & factory)
 
   registerMaterial(LangmuirMaterial);
   registerMaterial(MollifiedLangmuirMaterial);
-  registerMaterial(MineralPorosity);
+  registerMaterial(MineralVolumeFraction);
+  registerMaterial(SolidKineticPorosity);
 
   registerPostprocessor(TotalMineralVolumeFraction);
 }

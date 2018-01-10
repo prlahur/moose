@@ -61,7 +61,6 @@ KineticDisPreRateAux::computeValue()
   Real omega = 1.0;
 
   if (_vals.size() > 0)
-  {
     for (unsigned int i = 0; i < _vals.size(); ++i)
     {
       if ((*_vals[i])[_qp] <= 0.0)
@@ -69,7 +68,7 @@ KineticDisPreRateAux::computeValue()
       else
         omega *= std::pow((*_vals[i])[_qp], _sto_v[i]);
     }
-  }
+
   for (unsigned int i = 0; i < _vals.size(); ++i)
     _console << "vals " << (*_vals[i])[_qp] << std::endl;
   _console << "omega " << omega << std::endl;
