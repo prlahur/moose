@@ -27,11 +27,13 @@
 #include "KineticDisPreConcAux.h"
 #include "KineticDisPreRateAux.h"
 #include "PHAux.h"
+#include "EquilibriumConstantAux.h"
 
 #include "AddPrimarySpeciesAction.h"
 #include "AddSecondarySpeciesAction.h"
 #include "AddCoupledEqSpeciesAction.h"
 #include "AddCoupledSolidKinSpeciesAction.h"
+#include "AddGeochemicalDatabaseSpeciesAction.h"
 
 #include "ChemicalOutFlowBC.h"
 
@@ -99,6 +101,7 @@ ChemicalReactionsApp::registerObjects(Factory & factory)
   registerAux(KineticDisPreConcAux);
   registerAux(KineticDisPreRateAux);
   registerAux(PHAux);
+  registerAux(EquilibriumConstantAux);
 
   registerBoundaryCondition(ChemicalOutFlowBC);
 
@@ -122,12 +125,17 @@ ChemicalReactionsApp::associateSyntax(Syntax & syntax, ActionFactory & action_fa
   registerSyntax("AddSecondarySpeciesAction", "ReactionNetwork/SolidKineticReactions");
   registerSyntax("AddCoupledEqSpeciesAction", "ReactionNetwork/AqueousEquilibriumReactions");
   registerSyntax("AddCoupledSolidKinSpeciesAction", "ReactionNetwork/SolidKineticReactions");
+  registerSyntax("AddGeochemicalDatabaseSpeciesAction", "ReactionNetwork/GeochemicalDatabase");
   registerAction(AddPrimarySpeciesAction, "add_variable");
   registerAction(AddSecondarySpeciesAction, "add_aux_variable");
   registerAction(AddCoupledEqSpeciesAction, "add_kernel");
   registerAction(AddCoupledEqSpeciesAction, "add_aux_kernel");
   registerAction(AddCoupledSolidKinSpeciesAction, "add_kernel");
   registerAction(AddCoupledSolidKinSpeciesAction, "add_aux_kernel");
+  registerAction(AddGeochemicalDatabaseSpeciesAction, "add_variable");
+  registerAction(AddGeochemicalDatabaseSpeciesAction, "add_aux_variable");
+  registerAction(AddGeochemicalDatabaseSpeciesAction, "add_kernel");
+  registerAction(AddGeochemicalDatabaseSpeciesAction, "add_aux_kernel");
 }
 
 // External entry point for dynamic execute flag registration
