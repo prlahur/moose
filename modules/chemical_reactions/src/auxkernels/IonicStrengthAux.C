@@ -12,19 +12,13 @@ validParams<IonicStrengthAux>()
 {
   InputParameters params = validParams<AuxKernel>();
   params.addRequiredParam<std::vector<Real>>("z", "The charge of each chemical species");
-  params.addCoupledVar("conc", "The aqueous species in solution (primary and secondary)");
-  MooseEnum units("molarity molality", "molarity");
-  params.addParam<MooseEnum>("units", units, "Units of ionic strength (molarity or molality)");
-  params.addCoupledVar("density", 1000.0, "Density of water");
+  params.addRequiredCoupledVar("conc", "The aqueous species in solution (primary and secondary)");
   params.addClassDescription("Ionic strength of solution");
   return params;
 }
 
 IonicStrengthAux::IonicStrengthAux(const InputParameters & parameters)
-  : AuxKernel(parameters),
-    _z(getParam<std::vector<Real>>("z")),
-    _units(getParam<MooseEnum>("units").getEnum<IonicStrengthUnitsEnum>()),
-    _density(coupledValue("density"))
+  : AuxKernel(parameters), _z(getParam<std::vector<Real>>("z"))
 {
   const unsigned int n = coupledComponents("conc");
 
@@ -44,9 +38,6 @@ IonicStrengthAux::computeValue()
 
   for (unsigned int i = 0; i < _conc.size(); ++i)
     sum += _z[i] * _z[i] * (*_conc[i])[_qp];
-
-  if (_units == IonicStrengthUnitsEnum::MOLALITY)
-    sum /= _density[_qp];
 
   return 0.5 * sum;
 }

@@ -47,4 +47,9 @@
     input = calcium_bicarbonate.i
     csvdiff = calcium_bicarbonate_out.csv
   [../]
+  [./co2_h2o_dh]
+    type = CSVDiff
+    input = co2_h2o_dh.i
+    csvdiff = co2_h2o_dh_out.csv
+  [../]
 []

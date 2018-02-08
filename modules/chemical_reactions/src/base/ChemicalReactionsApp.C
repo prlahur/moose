@@ -30,6 +30,7 @@
 #include "TotalConcentrationAux.h"
 #include "EquilibriumConstantAux.h"
 #include "IonicStrengthAux.h"
+#include "ActivityCoefficientDHAux.h"
 
 #include "AddPrimarySpeciesAction.h"
 #include "AddSecondarySpeciesAction.h"
@@ -105,6 +106,7 @@ ChemicalReactionsApp::registerObjects(Factory & factory)
   registerAux(TotalConcentrationAux);
   registerAux(EquilibriumConstantAux);
   registerAux(IonicStrengthAux);
+  registerAux(ActivityCoefficientDHAux);
 
   registerBoundaryCondition(ChemicalOutFlowBC);
 
