@@ -53,17 +53,15 @@ private:
   const VariableValue & _gamma_eq_old;
   /// Porosity
   const MaterialProperty<Real> & _porosity;
-
   /// Old value of porosity
   const MaterialProperty<Real> & _porosity_old;
-
-  /// Coupled primary species variable numbers.
+  /// Coupled primary species variable numbers
   std::vector<unsigned int> _vars;
   /// Coupled primary species concentrations
   std::vector<const VariableValue *> _v_vals;
   /// Old values of coupled primary species concentrations
   std::vector<const VariableValue *> _v_vals_old;
-  /// Old value of the primary species concentration.
+  /// Old value of the primary species concentration
   const VariableValue & _u_old;
 };
 

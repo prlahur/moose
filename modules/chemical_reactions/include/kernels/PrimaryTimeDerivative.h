@@ -32,8 +32,10 @@ protected:
 
   /// Porosity
   const MaterialProperty<Real> & _porosity;
-  /// Derivative of porosity wrt time
-  const MaterialProperty<Real> & _dporosity_dt;
+  /// Old value of porosity
+  const MaterialProperty<Real> & _porosity_old;
+  /// Old value of the primary species concentration
+  const VariableValue & _u_old;
 };
 
 #endif // PRIMARYTIMEDERIVATIVE

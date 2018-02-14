@@ -80,10 +80,10 @@ CoupledBEEquilibriumSub::computeQpResidual()
   mooseAssert(_gamma_eq[_qp] > 0.0, "Activity coefficient must be greater than zero");
 
   // Contribution due to primary species that this kernel acts on
-  Real val_new =
-      std::pow(10.0, _log_k) * std::pow(_gamma_u[_qp] * _u[_qp], _sto_u) / _gamma_eq[_qp];
-  Real val_old = std::pow(10.0, _log_k) * std::pow(_gamma_u_old[_qp] * _u_old[_qp], _sto_u) /
-                 _gamma_eq_old[_qp];
+  Real val_new = _porosity[_qp] * std::pow(10.0, _log_k) *
+                 std::pow(_gamma_u[_qp] * _u[_qp], _sto_u) / _gamma_eq[_qp];
+  Real val_old = _porosity_old[_qp] * std::pow(10.0, _log_k) *
+                 std::pow(_gamma_u_old[_qp] * _u_old[_qp], _sto_u) / _gamma_eq_old[_qp];
 
   // Contribution due to coupled primary species
   for (unsigned int i = 0; i < _vars.size(); ++i)
@@ -92,7 +92,7 @@ CoupledBEEquilibriumSub::computeQpResidual()
     val_old *= std::pow((*_gamma_v_old[i])[_qp] * (*_v_vals_old[i])[_qp], _sto_v[i]);
   }
 
-  return _porosity[_qp] * _test[_i][_qp] * _weight * (val_new - val_old) / _dt;
+  return _test[_i][_qp] * _weight * (val_new - val_old) / _dt;
 }
 
 Real

@@ -19,8 +19,7 @@ template <>
 InputParameters validParams<CoupledBEKinetic>();
 
 /**
- * Define the Kernel for a CoupledBEKinetic operator that looks like:
- * delta (weight * v) / delta t.
+ * Rate of primary species consumed in mineral reaction
  */
 class CoupledBEKinetic : public Kernel
 {
@@ -31,16 +30,13 @@ protected:
   virtual Real computeQpResidual() override;
 
 private:
-  /// Material property of porosity.
+  /// Material property of porosity
   const MaterialProperty<Real> & _porosity;
-
-  /// Weight of the kinetic mineral concentration in the total primary species concentration.
+  /// Weight of the kinetic mineral concentration in the total primary species concentration
   const std::vector<Real> _weight;
-
-  /// Coupled kinetic mineral concentrations.
+  /// Coupled kinetic mineral concentrations
   std::vector<const VariableValue *> _vals;
-
-  /// Coupled old values of kinetic mineral concentrations.
+  /// Coupled old values of kinetic mineral concentrations
   std::vector<const VariableValue *> _vals_old;
 };
 
