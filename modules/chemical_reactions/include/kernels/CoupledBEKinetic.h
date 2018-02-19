@@ -30,8 +30,10 @@ protected:
   virtual Real computeQpResidual() override;
 
 private:
-  /// Material property of porosity
+  /// Porosity
   const MaterialProperty<Real> & _porosity;
+  /// Old value of porosity
+  const MaterialProperty<Real> & _porosity_old;
   /// Weight of the kinetic mineral concentration in the total primary species concentration
   const std::vector<Real> _weight;
   /// Coupled kinetic mineral concentrations

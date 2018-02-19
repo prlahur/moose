@@ -69,13 +69,8 @@ KineticDisPreRateAux::computeValue()
         omega *= std::pow((*_vals[i])[_qp], _sto_v[i]);
     }
 
-  for (unsigned int i = 0; i < _vals.size(); ++i)
-    _console << "vals " << (*_vals[i])[_qp] << std::endl;
-  _console << "omega " << omega << std::endl;
-
   const Real saturation_SI = omega / std::pow(10.0, _log_k);
   Real kinetic_rate = _r_area * kconst * (1.0 - saturation_SI);
-  _console << "saturation_SI " << saturation_SI << std::endl;
 
   if (std::abs(kinetic_rate) <= 1.0e-12)
     kinetic_rate = 0.0;

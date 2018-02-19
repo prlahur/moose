@@ -41,19 +41,13 @@ MineralVolumeFraction::MineralVolumeFraction(const InputParameters & parameters)
 void
 MineralVolumeFraction::computeQpProperties()
 {
-  Real species_volume_fraction = 0.0;
+  Real species_vf = 0.0;
 
   for (unsigned int i = 0; i < _num_coupled_species; ++i)
-    species_volume_fraction +=
-        (*_coupled_species_conc[i])[_qp] * _molar_volume[i] / _current_elem_volume;
+    species_vf += (*_coupled_species_conc[i])[_qp] * _molar_volume[i] / _current_elem_volume;
 
   // Volume fraction cannot be less than 0 or greater than 1
-  if (species_volume_fraction < 0.0)
-    species_volume_fraction = 0.0;
-  if (species_volume_fraction > 1.0)
-    species_volume_fraction = 1.0;
+  species_vf = species_vf < 0.0 ? 0 : (species_vf > 1.0 ? 1 : species_vf);
 
-  _console << "_coupled_species_conc " << (*_coupled_species_conc[0])[_qp] << std::endl;
-  _console << "species_volume_fraction " << species_volume_fraction << std::endl;
-  _mineral_volume_frac[_qp] = species_volume_fraction;
+  _mineral_volume_frac[_qp] = species_vf;
 }

@@ -26,15 +26,18 @@ SolidKineticPorosity::SolidKineticPorosity(const InputParameters & parameters)
 }
 
 void
+SolidKineticPorosity::initQpStatefulProperties()
+{
+  computeQpProperties();
+}
+
+void
 SolidKineticPorosity::computeQpProperties()
 {
   Real porosity = _base_porosity - _mineral_volume_frac[_qp];
 
   // Porosity cannot be less than zero or greater than 1
-  if (porosity < 0.0)
-    porosity = 0.0;
-  if (porosity > 1.0)
-    porosity = 1.0;
+  porosity = porosity < 0.0 ? 0 : (porosity > 1.0 ? 1 : porosity);
 
   _porosity[_qp] = porosity;
 }

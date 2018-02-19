@@ -29,8 +29,7 @@ KineticDisPreConcAux::computeValue()
   const Real kinetic_rate = KineticDisPreRateAux::computeValue();
 
   Real u_new_aux = _u_old[_qp] + kinetic_rate * _dt;
-  _console << "kinetic_rate " << kinetic_rate << std::endl;
-  _console << "u_new_aux " << u_new_aux << std::endl;
+
   // Bound concentration for the dissolution case
   if (u_new_aux < 0.0)
     u_new_aux = 0.0;

@@ -1,4 +1,4 @@
-# Porosity decrease due to calcite precipitation.
+# Porosity increase due to calcite dissolution.
 # Calcium (Ca2+) and bicarbonate (HCO3-) react to form calcite (CaCO3) via
 # the kinetic reaction
 #
@@ -8,7 +8,7 @@
 # k = 6.456542e-2 mol/m^2 s, equilibrium constant Keq = 10^(1.8487)
 #
 # Note: Calcite molar volume is 36.934e-6 m^3/mol, but a greatly exaggerated
-# value of 36.92e2 is used to exaggerate the size of porosity decrease in this test
+# value of 36.92e1 is used to exaggerate the size of porosity decrease in this test
 
 [Mesh]
   type = GeneratedMesh
@@ -17,13 +17,13 @@
 
 [Variables]
   [./ca2+]
-    initial_condition = 2.0e-2
+    initial_condition = 1e-5
   [../]
   [./h+]
-    initial_condition = 1.0e-8
+    initial_condition = 1.0e-6
   [../]
   [./hco3-]
-    initial_condition = 1.0e-2
+    initial_condition = 1.0e-5
   [../]
 []
 
@@ -33,6 +33,7 @@
     family = MONOMIAL
   [../]
   [./caco3_s]
+    initial_condition = 8.1e-6
   [../]
   [./mineral_frac]
     order = CONSTANT
@@ -64,7 +65,7 @@
     log10_keq = '1.8487'
     reference_temperature = '298.15'
     system_temperature = '298.15'
-    specific_reactive_surface_area = '1'
+    specific_reactive_surface_area = '0.1'
     kinetic_rate_constant = '6.456542e-7'
     activation_energy = '1.5e4'
   [../]

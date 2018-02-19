@@ -24,6 +24,7 @@ validParams<CoupledBEKinetic>()
 CoupledBEKinetic::CoupledBEKinetic(const InputParameters & parameters)
   : Kernel(parameters),
     _porosity(getMaterialProperty<Real>("porosity")),
+    _porosity_old(getMaterialPropertyOld<Real>("porosity")),
     _weight(getParam<std::vector<Real>>("weight"))
 {
   const unsigned int n = coupledComponents("v");
@@ -42,7 +43,9 @@ CoupledBEKinetic::computeQpResidual()
 {
   Real assemble_conc = 0.0;
   for (unsigned int i = 0; i < _vals.size(); ++i)
-    assemble_conc += _weight[i] * ((*_vals[i])[_qp] - (*_vals_old[i])[_qp]) / _dt;
+    assemble_conc +=
+        _weight[i] *
+        (_porosity[_qp] * (*_vals[i])[_qp] - _porosity_old[_qp] * (*_vals_old[i])[_qp]) / _dt;
 
-  return _porosity[_qp] * _test[_i][_qp] * assemble_conc;
+  return _test[_i][_qp] * assemble_conc;
 }
