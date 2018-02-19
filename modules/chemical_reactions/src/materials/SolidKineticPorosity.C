@@ -13,15 +13,18 @@ validParams<SolidKineticPorosity>()
 {
   InputParameters params = validParams<Material>();
   params.addRequiredParam<Real>("base_porosity", "Base porosity with no mineral species");
+  params.addParam<MaterialPropertyName>(
+      "porosity_name", "porosity", "The name of the material property defining porosity");
   params.addClassDescription("Porosity including contribution due to solid mineral species");
   return params;
 }
 
 SolidKineticPorosity::SolidKineticPorosity(const InputParameters & parameters)
   : Material(parameters),
+    _porosity_name(getParam<MaterialPropertyName>("porosity_name")),
     _base_porosity(getParam<Real>("base_porosity")),
     _mineral_volume_frac(getMaterialProperty<Real>("mineral_volume_frac")),
-    _porosity(declareProperty<Real>("porosity"))
+    _porosity(declareProperty<Real>(_porosity_name))
 {
 }
 

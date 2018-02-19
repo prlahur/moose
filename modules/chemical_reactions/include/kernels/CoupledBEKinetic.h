@@ -30,6 +30,8 @@ protected:
   virtual Real computeQpResidual() override;
 
 private:
+  /// Porosity material property name
+  const MaterialPropertyName _porosity_name;
   /// Porosity
   const MaterialProperty<Real> & _porosity;
   /// Old value of porosity

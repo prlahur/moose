@@ -51,6 +51,8 @@ private:
   const VariableValue & _gamma_eq;
   /// Old activity coefficient of equilibrium species
   const VariableValue & _gamma_eq_old;
+  /// Porosity material property name
+  const MaterialPropertyName _porosity_name;
   /// Porosity
   const MaterialProperty<Real> & _porosity;
   /// Old value of porosity

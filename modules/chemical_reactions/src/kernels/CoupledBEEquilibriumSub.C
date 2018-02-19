@@ -28,6 +28,8 @@ validParams<CoupledBEEquilibriumSub>()
   params.addCoupledVar("gamma_v", 1.0, "Activity coefficients of coupled primary species");
   params.addCoupledVar("gamma_eq", 1.0, "Activity coefficient of this equilibrium species");
   params.addCoupledVar("v", "Coupled primary species constituting the equilibrium species");
+  params.addParam<MaterialPropertyName>(
+      "porosity_name", "porosity", "The name of the material property defining porosity");
   params.addClassDescription("Derivative of equilibrium species concentration wrt time");
   return params;
 }
@@ -42,8 +44,9 @@ CoupledBEEquilibriumSub::CoupledBEEquilibriumSub(const InputParameters & paramet
     _gamma_u_old(coupledValueOld("gamma_u")),
     _gamma_eq(coupledValue("gamma_eq")),
     _gamma_eq_old(coupledValueOld("gamma_eq")),
-    _porosity(getMaterialProperty<Real>("porosity")),
-    _porosity_old(getMaterialPropertyOld<Real>("porosity")),
+    _porosity_name(getParam<MaterialPropertyName>("porosity_name")),
+    _porosity(getMaterialProperty<Real>(_porosity_name)),
+    _porosity_old(getMaterialPropertyOld<Real>(_porosity_name)),
     _u_old(valueOld())
 {
   const unsigned int n = coupledComponents("v");

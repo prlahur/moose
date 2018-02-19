@@ -14,14 +14,17 @@ InputParameters
 validParams<PrimaryTimeDerivative>()
 {
   InputParameters params = validParams<TimeDerivative>();
+  params.addParam<MaterialPropertyName>(
+      "porosity_name", "porosity", "The name of the material property defining porosity");
   params.addClassDescription("Derivative of primary species concentration wrt time");
   return params;
 }
 
 PrimaryTimeDerivative::PrimaryTimeDerivative(const InputParameters & parameters)
   : DerivativeMaterialInterface<TimeDerivative>(parameters),
-    _porosity(getMaterialProperty<Real>("porosity")),
-    _porosity_old(getMaterialPropertyOld<Real>("porosity")),
+    _porosity_name(getParam<MaterialPropertyName>("porosity_name")),
+    _porosity(getMaterialProperty<Real>(_porosity_name)),
+    _porosity_old(getMaterialPropertyOld<Real>(_porosity_name)),
     _u_old(valueOld())
 {
 }
@@ -36,7 +39,4 @@ Real
 PrimaryTimeDerivative::computeQpJacobian()
 {
   return _test[_i][_qp] * _phi[_j][_qp] * _porosity[_qp] / _dt;
-  // +
-  //_dporosity_dvar[_qp] *
-  // TimeDerivative::computeQpResidual();
 }

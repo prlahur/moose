@@ -35,6 +35,8 @@ protected:
   virtual void initQpStatefulProperties() override;
   virtual void computeQpProperties() override;
 
+  /// Porosity material property name
+  const MaterialPropertyName _porosity_name;
   /// Base porosity (without mineral contribution)
   const Real _base_porosity;
   /// Total mineral volume fraction

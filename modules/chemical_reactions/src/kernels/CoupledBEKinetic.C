@@ -17,14 +17,17 @@ validParams<CoupledBEKinetic>()
   params.addRequiredParam<std::vector<Real>>("weight",
                                              "The weight of kinetic species concentration");
   params.addCoupledVar("v", "List of kinetic species being coupled by concentration");
+  params.addParam<MaterialPropertyName>(
+      "porosity_name", "porosity", "The name of the material property defining porosity");
   params.addClassDescription("Derivative of kinetic species concentration wrt time");
   return params;
 }
 
 CoupledBEKinetic::CoupledBEKinetic(const InputParameters & parameters)
   : Kernel(parameters),
-    _porosity(getMaterialProperty<Real>("porosity")),
-    _porosity_old(getMaterialPropertyOld<Real>("porosity")),
+    _porosity_name(getParam<MaterialPropertyName>("porosity_name")),
+    _porosity(getMaterialProperty<Real>(_porosity_name)),
+    _porosity_old(getMaterialPropertyOld<Real>(_porosity_name)),
     _weight(getParam<std::vector<Real>>("weight"))
 {
   const unsigned int n = coupledComponents("v");
