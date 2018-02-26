@@ -29,6 +29,7 @@
 #include "PorousFlowCapillaryPressureBC.h"
 #include "PorousFlowWaterNCG.h"
 #include "PorousFlowBrineCO2.h"
+#include "PorousFlowBrineMethane.h"
 
 // DiracKernels
 #include "PorousFlowSquarePulsePointSource.h"
@@ -84,6 +85,7 @@
 #include "PorousFlowConstantThermalExpansionCoefficient.h"
 #include "PorousFlowFluidStateWaterNCG.h"
 #include "PorousFlowFluidStateBrineCO2.h"
+#include "PorousFlowFluidStateBrineMethane.h"
 
 // Kernels
 #include "PorousFlowAdvectiveFlux.h"
@@ -186,6 +188,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerUserObject(PorousFlowCapillaryPressureBC);
   registerUserObject(PorousFlowWaterNCG);
   registerUserObject(PorousFlowBrineCO2);
+  registerUserObject(PorousFlowBrineMethane);
 
   // DiracKernels
   registerDiracKernel(PorousFlowSquarePulsePointSource);
@@ -241,6 +244,7 @@ PorousFlowApp::registerObjects(Factory & factory)
   registerMaterial(PorousFlowConstantThermalExpansionCoefficient);
   registerMaterial(PorousFlowFluidStateWaterNCG);
   registerMaterial(PorousFlowFluidStateBrineCO2);
+  registerMaterial(PorousFlowFluidStateBrineMethane);
 
   // Kernels
   registerKernel(PorousFlowAdvectiveFlux);
